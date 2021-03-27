@@ -1,0 +1,8 @@
+<odoo>
+    <data>
+        <record id="group_print_invoice" model="res.groups">
+            <field name="name">Print Invoice</field>
+            <field name="comment">the user will have access to print invoice</field>
+        </record>
+    </data>
+</odoo>

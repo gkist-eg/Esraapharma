@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <record id="seq_item_request" model="ir.sequence">
+        <field name="name">Item Request</field>
+        <field name="code">item.request</field>
+        <field name="prefix">IR</field>
+        <field name="padding">5</field>
+    </record></data>
+<data noupdate="1">
+    <record id="emploee_location"  model="stock.location">
+        <field name="name">Employee</field>
+        <field name="usage">customer</field>
+       <field name="location_id" ref="stock.stock_location_locations_partner"/>
+        <field name="company_id"></field>
+
+    </record>
+        <record id="view_location_security_users_form" model="ir.ui.view">
+            <field name="name">location_security.users.form</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+
+                <notebook>
+                    <page string="Locations to Approve">
+                        <field name="multi_locations" nolabel="1" colspan="2"/>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+    <!-- Inherit Form View to Modify it -->
+    <record id="hr_department_inherit" model="ir.ui.view">
+        <field name="name">hr.department</field>
+        <field name="model">hr.department</field>
+        <field name="inherit_id" ref="hr.view_department_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="account_id"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</data></odoo>

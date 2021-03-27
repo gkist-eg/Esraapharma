@@ -1,0 +1,39 @@
+<odoo>
+  <data>
+  <!-- Inherit Form View to Modify it -->
+  <record id="mrp_production_form" model="ir.ui.view">
+      <field name="name">mrp.production</field>
+      <field name="model">mrp.production</field>
+      <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+      <field name="arch" type="xml">
+        <xpath expr="//button[@name='action_assign']" position="after">
+               <button name="button_adding" string="Request Materials" type="object" states="confirmed,progress" groups="mrp.group_mrp_user,mrp_updates.group_production_user"/>
+        </xpath>
+
+          <xpath expr="//div[@name='button_box']" position="inside">
+  <button type="object" name="action_see_request" class="oe_stat_button" icon="fa-paper-plane" attrs="{'invisible':[('requests','=',[])]}">
+                            <field name="request_count" widget="statinfo" string="Requests" help="Item Request For Batch"/>
+                            <field name="requests" invisible="1"/>
+                        </button>          </xpath>
+
+      </field>
+
+  </record>
+
+      <!-- Inherit Form View to Modify it -->
+      <record id="view_item_request_form_production" model="ir.ui.view">
+          <field name="name">item.request</field>
+          <field name="model">item.request</field>
+          <field name="inherit_id" ref="item_request.view_item_request_form"/>
+          <field name="arch" type="xml">
+
+              <xpath expr="//field[@name='location_id']" position="before">
+                  <field name="production_id" readonly="1"/>
+              </xpath>
+
+          </field>
+      </record>
+
+
+  </data>
+</odoo>

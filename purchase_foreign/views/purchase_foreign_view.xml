@@ -1,0 +1,64 @@
+
+<odoo>
+    <data>
+        <record id="id_purchase_foreignn_tree" model="ir.ui.view">
+            <field name="name">purchase.foreignn.tree</field>
+            <field name="model">purchase.foreignn</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="attachment_id" widget="many2many_binary" class="oe_inline"/>
+                    <field name="note"/>
+                    <field name="DateDate"/>
+                    <field name="foreign_id"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="id_purchase_foreignn_form" model="ir.ui.view">
+            <field name="name">purchase.foreignn.form</field>
+            <field name="model">purchase.foreignn</field>
+            <field name="arch" type="xml">
+                <form string="Purchase foreign">
+                    <sheet>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="attachment_id" widget="many2many_binary" class="oe_inline" readonly="1"/>
+                            <field name="note" readonly="1"/>
+                            <field name="DateDate" readonly="1"/>
+                            <field name="foreign_id" invisible="1" readonly="1"/>
+
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="id_purchase_foreignn_search" model="ir.ui.view">
+            <field name="name">purchase.foreignn.search</field>
+            <field name="model">purchase.foreignn</field>
+            <field name="arch" type="xml">
+                <search string="Search Purchase Request">
+                    <field name="name"/>
+
+                </search>
+            </field>
+        </record>
+
+        <record id="id_purchase_foreignn_form_action" model="ir.actions.act_window">
+            <field name="name">purchase.foreignn</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">purchase.foreignn</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+<!--        <menuitem-->
+<!--                id="menu_purchase_foreignn_action"-->
+<!--                sequence="-3"-->
+<!--                parent="id_purchase_requsts_view_menu"-->
+<!--                action="id_purchase_foreignn_form_action"-->
+        />
+    </data>
+
+</odoo>

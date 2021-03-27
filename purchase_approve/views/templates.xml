@@ -1,0 +1,10 @@
+<odoo>
+    <data>
+<record id="group_mfo_user" model="res.groups">
+    <field name="name">Manage Manufacturing For Other</field>
+    <field name="category_id" ref="base.module_category_hidden"/>
+</record>    </data>
+
+
+
+</odoo>

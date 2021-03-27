@@ -1,0 +1,9 @@
+<odoo>
+  <data>
+   <menuitem id="mrp.menu_mrp_root"
+        name="Manufacturing"
+        groups="mrp.group_mrp_user,mrp.group_mrp_manager,mrp_updates.group_production_user,group_research_user"
+        web_icon="mrp,static/description/icon.png"
+        sequence="35"/>
+  </data>
+</odoo>

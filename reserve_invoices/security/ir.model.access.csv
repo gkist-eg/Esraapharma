@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_reserve_invoices_reserve_invoices,reserve.invoices,model_reserve_invoices,base.group_user,1,1,1,0
+access_change_invoices_request,change.invoices.request,model_change_invoices_request,base.group_user,1,1,1,0
+access_reserve_invoices_request,reserve.invoices.request,model_reserve_invoices_request,base.group_user,1,1,1,0
+access_reserve_invoices_request_line,reserve.invoices.request.line,model_reserve_invoices_request_line,base.group_user,1,1,1,0

@@ -1,0 +1,23 @@
+<odoo>
+    <!-- Inherit Form View to Modify it -->
+      <record id="stock_master_origin" model="ir.ui.view">
+            <field name="name">stock.location.master</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='active']" position="after">
+
+                  <field name="origin"/>
+                  <field name="warehouse_id"/>
+                  <field name="stock_usage"/>
+                  <field name="type"/>
+                </xpath>
+                <xpath expr="//field[@name='scrap_location']" position="before">
+                  <field name="finish"/>
+                  <field name="scrap_stock"/>
+                </xpath>
+
+            </field>
+        </record>
+</odoo>

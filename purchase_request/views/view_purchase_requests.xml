@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="id_purchase_requsts_view_tree">
+            <field name="name">purchase.requsts</field>
+            <field name="model">purchase.requests</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="nname"/>
+                    <field name="requested_by_id"/>
+                    <field name="start_date"/>
+                    <field name="due_date"/>
+                    <field name="departmnt_id"/>
+                    <field name="approver_id"/>
+                    <field name="purchase_approver_id"/>
+                    <field name="prioritty"/>
+                    <field name="request_category_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="id_purchase_requsts_view_pivot">
+            <field name="name">purchase.requsts</field>
+            <field name="model">purchase.requests</field>
+            <field name="arch" type="xml">
+                <pivot>
+                    <!--                    <field name="request_line_ids" type="col"/>-->
+                    <field name="nname" type="row"/>
+
+                </pivot>
+            </field>
+        </record>
+
+
+        <record id="id_purchase_requsts_view_form" model="ir.ui.view">
+            <field name="name">purchase.requsts</field>
+            <field name="model">purchase.requests</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                        <button name="purchase_approval" string="Request Approve" class="oe_highlight"
+                                type="object" attrs="{'invisible':[('to_be_approve', '=', False)]}"/>
+                        <button name="leadr_approved" string="Leader Approved" class="oe_highlight"
+                                type="object" attrs="{'invisible': [('is_approve_leader', '=', False)]}"/>
+                        <button name="manegr_approved" string="Maneger Approved" class="oe_highlight"
+                                type="object" attrs="{'invisible': [('is_leader_purchase', '=', False)]}"/>
+                        <button name="requst_approved" string="Done" class="oe_highlight"
+                                type="object" attrs="{'invisible': [('is_request_approv', '=', False)]}"/>
+                        <button name="tap_for_quotation" string="New Quotation" class="oe_highlight"
+                                type="object" groups="purchase.group_purchase_user"
+                                attrs="{'invisible':[('state', 'not in', ('request_approved', 'fully_quotationed'))]}"/>
+<!--                        <button name="balah_elbalah" string="New balah_elbalah" class="oe_highlight"-->
+<!--                                type="object"/>-->
+                    </header>
+                    <sheet>
+                        <div class="oe_title mb8">
+                            <h1 class="o_row">
+                                <field name="nname" attrs="{'readonly':[('state','!=','draft')]}"/> <span>-</span>
+                                <field name="name" attrs="{'readonly':[('name','!=','New')],'invisible':[('name','=','New')]}"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="is_readonly" invisible="1"/>
+                                <field name="requested_by_id"  attrs="{'readonly':1}"/>
+                                <field name="departmnt_id"  attrs="{'readonly':1}" />
+<!--                                <field name="departmnt_user_id" invisible="1" />-->
+                                <field name="approver_id"  attrs="{'readonly':1}" />
+                                <field name="purchase_approver_id" />
+                                <field name="prioritty" attrs="{'readonly':[('is_readonly','=',False)]}"/>
+                                <field name="to_be_approve" invisible="1" />
+                                <field name="is_approve_leader" invisible="1" />
+                                <field name="is_leader_purchase" invisible="1" />
+                                <field name="is_request_approv" invisible="1" />
+                                <field name="is_tap_qoutation" invisible="1" />
+                                <field name="is_tap_stte" invisible="1" />
+                            </group>
+                            <group>
+                                <field name="start_date"  attrs="{'readonly':[('start_date','!=',False)]}"/>
+                                <field name="due_date" attrs="{'readonly':[('is_readonly','=',False)]}"/>
+                                <field name="attachment_ids" widget="many2many_binary" class="oe_inline"  attrs="{'readonly':[('is_readonly','=',False)]}"/>
+                                <field name="request_category_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="products" name="products">
+                                <field name="request_line_ids" widget="one2many" nolabel="1" attrs="{'readonly':[('is_readonly','=',False)]}">
+                                    <tree string="products">
+                                        <field name="product_id"/>
+                                        <field name="name"/>
+                                        <field name="product_qty"/>
+                                        <field name="ordered_qty" editable="bottom"/>
+                                        <field name="m_qty" editable="bottom"/>
+                                        <field name="supply_chain_qty" editable="bottom"/>
+                                        <field name="product_uom_id"/>
+                                        <field name="request_date"/>
+                                        <field name="due_date"/>
+                                        <field name="attachment_ids"/>
+                                        <field name="note"/>
+                                        <field name="state"/>
+<!--                                        <field name="category_uom_id" invisible="1"/>-->
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Description" name="description">
+                                <group>
+                                    <field name="descript" attrs="{'readonly':[('is_readonly','=',False)]}"/>
+                                </group>
+                            </page>
+                            <page string="Other Information" name="other_information">
+                                <group>
+                                    <field name="created_on" />
+                                    <field name="created_by" />
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        <record id='id_purchase_requsts_view_search' model='ir.ui.view'>
+            <field name="name">purchase.requsts.search</field>
+            <field name="model">purchase.requests</field>
+            <field name="arch" type="xml">
+                <search string="">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="id_purchase_requsts_view_action">
+            <field name="name">Purchase Requsts</field>
+            <field name="res_model">purchase.requests</field>
+            <field name="view_mode">tree,form,pivot</field>
+        </record>
+
+        <menuitem
+                id="id_purchase_requsts_view_menu"
+                name="Purchase Requests"
+                action="id_purchase_requsts_view_action"
+                sequence="-2"/>
+        <!--                parent="purchase.menu_procurement_management"-->
+
+
+
+    </data>
+</odoo>

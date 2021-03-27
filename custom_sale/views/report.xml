@@ -1,0 +1,11 @@
+<odoo>
+    <report
+                id="invoice_new_xlsx"
+                model="account.move"
+                report_type="xlsx"
+                string="New Invoice xlsx"
+                name="custom_sale.report_invoice"
+                file="custom_sale.report_invoice"
+                groups="custom_sale.group_print_invoice"
+        />
+</odoo>

@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_restrict_warehouse_barcode_restrict_warehouse_barcode,restrict_warehouse_barcode.restrict_warehouse_barcode,model_restrict_warehouse_barcode_restrict_warehouse_barcode,base.group_user,1,1,1,1

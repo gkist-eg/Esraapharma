@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+         <report
+            id="action_safe_report"
+            model="safe.statement"
+            string="Safe Report"
+            menu="False"
+            report_type="qweb-pdf"
+            name="report.safe_statement_report"
+            file="report.safe_statement_report"
+        />
+    <report
+            id="action_bank_report"
+            model="bank.statement"
+            string="Bank Report"
+            menu="False"
+            report_type="qweb-pdf"
+            name="report.bank_statement_report"
+            file="report.bank_statement_report"
+        />
+    <report
+            id="action_check_report"
+            model="check.statement"
+            string="Check Report"
+            report_type="qweb-pdf"
+            name="report.check_statement_report"
+            file="report.check_statement_report"
+        />
+    </data>
+
+
+</odoo>

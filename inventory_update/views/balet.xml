@@ -1,0 +1,45 @@
+<odoo>
+    <record id="view_balet_form" model="ir.ui.view">
+        <field name="name">balet.form</field>
+        <field name="model">balet.location</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+
+                    <group style="font-size: 18px;">
+
+                        <field name="name"  />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_balet_location_tree" model="ir.ui.view">
+        <field name="name">balet.tree</field>
+        <field name="model">balet.location</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name='create_date'/>
+            </tree>
+        </field>
+    </record>
+        <record id="action_balet_location" model="ir.actions.act_window">
+            <field name="name">Balet Location</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">balet.location</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p>
+                <p>
+                    <!-- More details about what a user can do with this object will be OK -->
+                </p>
+            </field>
+        </record>
+
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="menu_balet_action" name="Balet Location" action="action_balet_location" sequence="30"
+        parent="stock.menu_stock_warehouse_mgmt"/>
+</odoo>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_custom_sale,custom_sale.custom_sale,model_category_customer,base.group_user,1,1,1,1
+access_invoice_wizard,custom_sale.invoice_wizard,model_invoice_wizard,,1,1,1,1
+access_balance_wizard,custom_sale.balance_wizard,model_balance_wizard,,1,1,1,1
+access_detail_wizard,custom_sale.detail_wizard,model_detail_wizard,,1,1,1,1

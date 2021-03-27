@@ -1,0 +1,53 @@
+<odoo>
+  <record id="product_type_mrp_production" model="ir.ui.view">
+            <field name="name">product.template</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='default_code']" position="after">
+                     <field name="pro_type" />
+                </xpath>
+
+    <xpath expr="//label[@for='weight']" position="before">
+                        <field name="mfg" />
+                    </xpath>
+            </field>
+        </record>
+
+    <record id="view_mrp_production_workorder_form_view_filter" model="ir.ui.view">
+        <field name="name">mrp.workorder</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_workorder_form_view_filter"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='name']" position="replace">
+
+                <field name="name" string="Work Order" filter_domain="['|', ('name', 'ilike', self),('batch', 'ilike', self)]"/>
+                <field name="batch"/>
+                <field name="product_id"/>
+
+            </xpath>
+
+        </field>
+    </record>
+    <record id="view_mrp_production_work_order_search" model="ir.ui.view">
+        <field name="name">mrp.workorder</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_work_order_search"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='production_id']" position="before">
+
+                <field name="name" string="Work Order" filter_domain="['|', ('name', 'ilike', self),('batch', 'ilike', self)]"/>
+
+                <field name="batch"/>
+            </xpath>
+            <xpath expr="//field[@name='production_id']" position="after">
+
+
+                <field name="product_id"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

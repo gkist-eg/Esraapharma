@@ -1,0 +1,53 @@
+<odoo>
+
+     <record id="hr_res_users_view_form_simple_modif_edit" model="ir.ui.view">
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="hr.res_users_view_form_profile"/>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+
+ <xpath expr="//field[@name='employee_parent_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            <xpath expr="//field[@name='coach_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+
+                <xpath expr="//field[@name='department_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+
+        </field>
+    </record>
+
+    <record id="hr_res_users_view_form_simple_modif_edit3" model="ir.ui.view">
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="hr_expense.res_users_view_form_preferences"/>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+
+ <xpath expr="//field[@name='expense_manager_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+
+
+        </field>
+    </record><record id="hr_res_users_view_form_simple_modif_edit5" model="ir.ui.view">
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="sale_stock.res_users_view_form_preferences"/>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+
+ <xpath expr="//field[@name='property_warehouse_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+
+
+        </field>
+    </record>
+
+</odoo>

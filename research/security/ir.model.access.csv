@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_research_research,research bom,mrp.model_mrp_bom,group_research_user,1,1,1,1
+access_research_research_line,research bom line,mrp.model_mrp_bom_line,group_research_user,1,1,1,1
+access_research_research_stock_move,research bom line,stock.model_stock_move,group_research_user,1,0,0,0
+access_researchmrp_routing.workcenter,research mrp.routing.workcenter,mrp.model_mrp_routing_workcenter,group_research_user,1,0,0,0
+access_researchmrpmrp.bom.byproduct,research mrp.bom.byproduct,mrp.model_mrp_bom_byproduct,group_research_user,1,0,0,0
+access_research_mrp_document,research mrp.document,mrp.model_mrp_document,group_research_user,1,0,0,0

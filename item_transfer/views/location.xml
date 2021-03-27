@@ -1,0 +1,31 @@
+<odoo>
+
+
+         <record id="stock_picking_origin" model="ir.ui.view">
+            <field name="name">stock.picking.transfer</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='location_id']" position="replace">
+                     <field name="location_id" options="{'no_create': True}" groups="stock.group_stock_multi_locations" attrs="{'invisible': ['|',('picking_type_code', '=', 'incoming'),('location_id', '=',%(item_transfer.transit_location)d)]}"/>
+            </xpath>
+                <xpath expr="//field[@name='location_dest_id']" position="replace">
+
+                <field name="location_dest_id" options="{'no_create': True}" groups="stock.group_stock_multi_locations" attrs="{'invisible': ['|',('picking_type_code', '=', 'outgoing'),('location_dest_id', '=',%(item_transfer.transit_location)d)]}"/>
+                </xpath>
+                <xpath expr="//field[@name='location_id']" position="after">
+  <div class="o_td_label">
+                                <label for="location" string="Source Location" style="font-weight:bold;" attrs="{'invisible': [('location_id', '!=',%(item_transfer.transit_location)d)]}"/>
+                                <label for="location" string="Destination Location" style="font-weight:bold;" attrs="{'invisible': [('location_dest_id', '!=',%(item_transfer.transit_location)d)]}"/>
+                            </div>
+                            <field name="location" attrs="{'invisible': [('location', '=', False)]}" nolabel="1"/>
+
+                </xpath>
+
+
+            </field>
+        </record>
+
+
+</odoo>

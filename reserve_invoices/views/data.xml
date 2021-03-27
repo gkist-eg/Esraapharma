@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sequences for sale.order -->
+        <record id="seq_sale_order" model="ir.sequence">
+            <field name="name">Sales Order</field>
+            <field name="code">sale.order.quot</field>
+            <field name="prefix">SO</field>
+            <field name="padding">8</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_sale_order_distributor" model="ir.sequence">
+            <field name="name">Sales Order</field>
+            <field name="code">sale.order.distributor</field>
+            <field name="prefix">DSO</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+    </data>
+</odoo>

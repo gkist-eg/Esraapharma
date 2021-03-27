@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <template id="safe_statement_report">
+  <t t-call="web.html_container">
+            <t t-set="data_report_margin_top" t-value="12"/>
+            <t t-set="data_report_header_spacing" t-value="9"/>
+            <t t-set="data_report_dpi" t-value="110"/>
+            <t t-call="web.internal_layout">
+        <t t-foreach="docs" t-as="o">
+                    <div class="page">
+                    <h2>Bank Report</h2>
+
+                    <div class="row mt32">
+                        <div class="col-3">
+                            <strong>Date From:</strong>
+                            <p t-esc="o.date_from"/>
+                            <strong>Safe</strong>
+                            <p t-esc="o.journal_id.name"/>
+
+                        </div>
+                        <div class="col-3">
+                           <strong>Date To:</strong>
+                            <p t-esc="o.date_to"/>  <strong>Start Balance</strong>
+                            <p t-esc="o.amount_payment"/>
+                        </div>
+                    </div>     <table class="table table-condensed">
+                            <thead>
+                            <tr>
+                                <th t-if="o.type_cash == 'Partner'">Date</th>
+                                <th t-if="o.type_cash == 'Partner'">Reference</th>
+                                <th t-if="o.type_cash == 'Partner'">Amount Received</th>
+                                <th t-if="o.type_cash == 'Partner'">Amount Paid</th>
+                                <th t-if="o.type_cash == 'Partner'">partner</th>
+                                <th t-if="o.type_cash == 'Partner'">Description</th>
+                                <th t-if="o.type_cash == 'Partner'">Type</th>
+
+
+
+
+
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <t t-foreach="o.line_ids" t-as="l" >
+
+                                <tr>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.payment_date"/></td>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.communication"/></td>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.amount_received"/></td>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.amount"/></td>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.partner_id"/></td>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.name"/></td>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.type"/></td>
+
+
+
+
+
+
+                                </tr>
+                            </t>
+                            </tbody>
+                        </table>
+
+                     <div class="row">
+                        <div class="col-xs-4 pull-right">
+                         <table class="table table-condensed">
+                              <tr class="border-black">
+                            <td><strong>Total Amount Received</strong></td>
+                                 <td ><span  t-esc="sum(line.amount_received for line in o.line_ids )"/></td>
+
+                            <td class="text-right">
+                            </td>
+                        </tr>
+                             <tr class="border-black">
+                            <td><strong>Total Amount Paid</strong></td>
+                                 <td ><span  t-esc="sum(line.amount for line in o.line_ids )"/></td>
+
+                            <td class="text-right">
+                            </td>
+                        </tr>
+
+                             <tr class="border-black">
+                            <td><strong>Total End Balance</strong></td>
+                                 <td ><span t-esc="o.end_amount"/></td>
+
+                            <td class="text-right">
+                            </td>
+                        </tr>
+                         </table>
+                        </div>
+                     </div>
+                    <div class="oe_structure"/>
+                </div>
+
+            </t>
+        </t>
+    </t>
+    </template>
+</odoo>

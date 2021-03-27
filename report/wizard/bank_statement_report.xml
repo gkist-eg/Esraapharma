@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+<record id="view_bank" model="ir.ui.view" >
+        <field name="name">Bank</field>
+        <field name="model">bank.statement</field>
+        <field name="arch" type="xml">
+        <form string="Choose your date">
+            <p class="oe_gray">
+                </p>
+                        <group>
+                                <field name="journal_id"  options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+
+
+
+
+                        </group>
+ <group>
+
+
+                        <field name="date_from" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                        <field name="date_to" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+
+                        </group>
+            <button name="print_pdf_bank"
+                                string="Print "
+                                type="object"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel" />
+
+        </form>
+
+        </field>
+       </record>
+        <record id="action_wizard_bank" model="ir.actions.act_window">
+        <field name="name">Bank Report</field>
+        <field name="res_model">bank.statement</field>
+        <field name="view_mode">form</field>
+                    <field name="view_id" ref="view_bank"/>
+
+        <field name="target">new</field>
+        </record>
+
+    <menuitem
+                id="menu_action_wizard_bank"
+                name="Bank Report"
+                action="action_wizard_bank"
+                sequence="2"
+
+        />
+
+</odoo>

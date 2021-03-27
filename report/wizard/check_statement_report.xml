@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+       <record id="view_check" model="ir.ui.view">
+        <field name="name">Check</field>
+        <field name="model">check.statement</field>
+        <field name="arch" type="xml">
+        <form string="Choose your date">
+            <p class="oe_gray">
+                </p>
+                <group>
+                        <group>
+                                 <field name="journal_id" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                                 <field name="safe_id" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+
+                        </group>
+                        <group>
+
+
+                        <field name="date_from" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                        <field name="date_to" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+
+                        </group>
+
+</group>
+
+
+                <footer>
+                        <button name="print_pdf_check"
+                                string="Print "
+                                type="object"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel" />
+                </footer>
+
+        </form>
+
+
+        </field>
+       </record>
+               <record id="action_wizard_check" model="ir.actions.act_window">
+        <field name="name">Check</field>
+        <field name="res_model">check.statement</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_check"/>
+        <field name="target">new</field>
+        </record>
+        <menuitem
+                id="menu_action_wizard_check"
+                name="Check Report"
+                action="action_wizard_check"
+                sequence="3"
+        />
+
+</odoo>

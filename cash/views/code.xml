@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+
+
+         <record id="seq_code" model="ir.sequence">
+            <field name="name">Refrence</field>
+            <field name="code">code.code</field>
+            <field name="padding">5</field>
+            <field name="prefix">CSHOUT</field>
+        </record>
+        <record id="seq_code1" model="ir.sequence">
+            <field name="name">Refrence</field>
+            <field name="code">code.code.out</field>
+            <field name="padding">5</field>
+            <field name="prefix">CSHIN</field>
+        </record>
+        <record id="seq_code2" model="ir.sequence">
+            <field name="name">Refrence</field>
+            <field name="code">code.check.out</field>
+            <field name="padding">5</field>
+            <field name="prefix">CHKOUT</field>
+        </record><record id="seq_code3" model="ir.sequence">
+            <field name="name">Refrence</field>
+            <field name="code">code.check.in</field>
+            <field name="padding">5</field>
+            <field name="prefix">CHKIN</field>
+        </record>
+
+
+
+
+
+
+</odoo>

@@ -1,0 +1,40 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mrp_mrp_workcenter_productivity_loss,mrp.workcenter.productivity.loss,mrp.model_mrp_workcenter_productivity_loss,group_production_user,1,0,0,0
+access_mrp_mrp_workcenter_productivity_loss_type,mrp.workcenter.productivity.loss.type,mrp.model_mrp_workcenter_productivity_loss_type,group_production_user,1,0,0,0
+access_mrp_mrp_workcenter_productivity,mrp.workcenter.productivity,mrp.model_mrp_workcenter_productivity,group_production_user,1,1,1,1
+access_mrp_mrp_workcenter,mrp.workcenter,mrp.model_mrp_workcenter,group_production_user,1,0,0,0
+access_mrp_mrp_routing_workcenter,mrp.routing.workcenter,mrp.model_mrp_routing_workcenter,group_production_user,1,0,0,0
+access_mrp_mrp_bom,mrp.bom,mrp.model_mrp_bom,group_production_user,1,0,0,0
+access_mrp_mrp_bom_line,mrp.bom.line,mrp.model_mrp_bom_line,group_production_user,1,0,0,0
+access_mrp_mrp_bom_byproduct_user,mrp.bom.byproduct,mrp.model_mrp_bom_byproduct,group_production_user,1,0,0,0
+access_mrp_mrp_production,mrp.production user,mrp.model_mrp_production,group_production_user,1,1,0,0
+access_mrp_stock_location_mrp_worker,stock.location mrp_worker,stock.model_stock_location,group_production_user,1,0,0,0
+access_mrp_stock_move_mrp_worker,stock.move mrp_worker,stock.model_stock_move,group_production_user,1,1,1,0
+access_mrp_stock_picking_mrp_worker,stock.picking mrp_worker,stock.model_stock_picking,group_production_user,1,1,0,0
+access_mrp_stock_warehouse,stock.warehouse mrp_worker,stock.model_stock_warehouse,group_production_user,1,0,0,0
+access_mrp_mrp_production_stock_worker,mrp.production stock_worker,mrp.model_mrp_production,stock.group_stock_user,1,0,0,0
+access_mrp_product_product_user,product.product user,product.model_product_product,group_production_user,1,0,0,0
+access_mrp_product_template_user,product.template user,product.model_product_template,group_production_user,1,0,0,0
+access_mrp_uom_uom_user,uom.uom user,uom.model_uom_uom,group_production_user,1,0,0,0
+access_mrp_product_supplierinfo_user,product.supplierinfo user,product.model_product_supplierinfo,group_production_user,1,1,0,0
+access_mrp_res_partner,res.partner,base.model_res_partner,group_production_user,1,0,0,0
+access_mrp_mrp_workorder_mrp_user,mrp.workorder.user,mrp.model_mrp_workorder,group_production_user,1,1,0,0
+access_mrp_mrp_workorder_mrp_manager,mrp.workorder,mrp.model_mrp_workorder,mrp.group_mrp_manager,1,1,0,0
+access_mrp_resource_calendar_leaves_user,mrp.resource.calendar.leaves.user,resource.model_resource_calendar_leaves,group_production_user,1,1,1,1
+access_mrp_resource_calendar_leaves_manager,mrp.resource.calendar.leaves.manager,resource.model_resource_calendar_leaves,mrp.group_mrp_manager,1,0,0,0
+access_mrp_resource_calendar_attendance_mrp_user,mrp.resource.calendar.attendance.mrp.user,resource.model_resource_calendar_attendance,group_production_user,1,1,1,1
+access_mrp_uom_category,uom.category,uom.model_uom_category,group_production_user,1,0,0,0
+access_mrp_resource_resource,resource.resource,resource.model_resource_resource,group_production_user,1,0,0,0
+access_mrp_stock_production_lot_user,stock.production.lot,stock.model_stock_production_lot,group_production_user,1,1,1,0
+access_mrp_stock_warehouse_orderpoint_user,stock.warehouse.orderpoint,stock.model_stock_warehouse_orderpoint,group_production_user,1,0,0,0
+access_mrp_resource_calendar_manufacturinguser,resource.calendar manufacturing.user,resource.model_resource_calendar,group_production_user,1,0,0,0
+access_mrp_mrp_unbuild,mrp.unbuild,mrp.model_mrp_unbuild,group_production_user,1,0,0,0
+access_mrp_mrp_document_mrp_user,mrp.document group_user,mrp.model_mrp_document,group_production_user,1,1,1,1
+access_mrp_change_production_qty,access_mrp.change.production.qty,mrp.model_change_production_qty,group_production_user,1,1,1,0
+access_mrp_stock_warn_insufficient_qty_unbuild,access_mrp.stock.warn.insufficient.qty.unbuild,mrp.model_stock_warn_insufficient_qty_unbuild,group_production_user,1,1,1,0
+access_mrp_mrp_production_backorder,production.backordermrp.,mrp.model_mrp_production_backorder,group_production_user,1,1,1,0
+access_mrp_mrp_production_backorder_line,production.backorder.line,mrp.model_mrp_production_backorder_line,group_production_user,1,1,1,0
+access_mrp_mrp_consumption_warning,consumption.warning,mrp.model_mrp_consumption_warning,group_production_user,1,1,1,0
+access_mrp_mrp_consumption_warning_line,consumption.warning.line,mrp.model_mrp_consumption_warning_line,group_production_user,1,1,1,0
+access_mrp_mrp_immediate_production,immediate.production,mrp.model_mrp_immediate_production,group_production_user,1,1,1,0
+access_mrp_mrp_immediate_production_line,immediate.production.line,mrp.model_mrp_immediate_production_line,group_production_user,1,1,1,0

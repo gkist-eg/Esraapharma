@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_item_request_item_request,item_request.item_request,model_item_request,base.group_user,1,1,1,1
+access_item_request_item_request2,item_request.item_request,model_item_request_line,base.group_user,1,1,1,1
+access_item_requestuser,item_request.item_request,stock.model_stock_production_lot,base.group_user,1,0,0,0

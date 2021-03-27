@@ -1,0 +1,66 @@
+<odoo>
+    <record id="view_stock_move_line_operation_tree_expiry" model="ir.ui.view">
+        <field name="name">stock.move.line</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="product_expiry.view_stock_move_line_operation_tree_expiry"/>
+        <field name="arch" type="xml">
+
+           <xpath expr="//field[@name='expiration_date']" position="after">
+                <field name="box_no" groups="stock.group_production_lot"
+                        attrs="{'readonly': ['&amp;', ('package_level_id', '!=', False), ('parent.picking_type_entire_packs', '=', True)]}"
+                        invisible="not context.get('show_lots_text')" force_save="1" required=" context.get('show_lots_text')"  />
+                <field name="box_qty" groups="stock.group_production_lot" force_save="1"  invisible="not context.get('show_lots_text')" required=" context.get('show_lots_text')" />
+                <field name="suplier_lot" groups="stock.group_production_lot" force_save="1"  invisible="not context.get('show_lots_text')" required=" context.get('show_lots_text')" />
+                <field name="attachment_ids" groups="stock.group_production_lot" widget="many2many_binary" force_save="1"  invisible="not context.get('show_lots_text')" required=" context.get('show_lots_text')" />
+                <field name="balet_ids" groups="stock.group_production_lot" widget="many2many_tags"  invisible="not context.get('show_lots_text')" force_save="1"/>
+            </xpath>
+            <xpath expr="//field[@name='expiration_date']" position="before">
+                <field name="prod_date" force_save="1" attrs="{'column_invisible': ['|', ('parent.use_expiration_date', '!=', True), ('parent.picking_code', '!=', 'incoming')],                     'readonly': [('picking_type_use_existing_lots', '=', True)],                 }"/>
+            </xpath>
+
+        </field>
+    </record>
+    <record id="view_stock_move_line_operation_tree_lot_name" model="ir.ui.view">
+        <field name="name">stock.move.line</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+        <field name="arch" type="xml">
+
+           <xpath expr="//field[@name='lot_name']" position="replace">
+                <field name="lot_name" widget="text" groups="stock.group_production_lot"
+                        placeholder="Write your SN/LN one by one or copy paste a list."
+                        invisible="not context.get('show_lots_text')" force_save="1" />
+            </xpath>
+
+
+        </field>
+    </record>
+    <record id="view_move_form_expiry_production" model="ir.ui.view">
+        <field name="name">stock.production.lot.inherit.form</field>
+        <field name="model">stock.production.lot</field>
+        <field name="inherit_id" ref="product_expiry.view_move_form_expiry" />
+        <field name="arch" type="xml">
+        <xpath expr="//field[@name='expiration_date']" position="before">
+                        <field name="prod_date" />
+        </xpath>
+            <xpath expr="//page[@name='expiration_dates']" position="after">
+            <page string="Lot Information" name="lot_info" attrs="{'invisible': [('use_expiration_date', '=', False)]}">
+                <field name="use_expiration_date" invisible="1"/>
+                <group>
+                    <group>
+                        <field name="suplier_lot" />
+                        <field name="box_qty" />
+                                                                <field name="balet_ids" widget="many2many_tags"/>
+
+                    </group>
+                    <group>                        <field name="box_no" />
+
+                                        <field name="attachment_ids" widget="many2many_binary"/>
+
+                    </group>
+                </group>
+            </page></xpath>
+
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,14 @@
+<odoo>
+  <data>
+    <record model="ir.ui.view" id="view_pcicfkin_type_form_assignment">
+        <field name="model">stock.picking.type</field>
+        <field name="inherit_id" ref="stock.view_picking_type_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='use_existing_lots']" position="after">
+                <field name="allow_return"/>
+            </xpath>
+        </field>
+    </record>
+
+  </data>
+</odoo>

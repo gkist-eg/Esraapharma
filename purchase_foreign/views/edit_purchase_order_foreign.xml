@@ -1,0 +1,68 @@
+<odoo>
+    <data>
+        <record id="view_edit_purchase_foreign_form" model="ir.ui.view">
+            <field name="name">view edit purchase order form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="/form/sheet/notebook/page[@name='products']" position="after">
+                        <page name="foreign_purchase" string="Foreign Purchase"
+                              attrs="{'invisible':[('is_country', '!=', False)]}"/>
+                    </xpath>
+                    <xpath expr="/form/sheet/notebook/page[@name='foreign_purchase']" position="after">
+                        <page name="terms_conditions" string="Terms Conditions"
+                              attrs="{'invisible':[('is_country', '!=', False)]}"/>
+                    </xpath>
+                    <xpath expr="/form/sheet/notebook/page[@name='foreign_purchase']" position="inside">
+                        <header>
+                            <field name="statt" widget="statusbar"
+                                   attrs="{'invisible': ['|',('state', '!=', 'purchase'), ('is_invisible', '=', True)]}"/>
+                        </header>
+                        <sheet>
+                            <group>
+                                <field name="is_invisible" invisible="1"/>
+                                <field name="attachmenttt_id" widget="many2many_binary" class="oe_inline"
+                                       attrs="{'invisible': ['|',('state', '!=', 'purchase'), ('is_invisible', '=', True)]}"/>
+                                <field name="DateDate"
+                                       attrs="{'invisible': ['|',('state', '!=', 'purchase'), ('is_invisible', '=', True)]}"/>
+                                <field name="note"
+                                       attrs="{'invisible': ['|',('state', '!=', 'purchase'), ('is_invisible', '=', True)]}"/>
+                            </group>
+                            <button string="CONFIRM" type="object" name="action_confirm_conf" class="btn-primary"
+                                    attrs="{'invisible': ['|',('state', '!=', 'purchase'), ('is_invisible', '=', True)]}"/>
+                        </sheet>
+
+                    </xpath>
+                    <xpath expr="/form/sheet/notebook/page[@name='terms_conditions']" position="inside">
+                        <field name="due_term"/>
+                        <field name="is_country" invisible="1"/>
+                    </xpath>
+
+                    <xpath expr="/form/sheet/notebook/page[@name='terms_conditions']" position="after">
+                        <page name="notes" string="notes"/>
+                    </xpath>
+                    <xpath expr="/form/sheet/notebook/page[@name='notes']" position="after">
+                        <page name="foreign_report" string="Foreign Report"
+                              attrs="{'invisible':[('is_country', '!=', False)]}"/>
+                    </xpath>
+                    <xpath expr="/form/sheet/notebook/page[@name='foreign_report']" position="inside">
+                        <field name="foreign_ids" widget="one2many" attrs="{'invisible':[('statt','!=','clearance')]}">
+                            <tree string="foreign">
+                                <field name="name"/>
+                                <field name="attachment_id"/>
+                                <field name="DateDate"/>
+                                <field name="note"/>
+                                <field name="foreign_id" invisible="1"/>
+                            </tree>
+                        </field>
+                    </xpath>
+                    <xpath expr="/form/sheet/notebook/page[@name='notes']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+
+                    </xpath>
+                </data>
+            </field>
+        </record>
+    </data>
+</odoo>

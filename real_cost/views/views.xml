@@ -1,0 +1,17 @@
+<odoo>
+  <data>
+    <!-- Inherit Form View to Modify it -->
+    <record id="stock_inventory_line_tree" model="ir.ui.view">
+        <field name="name">stock.inventory.line</field>
+        <field name="model">stock.inventory.line</field>
+        <field name="inherit_id" ref="stock.stock_inventory_line_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='difference_qty']" position="after">
+                <field name="price_unit"/>
+            </xpath>
+
+        </field>
+    </record>
+  </data>
+</odoo>

@@ -1,0 +1,663 @@
+<odoo>
+        <record id="cash_form" model="ir.ui.view">
+            <field name="name">cash.cash.form</field>
+            <field name="model">cash.cash</field>
+            <field name="arch" type="xml">
+                <form string="cash">
+                    <header>
+                <button name="button_confirm"
+                            states="draft"
+                            string="Confirm"
+                            type="object"
+                            class="oe_highlight"
+                    />
+                <field name="state" widget="statusbar"
+                           statusbar_visible="draft,posted"
+                           statusbar_colors='{"draft":"red"}'/></header>
+                    <sheet>
+ <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="button_journal_entries"
+                                    string="Journal Entries" type="object"
+                                    attrs="{'invisible':[('state','=','draft')]}" icon="fa-bars">
+                                <field name="journal_entries" invisible="1"/></button>
+                            <button class="oe_stat_button" name="button_account"
+                                    string="Balance" type="object"
+                                  attrs="{'invisible':[('cash_method','=','check')]}" icon="fa-book">
+                                   <field name='balance' position="inside"/>
+                            </button>
+                    </div>
+                        <group name="main">
+                           <group name="left">
+                                                           <field name="code" />
+                                                           <field name="employee_id" />
+
+
+                                                          <field name="date"/>
+
+
+                                   <field name="payment_type" widget="radio" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+
+                                <field name="payment_partner" widget="radio" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                              <field name="cash_method" widget="radio" />
+
+
+                            </group>
+
+                            <group name="right">
+                            <field name="journal_id" attrs="{'invisible':[('cash_method', 'not in',('cash'))],'required': [('cash_method', 'in',('cash'))],'readonly': [('state', '=', 'posted')]}" options="{'no_create':True,'no_open':True}"/>
+                            <field name="check_receive" attrs="{'required': [('payment_type','in',('receive_money')), ('cash_method','in',('check'))] ,'invisible': ['|',('payment_type','&lt;&gt;','receive_money'), ('cash_method','&lt;&gt;','check')],'readonly': [('state', '=', 'posted')]}"  options="{'no_create_edit':True,'no_open':True,'no_create': True,}"/>
+                            <field name="check_send" attrs="{'required': [('payment_type','in',('send_money')), ('cash_method','in',('check'))] ,'invisible': ['|',('payment_type','&lt;&gt;','send_money'), ('cash_method','&lt;&gt;','check')],'readonly': [('state', '=', 'posted')]}"  options="{'no_create_edit':True,'no_open':True,'no_create': True,}"/>
+                            <field name="check_safe" attrs="{'required': [('payment_type','in',('send_money','receive_money')), ('payment_partner','in',('partner','expense','other')),('cash_method', 'in',('check'))], 'invisible': ['|',('payment_type','&lt;&gt;',('send_money','receive_money')), ('payment_partner','&lt;&gt;','partner'),('cash_method', 'not in',('check'))],'readonly': [('state', '=', 'posted')],}" options="{'no_create_edit':True,'no_open':True,'no_create': True,}"/>
+                            <field name="amount" sum="Amount" attrs="{'invisible':[('payment_type', 'not in',('send_money'))],'readonly': [('state', '=', 'posted')]}"/>
+                            <field name="amount_re" attrs="{'invisible':[('payment_type', 'not in',('receive_money'))],'readonly': [('state', '=', 'posted')]}"/>
+                            <field name="check_number" attrs="{'required': [('payment_type','in',('send_money','receive_money')), ('payment_partner','in',('partner','expense','other')),('cash_method', 'in',('check'))], 'invisible': ['|',('payment_type','&lt;&gt;',('send_money','receive_money')), ('payment_partner','&lt;&gt;','partner'),('cash_method', 'not in',('check'))],'readonly': [('state', '=', 'posted')]}"/>
+                            <field name="due_date" attrs="{'required': [('payment_type','in',('send_money','receive_money')), ('payment_partner','in',('partner','other','expense')),('cash_method', 'in',('check'))], 'invisible': ['|',('payment_type','&lt;&gt;',('send_money','receive_money')), ('payment_partner','&lt;&gt;','partner'),('cash_method', 'not in',('check'))],'readonly': [('state', '=', 'posted')]}"/>
+                            <field name="bank" attrs="{'required': [('payment_type','in',('send_money')), ('cash_method','in',('check'))] ,'invisible': ['|',('payment_type','&lt;&gt;','send_money'), ('cash_method','&lt;&gt;','check')],'readonly': [('state', '=', 'posted')]}" options="{'no_create_edit':True,'no_open':True,'no_create': True,}"/>
+                            <field name="bank_receive" attrs="{'invisible': ['|',('payment_type','&lt;&gt;','receive_money'), ('cash_method','&lt;&gt;','check')],'readonly': [('state', '=', 'posted')]}" />
+                            <field name="bank_account_receive" attrs="{'invisible': ['|',('payment_type','&lt;&gt;','receive_money'), ('cash_method','&lt;&gt;','check')],'readonly': [('state', '=', 'posted')]}" />
+                            <field name="bank_account" attrs="{'required': [('payment_type','in',('send_money')), ('cash_method','in',('check'))] ,'invisible': ['|',('payment_type','&lt;&gt;','send_money'), ('cash_method','&lt;&gt;','check')],'readonly': [('state', '=', 'posted')]}" options="{'no_create_edit':True,'no_open':True,'no_create': True,}"/>
+                            <field name="partner_type" attrs="{'required': [('payment_type','in',('send_money','receive_money')),('payment_partner','in',('partner'))] ,'invisible': [('payment_partner','not in',('partner'))],'readonly': [('state', '=', 'posted')]}" options="{'no_create_edit':True,'no_open':True,'no_create': True,}"/>
+                            <field name="partner_id" attrs="{'required': [('payment_partner','=','partner')], 'invisible':[('payment_partner', '!=','partner')],'readonly': [('state', '=', 'posted')]}" context="{ 'default_supplier': payment_type == 'send_money', 'default_customer': payment_type == 'receive_money'}" options="{'no_create_edit':True,'no_open':True,'no_create': True,}"/>
+                            <field name="employee_expense" attrs="{'required': [('payment_partner','in',('custody','loan','expense'))],'invisible':[('payment_partner', 'not in',('expense','loan','custody'))],'readonly': [('state', '=', 'posted')]}" options="{'no_create_edit':True,'no_open':True,'no_create': True,}"/>
+                            <field name="account_loan" attrs="{'invisible':[ ('payment_partner', '!=','loan')],'readonly': [('state', '=', 'posted')]}" options="{'no_create_edit':True,'no_open':True}" readonly="1"/>
+                            <field name="account_other" attrs="{'required': [('payment_partner','=','other')], 'invisible': [('payment_partner','!=','other')],'readonly': [('state', '=', 'posted')]}" options="{'no_create_edit':True,'no_open':True,'no_create': True,}"/>
+                            <field name="account_custody" attrs="{'required': [('payment_partner','in',('custody'))] ,'invisible':[ ('payment_partner', '!=','custody')],'readonly': [('state', '=', 'posted')]}" options="{'no_create_edit':True,'no_open':True,'no_create': True,}" readonly="1"/>
+                            <field name="partner_other" attrs="{'invisible': [('payment_partner','&lt;&gt;','other')],'readonly': [('state', '=', 'posted')]}" options="{'no_create_edit':True,'no_open':True}"/>
+<!--                            <field name="account_id_expense" attrs="{'required': [('payment_partner','in',('expense'))], 'invisible':[('payment_partner', '!=','expense')],'readonly': [('state', '=', 'posted')]}" options="{'no_create_edit':True,'no_open':True,'no_create': True,}"/>-->
+                            <field name="analytic_account_id" attrs="{'required': [ ('payment_partner','=','expense')], 'invisible':[('payment_partner', '!=','expense')],'readonly': [('state', '=', 'posted')]}" options="{'no_create_edit':True,'no_open':True,'no_create': True,}" />
+                                                       <field name="catg_id" attrs="{'required': [ ('payment_partner','=','expense')], 'invisible':[('payment_partner', '!=','expense')],'readonly': [('state', '=', 'posted')]}" options="{'no_create_edit':True,'no_open':True,'no_create': True,}" />
+
+                            <field name="product_id" attrs="{'required': [ ('payment_partner','=','expense')], 'invisible':[('payment_partner', '!=','expense')],'readonly': [('state', '=', 'posted')]}" options="{'no_create_edit':True,'no_open':True,'no_create': True,}" />
+                            <field name="payment_condation" attrs="{'required': [('payment_type','in','send_money'), ('payment_partner','in','loan')], 'invisible': ['|',('payment_type','&lt;&gt;','send_money'), ('payment_partner','&lt;&gt;','loan')],'readonly': [('state', '=', 'posted')]}"/>
+                            <field name="start_date_payment" attrs="{'required': [('payment_type','in','send_money'), ('payment_partner','in','loan')], 'invisible': ['|',('payment_type','&lt;&gt;','send_money'), ('payment_partner','&lt;&gt;','loan')],'readonly': [('state', '=', 'posted')]}"/>
+                            <field name="description" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                  <field name="message_follower_ids" widget="mail_followers"/>
+                  <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+     <record id="view_account_search" model="ir.ui.view">
+            <field name="name">cash.cash.search</field>
+            <field name="model">cash.cash</field>
+            <field name="arch" type="xml">
+                <search string="Cash">
+                    <field name="code" string="Reference" />
+                     <filter name="draft" string="Draft"
+                        domain="[('state', '=', 'draft')]" />
+                    <filter name="done" string="Done"
+                        domain="[('state', '=', 'posted')]" />
+                </search>
+            </field>
+        </record>
+      <record id="loan_loan_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Loan">
+                <field name="code" />
+                <field name="date" />
+                <field name="employee_id" />
+                <field name="amount" invisible="1" />
+                <field name="amount_re" />
+                <field name="payment_type" />
+                <field name="journal_id" />
+                <field name="partner_id" />
+                <field name="employee_expense" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+ <record id="supplier_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Supplier">
+                <field name="code" />
+                <field name="date" />
+                <field name="amount"  />
+                <field name="amount_re" invisible="1" />
+                <field name="payment_type" />
+                <field name="journal_id" />
+                <field name="partner_id" />
+                <field name="employee_expense" invisible="1"/>
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record id="custody_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Custody" >
+                <field name="code" />
+                <field name="date" /><field name="employee_id" />
+                <field name="amount"  />
+                <field name="amount_re" invisible="1" />
+                <field name="payment_type" />
+                <field name="journal_id" />
+                <field name="partner_id" invisible="1" />
+                <field name="employee_expense" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record id="loan_paid_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Loan">
+                <field name="code" />
+                <field name="date" /><field name="employee_id" />
+                <field name="amount" />
+                <field name="amount_re" invisible="1"/>
+                <field name="payment_type" />
+                <field name="journal_id" />
+                <field name="partner_id" invisible="1"/>
+                <field name="employee_expense" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record id="report_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Cash">
+                <field name="code" />
+                <field name="date" /><field name="employee_id" />
+                <field name="amount" />
+                <field name="amount_re" />
+                <field name="payment_type" />
+                <field name="journal_id" />
+                <field name="partner_id" invisible="1"/>
+                <field name="employee_expense" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+     <record id="cash_menu_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Cash">
+                <field name="code" />
+                <field name="date" /><field name="employee_id" />
+                <field name="amount"  />
+                <field name="amount_re" />
+                <field name="payment_type" />
+                <field name="payment_partner" />
+                <field name="journal_id" />
+                <field name="partner_id" />
+                <field name="employee_expense" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record id="expense_paid_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Cash">
+                <field name="code" />
+                <field name="date" /><field name="employee_id" />
+                <field name="amount" />
+                <field name="amount_re" invisible="1"/>
+                <field name="payment_type" />
+                <field name="journal_id" />
+                <field name="product_id" />
+                <field name="analytic_account_id" />
+                <field name="partner_id" invisible="1"/>
+                <field name="employee_expense" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record id="loan_received_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Cash">
+                <field name="code" />
+                <field name="date" />
+                <field name="amount" invisible="1"/>
+                <field name="amount_re" />
+                <field name="payment_type" />
+                <field name="journal_id" />
+                <field name="partner_id" invisible="1"/>
+                <field name="employee_expense" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record id="custody_received_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Cash">
+                <field name="code" />
+                <field name="date" />
+                <field name="employee_id" />
+                <field name="amount" invisible="1"/>
+                <field name="amount_re" />
+                <field name="payment_type" />
+                <field name="journal_id" />
+                <field name="partner_id" invisible="1"/>
+                <field name="employee_expense" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="income_received_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Cash">
+                <field name="code" />
+                <field name="date" />
+                <field name="employee_id" />
+                <field name="amount" invisible="1"/>
+                <field name="amount_re" />
+                <field name="payment_type" />
+                <field name="journal_id" />
+                <field name="partner_id" invisible="1"/>
+                <field name="employee_expense" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record id="customer_received_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Cash" >
+                <field name="code" />
+                <field name="date" />
+                <field name="employee_id" />
+                <field name="amount" invisible="1"/>
+                <field name="amount_re" />
+                <field name="payment_type" />
+                <field name="journal_id" />
+                <field name="partner_id" />
+                <field name="employee_expense" invisible="1"/>
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record id="check_received_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Cash" >
+                <field name="code" />
+                <field name="date" />
+                <field name="employee_id" />
+                <field name="amount_re" />
+                <field name="due_date" />
+                <field name="check_number" />
+                <field name="check_safe" />
+                <field name="employee_id" />
+                <field name="amount" invisible="1"/>
+                <field name="check_receive" />
+                <field name="partner_id" />
+                <field name="employee_expense" invisible="1"/>
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record id="check_send_tree" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Cash" >
+                <field name="code" />
+                <field name="date" />
+                <field name="employee_id" />
+                <field name="amount" />
+                <field name="cash_method" />
+                <field name="due_date" />
+                <field name="check_number" />
+                <field name="amount_re" invisible="1"/>
+                <field name="check_send"  />
+                <field name="partner_id" />
+                <field name="employee_expense" invisible="1"/>
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="receive_otherr" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Cash" >
+                <field name="code" />
+                <field name="date" />
+                <field name="employee_id" />
+                <field name="amount_re"  />
+                <field name="payment_type" />
+                <field name="cash_method" />
+
+                <field name="amount" invisible="1" />
+                <field name="journal_id" />
+                <field name="partner_id" invisible="1"/>
+                <field name="employee_expense" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record id="paid_otherr" model="ir.ui.view">
+        <field name="model">cash.cash</field>
+        <field name="arch" type="xml">
+            <tree string="Cash" >
+                <field name="code" />
+                <field name="date" />
+                <field name="employee_id" />
+                <field name="amount" />
+                <field name="payment_type" />
+                <field name="cash_method" />
+                <field name="amount_re" invisible="1"  />
+                <field name="journal_id" />
+                <field name="partner_id" invisible="1"/>
+                <field name="employee_expense" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+ 
+    <record id="cash_action" model="ir.actions.act_window">
+        <field name="name">Cash</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+         <field name="search_view_id" ref="view_account_search"/>
+          <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.cash_menu_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+
+    </record>
+
+    <record id="cash_receive_money" model="ir.actions.act_window">
+        <field name="name">Send Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+         <field name="domain">[('payment_type','=', 'receive_money')]</field>
+        <field name="search_view_id" ref="view_account_search"/>
+
+
+    </record>
+    <record id="cash_loan" model="ir.actions.act_window">
+        <field name="name">Send Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="domain">[('payment_partner','=', 'loan'),('payment_type','=', 'send_money')]</field>
+        <field name="search_view_id" ref="view_account_search"/>
+        <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.loan_paid_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+
+    </record><record id="paid_other_action" model="ir.actions.act_window">
+        <field name="name">Send Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="domain">[('payment_partner','=', 'other'),('payment_type','=', 'send_money')]</field>
+    <field name="search_view_id" ref="view_account_search"/>
+    <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.paid_otherr')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+    </record>
+    <record id="receive_other_action" model="ir.actions.act_window">
+        <field name="name">Receive Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_account_search"/>
+        <field name="domain">[('payment_partner','=', 'other'),('payment_type','=', 'receive_money')]</field>
+         <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.receive_otherr')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+
+    </record>
+    <record id="cash_custody" model="ir.actions.act_window">
+        <field name="name">Send Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_account_search"/>
+        <field name="domain">[('payment_type','=', 'send_money'),('payment_partner','=', 'custody')]</field>
+        <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.custody_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+    </record>
+    <record id="cash_expense" model="ir.actions.act_window">
+        <field name="name">Send Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_account_search"/>      
+        <field name="domain">[('payment_type','=', 'send_money'),('payment_partner','=', 'expense')]</field>
+                <field name="view_id" ref="expense_paid_tree"/>
+                 <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.expense_paid_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+    </record>
+
+    <record id="cash_supplier" model="ir.actions.act_window">
+        <field name="name">Send Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_account_search"/>
+        <field name="domain">[('payment_type','=', 'send_money'),('payment_partner','=', 'partner') ]</field>
+        <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.supplier_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+
+    </record>
+
+     <record id="cash_loan_h" model="ir.actions.act_window">
+        <field name="name">Send Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+         <field name="search_view_id" ref="view_account_search"/>
+         <field name="domain">[('payment_partner','=', 'loan'),('payment_type','=', ('receive_money','send_money'))]</field>
+         <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.report_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+
+    </record>
+    <record id="cash_custody_h" model="ir.actions.act_window">
+        <field name="name">Send Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="domain">[('payment_partner','=', 'custody'),('payment_type','=', ('receive_money','send_money'))]</field>
+       <field name="search_view_id" ref="view_account_search"/>
+        <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.report_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+    </record>
+    <record id="cash_receive_loan" model="ir.actions.act_window">
+        <field name="name">Receive Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_account_search"/>
+        <field name="context">{'payment_type': 'receive_money'}</field>
+        <field name="domain">[('payment_partner','=', 'loan'),('payment_type','=', 'receive_money')]</field>
+        <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.loan_received_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+    </record>
+    <record id="cash_receive_custody" model="ir.actions.act_window">
+        <field name="name">Receive Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_account_search"/>
+         <field name="domain">[('payment_type','=', 'receive_money'),('payment_partner','=', 'custody')]</field>
+        <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.custody_received_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+
+
+    </record>
+    <record id="cash_receive_income" model="ir.actions.act_window">
+        <field name="name">Receive Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_account_search"/>
+         <field name="domain">[('payment_type','=', 'receive_money'),('payment_partner','=', 'expense')]</field>
+        <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.income_received_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+    </record>
+    <record id="cash_receive_customer" model="ir.actions.act_window">
+        <field name="name">Receive Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_account_search"/>
+         <field name="domain">[('payment_type','=', 'receive_money'),('payment_partner','=', 'partner')]</field>
+        <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.customer_received_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+
+    </record>
+    <record id="check_receive_customer" model="ir.actions.act_window">
+        <field name="name">Receive</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_account_search"/>
+         <field name="domain">[('payment_type','=', 'receive_money'),('payment_partner','=', 'partner')and('cash_method', '=',('check'))]</field>
+       <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.check_received_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+
+
+    </record>
+    <record id="check_paid_customer" model="ir.actions.act_window">
+        <field name="name">Send Money</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.cash</field>
+        
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_account_search"/>
+
+         <field name="domain">[('payment_type','=', 'send_money'),('payment_partner','in', ('partner'))and('cash_method', '=',('check'))]</field>
+  <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('cash.check_send_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('cash.cash_form')})]"/>
+
+
+
+    </record>
+    <record id="view_move_line_tree_edit2" model="ir.ui.view">
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
+        <field name="arch" type="xml">
+
+            <field name="partner_id" position="after">
+                <field name="employee_expense"/>
+
+
+
+            </field>
+
+        </field>
+    </record>
+     <record id="move_line_tree_edt_" model="ir.ui.view">
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='line_ids']//tree//field[@name='partner_id']" position="after">
+                 <field name="employee_expense"/>
+                </xpath>
+
+
+
+        </field>
+    </record>
+
+    <record id="cash_confirm_view" model="ir.ui.view">
+            <field name="name">cash.confirm.form</field>
+            <field name="model">cash.confirm</field>
+            <field name="arch" type="xml">
+                <form string="Approve ">
+                    <p class="oe_grey">
+                        Approve Cash
+                    </p>
+                    <footer>
+                        <button string="Approve" name="cash_confirm" type="object"  default_focus="1" class="btn-primary" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+    <record id="action_cash_approve2" model="ir.actions.act_window">
+            <field name="name">Approve</field>
+            <field name="res_model">cash.confirm</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="cash_confirm_view"/>
+            <field name="target">new</field>
+                    <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]"/>
+
+            <field name="binding_model_id" ref="cash.model_cash_cash" />
+            <field name="binding_view_types">list</field>
+        </record>
+
+<menuitem id="cash_action_menu" name="Cash" action="cash_action" groups="base.group_user"
+              sequence="60"/>
+    <menuitem id="menu_cash" name="Cash" sequence="1" parent="cash_action_menu" groups="base.group_user" action="cash_action"/>
+    <menuitem id="menu_cash1" name="Send Money" sequence="2" parent="cash_action_menu" groups="base.group_user" />
+    <menuitem id="menu_cash2" name="Receive Money" sequence="3" parent="cash_action_menu" groups="base.group_user" action="cash_receive_money"/>
+      <menuitem id="report_cash" name="Report cash" sequence="4" parent="cash_action_menu" groups="base.group_user" />
+
+    <menuitem id="menu_cash3" name="Loans" sequence="3" parent="menu_cash1" groups="base.group_user" action="cash_loan"/>
+    <menuitem id="menu_cash4" name="Custody" sequence="4" parent="menu_cash1" groups="base.group_user" action="cash_custody"/>
+    <menuitem id="menu_cash5" name="Expense" sequence="1" parent="menu_cash1" groups="base.group_user" action="cash_expense"/>
+    <menuitem id="menu_cash6" name="Supplier" sequence="2" parent="menu_cash1" groups="base.group_user" action="cash_supplier"/>
+    <menuitem id="menu_cash7" name="Loans" sequence="3" parent="menu_cash2" groups="base.group_user" action="cash_receive_loan"/>
+    <menuitem id="menu_cash8" name="Custody" sequence="4" parent="menu_cash2" groups="base.group_user" action="cash_receive_custody"/>
+    <menuitem id="menu_cash9" name="Income" sequence="1" parent="menu_cash2" groups="base.group_user" action="cash_receive_income"/>
+    <menuitem id="menu_cash10" name="Customer" sequence="2" parent="menu_cash2" groups="base.group_user" action="cash_receive_customer"/>
+    <menuitem id="menu_cash11" name="Check" sequence="5" parent="menu_cash2" groups="base.group_user" action="check_receive_customer"/>
+    <menuitem id="menu_cash12" name="Check" sequence="5" parent="menu_cash1" groups="base.group_user" action="check_paid_customer"/>
+    <menuitem id="menu_cash13" name="Loans Report" sequence="7" parent="menu_cash2" groups="base.group_user" action="cash_loan_h"/>
+    <menuitem id="menu_cash16" name="Custody Report" sequence="8" parent="menu_cash2" groups="base.group_user" action="cash_custody_h"/>
+    <menuitem id="menu_cash14" name="Other" sequence="6" parent="menu_cash1" groups="base.group_user" action="paid_other_action"/>
+    <menuitem id="menu_cash15" name="Other" sequence="6" parent="menu_cash2" groups="base.group_user" action="receive_other_action"/>
+
+
+
+</odoo>

@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_prod_sub2,product_code,model_prod_sub2,base.group_user,1,0,0,0
+access_prod_sub2t,product_code,model_prod_sub2,group_create_product,1,1,1,1
+access_prod_product,product,product.model_product_product,group_create_product,1,1,1,1
+access_prod_product_product,product template,product.model_product_template,group_create_product,1,1,1,1
+access_prod_product_category,product template,product.model_product_category,group_create_product,1,1,1,1
+access_prod_sub,product_code,model_prod_sub,base.group_user,1,0,0,0
+access_prod_subt,product_code,model_prod_sub,group_create_product,1,1,1,1
+access_product_code_product_code,product_code,model_prod_market,base.group_user,1,0,0,0
+access_product_group_create_product,product_code,model_prod_market,group_create_product,1,1,1,1
+access_product_code_product_code44,product_code,model_prod_category,base.group_user,1,0,0,0
+access_product_code_product_code1,product_code,model_prod_category,group_create_product,1,1,1,1

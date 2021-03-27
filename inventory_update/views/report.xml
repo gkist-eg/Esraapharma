@@ -1,0 +1,75 @@
+<odoo>
+<template id="stock_report_delivery_document_inherit_udates" inherit_id="product_expiry.stock_report_delivery_document_inherit_product_expiry">
+        <xpath expr="//t[@name='expiry_date']" position="replace">
+            <t t-set="has_expiry_date" t-value="False"/>
+            <t t-set="has_expiry_date"
+               t-value="o.move_line_ids.filtered(lambda ml: ml.lot_id.expiration_date or ml.expiration_date)"
+               groups="product_expiry.group_expiry_date_on_delivery_slip"/>
+            <t t-set="has_box_date" t-value="False"/>
+            <t t-set="has_box_date"
+               t-value="o.move_line_ids.filtered(lambda ml: ml.box_no)"
+               />
+            <t t-set="has_batch_date" t-value="False"/>
+            <t t-set="has_batch_date"
+               t-value="o.move_line_ids.filtered(lambda ml: ml.lot_id.ref or ml.suplier_lot)"
+               />
+
+            <t name="box_date" t-if="has_box_date">
+                <th>Box Weight/Qty</th>
+            </t>
+            <t name="box_no_date" t-if="has_box_date">
+                <th>No of Boxes</th>
+            </t>
+            <t name="expiry_date" t-if="has_expiry_date">
+                <th>Production Date</th>
+            </t>
+            <t name="expiry_date" t-if="has_expiry_date">
+                <th>Expiration Date</th>
+
+            </t>
+            <t name="batch_date" t-if="has_batch_date">
+                <th>Batch NO</th>
+
+            </t>
+        </xpath>
+    </template>
+
+    <template id="stock_report_delivery_has_serial_move_line_inherit_product_expiry" inherit_id="product_expiry.stock_report_delivery_has_serial_move_line_inherit_product_expiry">
+        <xpath expr="//t[@t-if='has_expiry_date']" position="replace">
+            <t t-if="has_box_date">
+                <td><span t-field="move_line.box_no"/></td>
+            </t>
+            <t t-if="has_box_date">
+                <td><span t-field="move_line.box_qty" /></td>
+            </t>
+             <t t-if="has_expiry_date">
+                <td><span t-if="move_line.lot_id.prod_date" t-field="move_line.lot_id.prod_date" t-options='{"widget": "date"}'/></td>
+            </t>
+            <t t-if="has_expiry_date">
+                <td><span t-if="move_line.lot_id.expiration_date" t-field="move_line.lot_id.expiration_date" t-options='{"widget": "date"}'/></td>
+
+            </t>
+            <t t-if="has_batch_date">
+                <td><span t-if="move_line.suplier_lot" t-field="move_line.suplier_lot"/><span t-if="move_line.lot_id.ref" t-field="move_line.lot_id.ref"/></td>
+            </t>
+
+        </xpath>
+    </template>
+
+    <template id="stock_report_delivery_document_inherit_udates2" inherit_id="stock.report_delivery_document">
+            <xpath expr="//div[@name='div_sched_date']" position="after">
+
+                <div t-if="o.location_id.usage=='internal'" class="col-auto" name="from_location">
+                            <strong>From:</strong>
+                            <p t-field="o.location_id.name"/>
+                        </div>
+                <div t-if="o.location_dest_id.usage=='internal'" class="col-auto" name="to_location">
+                            <strong>To:</strong>
+                            <p t-field="o.location_dest_id.name"/>
+                        </div>
+
+
+            </xpath>
+</template>
+
+</odoo>

@@ -1,0 +1,38 @@
+<odoo>
+  <record id="master_view_picking_form" model="ir.ui.view">
+            <field name="name">stock.picking</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='operations']//tree//field[@name='company_id']" position="before">
+                     <button name="do_unreserve" help="Un reserve" icon="fa-unlink" type="object"/>
+                </xpath>
+                   <xpath expr="//button[@name='button_validate'][1]" position="replace">
+                    <button name="button_validate" attrs="{'invisible': [('show_validate', '=', False)]}" string="Validate" type="object" class="oe_highlight" />
+                </xpath>
+                <xpath expr="//button[@name='action_assign']" position="replace">
+                    <button name="action_assign" attrs="{'invisible': [('show_check_availability', '=', False)]}" string="Check Availability" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
+                </xpath>
+                <xpath expr="//button[@name='action_confirm']" position="replace">
+                    <button name="action_confirm" attrs="{'invisible': [('show_mark_as_todo', '=', False)]}" string="Mark as Todo" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
+                </xpath>
+                <xpath expr="//button[@name='do_unreserve']" position="replace">
+                    <button name="do_unreserve" string="Unreserve" groups="stock.group_stock_user" type="object" attrs="{'invisible': ['|', '|', '|', ('picking_type_code', '=', 'incoming'), ('immediate_transfer', '=', True), '&amp;', ('state', 'not in', ('assigned', 'partially_available')), ('move_type', '!=', 'one'), '&amp;', ('state', 'not in', ('assigned', 'partially_available', 'confirmed')), ('move_type', '=', 'one')]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_confirm']" position="replace">
+                    <button name="action_confirm" attrs="{'invisible': [('show_mark_as_todo', '=', False)]}" string="Mark as Todo" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
+                </xpath>
+                <xpath expr="//button[@name='button_validate'][2]" position="replace">
+                                        <button name="button_validate" invisible="1" string="Validate" type="object" groups="stock.group_stock_user" class="o_btn_validate"/>
+
+                    <button name="keeper_approve" attrs="{'invisible': [('show_cofirm', '=', False)]}" string="Confirm" type="object" groups="stock.group_stock_user" class="o_btn_validate"/>
+                    <field name="approve" invisible="1"/>
+                    <field name="show_cofirm" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="replace">
+                            <field name="name" attrs="{'invisible': [('name','=','/')],'readonly': [('name','!=','/')]}"/>
+                </xpath>
+            </field>
+        </record>
+
+</odoo>

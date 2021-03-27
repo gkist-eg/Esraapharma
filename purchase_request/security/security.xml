@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+         <record model="ir.module.category" id="module_purchase_requstt">
+             <field name="name">Purchase Requst</field>
+             <field name="description">manage your purchase request department</field>
+             <field name="sequence">20</field>
+        </record>
+
+        <record id="group_purchase_request_department" model="res.groups">
+            <field name="name">purchase request department</field>
+            <field name="category_id" ref="module_purchase_requstt"/>
+        </record>
+
+        <record id="id_purchase_request_rec" model="ir.rule">
+            <field name="name">purchase_request_rec</field>
+            <field name="model_id" ref="purchase_request.model_purchase_requests"/>
+            <field name="domain_force">['|',('departmnt_id', '=',False),('departmnt_id', '=', user.department_id.id)]
+            </field>
+            <field name="groups" eval="[(4, ref('group_purchase_request_department'))]"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
+            <field name="perm_read" eval="1"/>
+        </record>
+
+    </data>
+</odoo>

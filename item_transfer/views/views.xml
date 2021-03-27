@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="item_transfer_form" model="ir.ui.view">
+        <field name="name">item.transfer</field>
+        <field name="model">item.transfer</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <header>
+                    <button name="button_to_approve" states="draft"
+                            string="Transfer approval" type="object"
+                            class="oe_highlight"/>
+                    <button name="button_leader_approved"
+                            string="Leader Approve"
+                            type="object"
+                            class="oe_highlight"
+                            groups="base.group_user"
+                            attrs="{'invisible': [('can_leader_approved', '=', False)]}"/>
+                    <button name="button_manager_approved"
+                            string="Source Approve"
+                            type="object"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('can_source_approved', '=', False)]}"/>
+
+                     <button name="make_item_transfer"
+                            string="Recieve Product"
+                            type="object"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('can_done', '=', False)]}"
+
+                            />
+
+
+                    <button name="button_rejected"
+                            string="Reject"
+                            type="object"
+                            attrs="{'invisible': [('can_reject', '=', False)]}"
+                    />
+
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,to_approve,leader_approved,source_approved,source_lapproved,done"
+                           statusbar_colors='{"source_approved":"blue"}'/>
+
+
+                </header>
+                <sheet>
+
+                      <div class="oe_button_box" name="button_box">
+                        <button type="object" name="action_view_picking" class="oe_stat_button" icon="fa-truck" attrs="{'invisible':[('state', 'in', ('draft','to_approve','leader_approved')),('picking_ids','=',[])]}">
+                            <field name="picking_count" widget="statinfo" string="Shipment" help="Incoming Shipments"/>
+                            <field name="picking_ids" invisible="1"/>
+                        </button>
+                    </div>
+                    <field name="is_editable" invisible="1"/>
+                    <div class="oe_edit_only">
+                        <label for="name" class="oe_inline"/>
+                    </div>
+                    <h1>
+
+                        <field name="name" class="oe_inline"  attrs="{'readonly':[('name','!=','New')],'invisible':[('name','=','New')]}"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="can_leader_approved" invisible="1"/>
+                            <field name="requested_by" attrs="{'required' :1 , 'readonly' :[('requested_by' , '!=' ,False)]}" />
+                            <field name="assigned_to"  attrs="{'required' :1 , 'readonly' :[('requested_by' , '!=' ,False)]}"/>
+                            <field name="warehouse_dest_id" invisible="1"/>
+                            <field name="location_dest_id" attrs="{'required' :1 , 'readonly' :[('state' , 'not in' ,('draft','to_approve'))]}"/>
+                        </group>
+                        <group>
+                             <field name="can_done" invisible="1"/>
+                             <field name="can_source_approved" invisible="1"/>
+                             <field name="can_reject" invisible="1"/>
+                             <field name="date" attrs="{'readonly' :[('date' , '!=' ,False)]}"/>
+                             <field name="warehouse_id" invisible="1" />
+                             <field name="location_id" attrs="{'required' :1 , 'readonly' :[('state' , 'not in' ,('draft','to_approve'))]}" />
+                        </group>
+
+                    </group>
+                    <notebook>
+                        <page name='lines' string="Products">
+                            <field name="line_ids"  attrs="{'readonly': [('state','not in',('draft' ,'to_approve'))]}" >
+                                <tree editable="bottom">
+                                    <field name="product_id"  options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
+                                    <field name="product_qty"/>
+                                    <field name="qty_in_progress" attrs="{'column_invisible': [('parent.state','not in', ('done','source_approved'))]}"/>
+                                    <field name="qty_done" attrs="{'column_invisible': [('parent.state','not in', ('done','source_approved'))]}"/>
+                                    <field name="qty_cancelled" attrs="{'column_invisible': [('parent.state','not in', ('done','source_approved'))]}"/>
+                                    <field name="product_uom_id" />
+                                    <field name="cancelled" invisible="1"/>
+                                    <field name="is_editable" invisible="1"/>
+                                </tree>
+
+                            </field>
+                        </page>
+                        <page name="description" string="Description">
+                            <field name="description" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        </page>
+
+                        <page name="ohter" string="Other Information">
+                            <group>
+                                <group>
+                                     <field name="create_date" readonly="1"/>
+                                     <field name="assigned_for" readonly="1"/>
+                                </group>
+                                <group>
+                                     <field name="create_uid" readonly="1"/>
+                                     <field name="assigned_for_lead" readonly="1"/>
+                                     <field name="picking_done_ids" invisible="1" />
+                                </group>
+                            </group>
+
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+        <record model="ir.ui.view" id="view_item_transfer_tree">
+            <field name="name">item.transfer.tree</field>
+            <field name="model">item.transfer</field>
+            <field name="arch" type="xml">
+                <tree string="Item transfer">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="warehouse_dest_id"/>
+                    <field name="requested_by"/>
+                    <field name="warehouse_id"/>
+                    <field name="state"/>
+                </tree>
+          </field>
+        </record>
+<!--        <record id="view_item_transfer_search" model="ir.ui.view">-->
+<!--            <field name="name">item.transfer.list.select</field>-->
+<!--            <field name="model">item.transfer</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <search>-->
+<!--                    <field name="name"/>-->
+<!--                    <field name="location_id"/>-->
+<!--                    <field name="warehouse_id"/>-->
+<!--                    <field name="location_dest_id"/>-->
+<!--                    <field name="warehouse_dest_id"/>-->
+<!--                    <field name="state"/>-->
+<!--                    <filter name="state_draft" string="Draft"-->
+<!--                            domain="[('state','=','draft')]"-->
+<!--                            help="transfer is to be approved"/>-->
+<!--                    <filter name="state_to_approve" string="ToApprove"-->
+<!--                            domain="[('state','=','to_approve')]"-->
+<!--                            help="transfer is to be approved"/>-->
+<!--                    <filter name="state_to_approve" string="Leader Approved"-->
+<!--                            domain="[('state','=','leader_approved')]"-->
+<!--                            help="transfer is approved by leader"/>-->
+<!--                    <filter name="state_to_approve" string="Source Approved"-->
+<!--                            domain="[('state','=','source_approved')]"-->
+<!--                            help="transfer is approved"/>-->
+<!--                    <filter name="state_lapproved" string="SourceLeaderApproved"-->
+<!--                            domain="[('state','=','source_lapproved')]"-->
+<!--                            help="transfer is approved"/>-->
+<!--                    <filter name="state_rejected" string="Rejected"-->
+<!--                            domain="[('state','=','rejected')]"-->
+<!--                            help="transfer is rejected"/>-->
+<!--                    <filter string="Unread Messages"-->
+<!--                            name="message_needaction"-->
+<!--                            domain="[('message_needaction','=',True)]"/>-->
+<!--                    <filter domain="[('assigned_to','=', uid)]"-->
+<!--                            help="Assigned to me"/>-->
+<!--                    <field name="requested_by" />-->
+<!--                    <field name="assigned_to" />-->
+<!--                </search>-->
+<!--            </field>-->
+<!--        </record>-->
+
+    <record id="item_transfer_form_action" model="ir.actions.act_window">
+        <field name="name">Item Transfer</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">item.transfer</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            <!-- Add Text Here -->
+          </p><p>
+            <!-- More details about what a user can do with this object will be OK -->
+          </p>
+        </field>
+    </record>
+   <record id="view_item_line_form" model="ir.ui.view">
+        <field name="name">view.item.form</field>
+        <field name="model">item.transfer.line</field>
+        <field name="arch" type="xml">
+            <form>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="is_editable" invisible="1"/>
+                                                <field name="product_id"  options="{'no_create_edit':True}"/>
+
+                                         </group>
+                                        </group>
+                                    <group>
+                                         <group>
+
+
+                                                  <label for="product_qty"/>
+                                              <div>
+
+                                                   <field name="product_qty" />
+                                                   <field name="product_uom_id" readonly="1"/>
+                                              </div>
+
+                                         </group>
+
+                                          <group>
+
+                                          </group>
+
+                                                <field name="cancelled" invisible="1"/>
+
+                                      </group>
+                                        <group>
+                                            <separator string="Specifications"/>
+                                            <newline/>
+                                            <field name="specifications" nolabel="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                                        </group>
+                                        <notebook>
+                                        </notebook>
+                                    </sheet>
+                                </form>
+        </field>
+    </record>
+
+
+
+
+  <menuitem
+            id="menu_transfer_action"
+            action="item_transfer_form_action"
+            name ='Item Transfer'
+            parent="stock.menu_stock_warehouse_mgmt"
+            sequence="6"
+            />
+  
+
+
+</odoo>

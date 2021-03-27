@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <template id="bank_statement_report">
+       <t t-call="web.html_container">
+            <t t-set="data_report_margin_top" t-value="12"/>
+            <t t-set="data_report_header_spacing" t-value="9"/>
+            <t t-set="data_report_dpi" t-value="110"/>
+            <t t-call="web.internal_layout">
+        <t t-foreach="docs" t-as="o">
+                    <div class="page">
+                    <h2>Bank Report</h2>
+
+                    <div class="row mt32">
+                        <div class="col-3">
+                            <strong>Date From:</strong>
+                            <p t-esc="o.date_from"/>
+                            <strong>Bank</strong>
+                            <p t-esc="o.journal_id.name"/>
+
+                        </div>
+                        <div class="col-3">
+                           <strong>Date To:</strong>
+                            <p t-esc="o.date_to"/>  <strong>Start Balance</strong>
+                            <p t-esc="o.amount_payment"/>
+                        </div>
+                    </div>
+                        <table class="table table-condensed">
+                            <thead>
+                            <tr>
+                                <th t-if="o.type_cash == 'Partner'">Date</th>
+                                <th t-if="o.type_cash == 'Partner'">Reference</th>
+                                <th t-if="o.type_cash == 'Partner'">Amount Received</th>
+                                <th t-if="o.type_cash == 'Partner'">Amount Paid</th>
+                                <th t-if="o.type_cash == 'Partner'">partner</th>
+                                <th t-if="o.type_cash == 'Partner'">Description</th>
+
+
+
+
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <t t-foreach="o.line_ids" t-as="l" >
+
+                                <tr>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.payment_date"/></td>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.communication"/></td>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.amount_received"/></td>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.amount"/></td>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.partner_id"/></td>
+                                    <td t-if="o.type_cash == 'Partner'"><span t-esc="l.name"/></td>
+
+
+
+
+
+                                </tr>
+                            </t>
+                            </tbody>
+                        </table>
+
+                    <div class="row">
+                        <div class="col-xs-4 pull-left">
+                         <table class="table table-condensed">
+                              <tr class="border-black">
+                            <td><strong>Total Amount Received</strong></td>
+                                 <td ><span  t-esc="sum(line.amount_received for line in o.line_ids )"/></td>
+
+                            <td class="text-right">
+                            </td>
+                        </tr>
+                             <tr class="border-black">
+                            <td><strong>Total Amount Paid</strong></td>
+                                 <td ><span  t-esc="sum(line.amount for line in o.line_ids )"/></td>
+
+                            <td class="text-right">
+                            </td>
+                        </tr>
+
+                             <tr class="border-black">
+                            <td><strong>Total End Balance</strong></td>
+                                 <td ><span t-esc="o.end_amount"/></td>
+
+                            <td class="text-right">
+                            </td>
+                        </tr>
+                         </table>
+                        </div>
+                     </div>
+                    <div class="oe_structure"/>
+                </div>
+
+        </t></t>
+        </t>
+    </template>
+     <template id="bank_report_layout">
+    <!-- Multicompany -->
+    <t t-if="not o and doc">
+        <t t-set="o" t-value="doc"/>
+    </t>
+    <t t-if="o and 'company_id' in o">
+        <t t-set="company" t-value="o.company_id"></t>
+    </t>
+    <t t-if="not o or not 'company_id' in o">
+        <t t-set="company" t-value="res_company"></t>
+    </t>
+
+    <t t-call="cash.bank_report_layout_header" />
+    <t t-raw="0" />
+</template>
+
+<template id="bank_report_layout_header">
+    <div class="header">
+        <div class="row">
+            <div class="col-xs-3">
+                <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo" style="max-height: 45px;"/>
+            </div>
+        </div>
+        <div class="row zero_min_height">
+            <div class="col-xs-12">
+                <div style="border-bottom: 1px solid black;"></div>
+            </div>
+        </div>
+
+        <br/>
+    </div>
+</template>
+</odoo>

@@ -1,0 +1,8 @@
+<odoo>
+    <data>
+	<record id="group_stock_approve" model="res.groups">
+            <field name="name">Approve Quarantine Location </field>
+        </record>
+
+    </data>
+</odoo>

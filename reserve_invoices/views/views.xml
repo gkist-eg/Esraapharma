@@ -1,0 +1,154 @@
+<odoo>
+  <data>
+<record id="reserve_invoices_request_view" model="ir.ui.view">
+        <field name="name">reserve.invoices.request.form</field>
+        <field name="model">reserve.invoices.request</field>
+        <field name="arch" type="xml">
+            <form string="Request">
+
+                <group>
+                        <field name="reserve_change" widget="radio" />
+                        <field name="customer" widget="many2many_tags" invisible="1"
+                               options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                        <field name="date_reserve" attrs="{'invisible':[('reserve_change', '!=', 'reserve')],
+                                'required':[('reserve_change','=', 'reserve')]}"/>
+
+                </group>
+                <notebook>
+                    <page name="Customers" string="Customers">
+                        <field name="reserves_line_ids">
+                            <tree editable="bottom">
+                                <field name="customer"/>
+                                <field name="reserve_num"/>
+                            </tree>
+                        </field>
+
+                    </page>
+                </notebook>
+                <footer>
+                        <button name="request"
+                                string="Request "
+                                type="object"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel" />
+                    </footer>
+            </form>
+        </field>
+    </record>
+    <record id="change_invoices_request_view" model="ir.ui.view">
+        <field name="name">change.invoices.request.form</field>
+        <field name="model">change.invoices.request</field>
+        <field name="arch" type="xml">
+            <form string="Change Serial">
+
+                <group>
+                    <group>
+                        <field name="order_number" invisible="1"/>
+                        <field name="orders" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                        <field name="partner" invisible="1" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                        <field name="reserves" domain="[('customer','=',partner), ('changed', '=', False)]" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+
+                    </group>
+                </group>
+                <footer>
+                        <button name="change"
+                                string="Done"
+                                type="object"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel" />
+                    </footer>
+            </form>
+        </field>
+        </record>
+
+      <record id="reserve_invoices_tree" model="ir.ui.view">
+        <field name="name">reserve.invoices.tree</field>
+        <field name="model">reserve.invoices</field>
+        <field name="arch" type="xml">
+            <tree string="Reserves" edit="false" create="false">
+                <field name="customer"/>
+                <field name="order_number"/>
+                <field name="inv_number"/>
+                <field name="date"/>
+                <field name="changed"/>
+                <field name="changing_date"/>
+            </tree>
+        </field>
+      </record>
+        <record id="reserve_invoices_search" model="ir.ui.view">
+           <field name="name">reserve.invoices.search</field>
+           <field name="model">reserve.invoices</field>
+            <field name="arch" type="xml">
+
+                <search  string="Change">
+                    <field name="customer" string="customer" />
+                    <filter string="Not Changed" name="not_changed" domain="[('changed','=',False)]"/>
+                    <filter string="Changed" name="changed" domain="[('changed','=',True)]"/>
+                </search>
+           </field>
+        </record>
+      <record id="reserve_invoices_action" model="ir.actions.act_window">
+        <field name="name">Reserves</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">reserve.invoices</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="reserve_invoices_tree"/>
+          <field name="context">{"search_default_not_changed":1}</field>
+    </record>
+
+    <record id="reserve_invoices_request_action" model="ir.actions.act_window">
+        <field name="name">Request</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">reserve.invoices.request</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="reserve_invoices_request_view"/>
+            <field name="target">new</field>
+    </record>
+
+      <record id="change_invoices_request_action" model="ir.actions.act_window">
+        <field name="name">Change Serial</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">change.invoices.request</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="change_invoices_request_view"/>
+            <field name="target">new</field>
+    </record>
+
+    <record id="view_order_form_reserve" model="ir.ui.view">
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath  expr="//header//button[@name='action_quotation_send']" position="before">
+                    <button class="btn-link" type="action"
+                            string="Change Serial"
+                            name="%(change_invoices_request_action)d"
+                            icon="fa-arrow-right"
+                             attrs="{'invisible': [
+                            ('serial_changed', '=', True)]}"
+                           domain="[('cust_categ_id','=','distributor')]"
+                    groups="sales_team.group_sale_salesman"/>
+            </xpath>
+
+                <xpath expr="//field[@name='partner_id']" position="before">
+                   <field name="serial_changed" invisible=""/>
+                </xpath>
+            </field>
+      </record>
+    <menuitem
+                id="menu_reserve_invoices_request_sale"
+                name="Request"
+                action="reserve_invoices_request_action"
+                parent="sale.sale_order_menu"
+                sequence="45"
+        />
+
+
+      <menuitem
+                id="menu_reserve_invoices_sale"
+                name="Reserves"
+                action="reserve_invoices_action"
+parent="sale.sale_order_menu"
+                sequence="45"
+        />
+  </data>
+</odoo>

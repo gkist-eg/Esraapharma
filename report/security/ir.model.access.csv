@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_check_statement,access_check_statement,model_check_statement,base.group_user,1,1,1,1
+access_check_statement_line,access_check_statement_line,model_check_statement_line,base.group_user,1,1,1,1
+access_bank_statement,access_bank_statement,model_bank_statement,base.group_user,1,1,1,1
+access_bank_statement_line,access_bank_statement_line,model_bank_statement_line,base.group_user,1,1,1,1
+access_safe_statement,access_safe_statement,model_safe_statement,base.group_user,1,1,1,1
+access_safe_statement_line,access_safe_statement_line,model_safe_statement_line,base.group_user,1,1,1,1

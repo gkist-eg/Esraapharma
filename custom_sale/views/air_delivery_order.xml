@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report
+                id="invoice_new"
+                model="account.move"
+                report_type="qweb-html"
+                string=" New Quotation"
+                name="custom_sale.edc_invoice_template"
+                file="custom_sale.edc_invoice_template"
+        />
+
+      <template id="edc_invoice_template">
+           <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.external_layout">
+                        <t t-if="o.move_type == 'out_invoice'">
+                            <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
+            <t t-if="lot_values">
+                            <div class="page">
+                                <div class="d-flex justify-content-center">
+
+                                </div>
+                                <div>
+                                    <h3>
+                                        <span t-field="o.name"/>
+                                    </h3>
+
+                                    <br></br>
+                                    <strong>Customer</strong>
+                                    <span t-field="o.partner_id.name"/>
+                                    <br></br>
+
+                                    <div class="d-flex justify-content-between">
+                                        <div class="">
+                                            <strong>Date:</strong>
+                                    <span t-field="o.invoice_date"/>
+                                                                                <br></br>
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                                <table style="border: 1px solid black;border-collapse: collapse;width:100%">
+                                    <thead>
+                                        <tr style="border: 1px solid black">
+                                            <th>
+                                                Description
+                                            </th>
+                                            <th>
+                                                Unit
+
+                                            </th>
+                                            <th>
+                                                Quantity
+                                            </th>
+                                            <th>
+                                                Price
+                                            </th>
+                                            <th>
+                                                Amount
+                                            </th>
+
+
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody class="invoice_tbody">
+                                                                <t t-foreach="lot_values" t-as="snln_line">
+
+                                        <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>
+                                        <tr t-foreach="o.invoice_line_ids" t-as="l" style="border: 1px solid black;">
+                                            <td>
+                                                <span t-field="l.name"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span style="float:left;" t-field="l.product_uom_id.name"/>
+
+                                            </td>
+                                            <td>
+                                                <span t-field="l.quantity" t-options='{"widget": "float", "precision": 2}'/>
+
+                                            </td>
+                                            <td>
+                                                <span t-field="l.publicprice" t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
+                                            </td>
+
+                                            <td>
+                                                <span t-field="l.price_subtotal" t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
+                                            </td>
+
+
+                                        </tr>
+                                                                </t>
+                                    </tbody>
+                                </table>
+                                <br></br>
+                                <h3> Total Quantity : <span t-esc="int(o.tot_qty)"/> </h3>
+                                <div>
+                                     <table style="border: 1px solid black;border-collapse: collapse;width:80%">
+                                         <tr style="border: 1px solid black;">
+                                             <th style="border: 1px solid black;">Total Amount</th>
+                                             <th style="border: 1px solid black;">Total Discount</th>
+                                             <th style="border: 1px solid black;">Allowance Discount</th>
+                                             <th style="border: 1px solid black;">Net After Allowance Discount</th>
+                                         </tr>
+                                         <tr style="border: 1px solid black;">
+
+
+
+
+                                             <td style="border: 1px solid black;">
+                                                 <span t-field="o.amount_total"/>
+                                             </td><td style="border: 1px solid black;">
+                                                 <span t-field="o.discount_amount"/>
+                                             </td>
+                                             <td style="border: 1px solid black;">
+                                                 <span t-field="o.discount_amt"/>
+                                             </td>
+                                             <td style="border: 1px solid black;">
+                                                 <span t-field="o.discount_net"/>
+                                             </td>
+                                         </tr>
+
+                                </table>
+
+
+                                </div>
+
+                                <br/>
+                                <br/>
+                                <div class="text-center">
+                                    <span class="text-center" t-esc="o.narration"/>
+                                </div>
+                                <br></br>
+
+
+  <table class="table table-borderless">
+                        <thead style="font-size:20px">
+                             <tr class="no-border">
+                                <th class="text-center">توقيع</th>
+
+                             </tr>
+                        </thead>
+                    <tbody style="font-size:11px">
+
+                    </tbody>
+                </table>                            </div>
+                        </t></t>
+            </t>
+
+                </t>
+            </t>
+        </template>
+
+
+    </data>
+</odoo>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="group_purchase_leader" model="res.groups">
+            <field name="name">leader</field>
+            <field name="implied_ids" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+            <field name="category_id" ref="base.module_category_inventory_purchase"/>
+        </record>
+
+        <!--        <record id="id_purchase_request_rec" model="ir.rule">-->
+        <!--            <field name="name">purchase_request_rec</field>-->
+        <!--            <field name="model_id" ref="purchase_request.model_purchase_requests"/>-->
+        <!--            <field name="domain_force">['|', ('user_id', '=',False), ('user_id', '=', user.id)]</field>-->
+        <!--            <field name="perm_create" eval="0"/>-->
+        <!--            <field name="perm_write" eval="1"/>-->
+        <!--            <field name="perm_unlink" eval="0"/>-->
+        <!--            <field name="perm_read" eval="0"/>-->
+        <!--        </record>-->
+
+    </data>
+</odoo>

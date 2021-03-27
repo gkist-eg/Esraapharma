@@ -1,0 +1,111 @@
+<odoo>
+    <template id="report_item_request">
+        <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.internal_layout">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <div class="row">
+                        <div class="col-xs-4 pull-right">
+                            <div>
+                                <span><strong>Employee :</strong>
+                                    <span t-field="o.requested_by"/>
+                                    </span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <h2>
+                        <span t-field="o.name"/>
+                    </h2>
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th t-if="o.origin"><strong>Source Document</strong></th>
+                                <th >
+                                    <strong>Date</strong>
+                                </th>
+                                <th>
+                                    <strong>Status</strong>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td t-if="o.origin">
+                                    <span t-field="o.origin"/>
+                                </td>
+                                <td>
+                                        <span t-field="o.date_start"/>
+                                </td>
+                                <td>
+                                        <span t-field="o.state"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-condensed mt48" >
+                        <thead>
+                            <tr>
+                                <th><strong>Product</strong></th>
+                                <th><strong>Ordered Quantity</strong></th>
+
+                               <th><strong>Confirmed Quantity</strong></th>
+                              <th><strong>Issued Quantity</strong></th>
+                              <th><strong>Unit of Messure </strong></th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.line_ids" t-as="move">
+                                <td><span t-field="move.product_id"/></td>
+
+                                <td><span t-field="move.product_qty"/> </td>
+                                  <td><span t-field="move.qty"/></td>
+                                  <td><span t-field="move.qty_done"/> </td>
+
+                                 <td><span t-field="move.product_uom_id"/></td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                    <br/>
+                    <br/>
+                    <br/>
+                    <div class="row ">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Request By</th>
+                            <th class="text-center">Approved By</th>
+                            <th class="text-center">Manager</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr >
+                            <td class="col-xs-3 text-center"><span  style="height: 20px; width: 20px;"/></td>
+                            <td class="col-xs-3" ><spant  style="height: 20px; width: 20px;"/></td>
+                            <td class="col-xs-3"><span   style="height: 20px; width: 20px;"/></td>
+
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+              </div></t></t>
+         </t>
+    </template>
+
+     <record id="action_report_item_request_erport" model="ir.actions.report">
+            <field name="name">Item Request</field>
+            <field name="model">item.request</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">item_request.report_item_request</field>
+            <field name="report_file">item_request.view.report</field>
+            <field name="print_report_name">'Item Request - %s' % object.name</field>
+            <field name="binding_model_id" ref="model_item_request"/>
+            <field name="binding_type">report</field>
+        </record>
+</odoo>
