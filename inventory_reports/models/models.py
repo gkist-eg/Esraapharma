@@ -61,8 +61,8 @@ class ProductTemplate(models.TransientModel):
 
     def compute_date_to2(self):
         for record in self:
-            record.date_to2 = datetime.datetime.strptime(record.date_to, '%Y-%m-%d') + relativedelta(days=1)
-            record.date_from2 = datetime.datetime.strptime(record.date_from, '%Y-%m-%d') + relativedelta(days=1)
+            record.date_to2 =record.date_to- relativedelta(days=1)
+            record.date_from2 = record.data_from + relativedelta(days=1)
 
     # @api.constrains('location_id')
     # def check_user_location_rights(self):
@@ -81,8 +81,8 @@ class ProductTemplate(models.TransientModel):
         for wizard_id in self.env['stock.wizerd.quantity.line'].search([('wizerd_id', '=', self.id)]):
             if wizard_id.wizard_id.id == self.id:
                 self.write({'line_ids': [(3, wizard_id.id)]})
-        date_from = self.date_from
-        date_to = self.date_to
+        date_from = self.date_from - relativedelta(days=1)
+        date_to = self.date_to + relativedelta(days=1)
         qty = 0
         lb = 0
         if not self.lot_id:
