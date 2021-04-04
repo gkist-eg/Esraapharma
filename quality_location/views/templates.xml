@@ -4,5 +4,26 @@
             <field name="name">Approve Quarantine Location </field>
         </record>
 
+    <record id="view_production_lot_form" model="ir.ui.view">
+        <field name="name">stock.production.lot.inherit.form</field>
+        <field name="model">stock.production.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='main_group']" position="inside">
+
+                    <group>
+                          <div class="o_td_label">
+
+                        <label for="release_date" string="Ralease Date" style="font-weight:bold;" attrs="{'invisible': ['|',('release_date', '=',False),('release_state', '=',False)]}"/>
+                        <label for="release_date" string="Reject Date" style="font-weight:bold;" attrs="{'invisible': ['|',('release_date', '=',False),('release_state', '=',True)]}"/>
+                          </div>
+                        <field name="release_date" nolabel="1" attrs="{'invisible': [('release_date', '=',False)]}" />
+                        <field name="release_state" invisible="1" />
+
+                    </group>
+</xpath>
+
+        </field>
+    </record>
     </data>
 </odoo>
