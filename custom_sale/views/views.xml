@@ -152,6 +152,14 @@
                   <field name="cust_categ_id" attrs="{'readonly': [('state', '=', 'sale')]}"/>
                   <!-- Add your fields or attributes here -->
               </xpath>
+              <xpath expr="//field[@name='partner_id']" position="after">
+                  <field name="cash_discount_sale" readonly="1"  force_save="1"/>
+                  <!-- Add your fields or attributes here -->
+              </xpath>
+              <xpath expr="//field[@name='partner_id']" position="after">
+                  <field name="dis_discount_sale" readonly="1"  force_save="1"/>
+                  <!-- Add your fields or attributes here -->
+              </xpath>
               <xpath expr="//field[@name='amount_untaxed']" position="before">
                     <field name="pharm_discount_total" />
                     <field name="cash_discount_total" />
@@ -222,8 +230,10 @@
                                             <div name="invoiced_qty" attrs="{'invisible': [('parent.state', 'not in', ['sale', 'done'])]}">
                                                 <field name="qty_invoiced" attrs="{'invisible': [('parent.state', 'not in', ['sale', 'done'])]}"/>
                                             </div>
-                                             <field name="cash_discount"/>
-                                             <field name="dist_discount"/>
+                                             <field name="cash_discount" />
+                                             <field name="dist_discount" />
+                                            <field name="cash_discount_sale" invisible="1"/>
+                                             <field name="dis_discount_sale" invisible="1"/>
                                              <field name="cash_amount"/>
                                              <field name="dist_amount"/>
                                             <field name="price_unit" readonly="1"/>
@@ -392,8 +402,10 @@
                                     />
                                       <field name="publicprice" readonly="True"/>
                   <field name="store_price" readonly="1"/>
-                                     <field name="cash_discount" />
-                                     <field name="dist_discount" />
+                                      <field name="cash_discount" invisible="1"/>
+                                             <field name="dist_discount" invisible="1"/>
+                                            <field name="cash_discount_sale"/>
+                                             <field name="dis_discount_sale"/>
                                      <field name="cash_amount"/>
                                              <field name="dist_amount"/>
                                     <field name="discount" string="Disc.%" groups="product.group_discount_per_so_line" optional="show" widget="product_discount"/>
@@ -494,6 +506,15 @@
                       <field name="cust_categ_id"  attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))]}" />
 
               </xpath>
+              <xpath expr="//field[@name='partner_id']" position="after">
+
+                      <field name="cash_discount_sale"  readonly="1" />
+
+              </xpath> <xpath expr="//field[@name='partner_id']" position="after">
+
+                      <field name="dis_discount_sale"  readonly="1" />
+
+              </xpath>
  <xpath expr="//field[@name='invoice_date']" position="after">
 
                       <field name="warehouse_id"  attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))],'readonly':[('state','=','posted')]}"/>
@@ -504,6 +525,7 @@
 
 
               </xpath>
+
               <xpath expr="//field[@name='invoice_line_ids']//tree/field[@name='price_unit']" position="after">
                    <field name="publicprice" readonly="True"  attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
                   <field name="store_price" readonly="1"  attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
@@ -513,8 +535,10 @@
 
                   <field name="discount" readonly="1"  attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
                   <field name="price_total"  invisible="1"/>
-                  <field name="dist_discount" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}" />
-                  <field name="cash_discount" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}" />
+                  <field name="dist_discount"  attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}" />
+                  <field name="cash_discount"  attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}" />
+                  <field name="cash_discount_sale" invisible="1" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}" />
+                  <field name="dis_discount_sale" invisible="1" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}" />
                   <field name="dist_amount" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
                   <field name="cash_amount" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
 

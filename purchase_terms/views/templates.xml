@@ -1,0 +1,27 @@
+<odoo>
+    <data>
+        <template id="report_purchaseorder_document" inherit_id="purchase.report_purchaseorder_document">
+            <xpath expr="//div[@id='total']" position="after">
+         <div style="page-break-before: always;">
+<div  class="col-xs-12">
+    <div  class="col-xs-3">
+    <strong>P.O.No:</strong>
+   <span t-field="o.name"/>
+    </div>
+
+    <div class="col-xs-6 text-center">
+    <p  style="font-size:25px;font-family: Times and Roman;">Terms And Conditions</p></div>
+
+<div  class="col-xs-3">
+    <strong>Supplier:</strong>
+   <span t-field="o.partner_id.name"/>
+    </div>
+
+    <div><span t-field="o.due_term"/></div>
+    </div>
+
+</div>            </xpath>
+
+        </template>
+    </data>
+</odoo>

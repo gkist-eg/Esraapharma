@@ -3,6 +3,7 @@
 from odoo import models, fields, api, _
 import math
 
+from odoo.exceptions import UserError
 
 INTEGRITY_HASH_MOVE_FIELDS = ('date', 'journal_id', 'company_id')
 INTEGRITY_HASH_LINE_FIELDS = ('debit', 'credit', 'account_id', 'partner_id')
@@ -64,6 +65,16 @@ class Partner(models.Model):
 class Sale(models.Model):
     _name = 'sale.order'
     _inherit = 'sale.order'
+    cash_discount_sale=fields.Float('Cash Discount',store=True)
+    dis_discount_sale=fields.Float('Distributor Discount',store=True)
+
+    @api.onchange('partner_id')
+    def _onchange_ty(self):
+        for record in self:
+            if self.partner_id:
+                record.dis_discount_sale = record.partner_id.dist_discount
+                record.cash_discount_sale = record.partner_id.cash_discount
+
     office = fields.Many2one('hr.department', store=True)
 
     cust_categ_id = fields.Many2one(comodel_name="category.customer", string="", required=True, )
@@ -140,6 +151,8 @@ class Sale(models.Model):
                              'distr_amount': self.dist_discount_total,
                              'cash_amount': self.cash_discount_total,
                              'cust_categ_id': self.cust_categ_id,
+                             'cash_discount_sale': self.cash_discount_sale,
+                             'dis_discount_sale': self.dis_discount_sale,
                              })
         return invoice_vals
 
@@ -147,6 +160,8 @@ class Sale(models.Model):
 class ORder(models.Model):
     _name = 'sale.order.line'
     _inherit = 'sale.order.line'
+    cash_discount_sale = fields.Float('Cash Dis%',related='order_id.cash_discount_sale' ,store=True)
+    dis_discount_sale = fields.Float('Dist Dis%',related='order_id.dis_discount_sale' , store=True)
 
     sale_type = fields.Selection(string="Product Type", selection=[('sale', 'Sale'),('bouns', 'Bouns')],
                                  required=False, )
@@ -198,7 +213,7 @@ class ORder(models.Model):
 
                 if line.sale_type == 'bouns':
 
-                    taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty,
+                    taxes = line.tax_id.compute_all(price2, line.order_id.currency_id, line.product_uom_qty,
                                                     product=line.product_id, partner=line.order_id.partner_shipping_id)
 
                     line.update({
@@ -213,8 +228,8 @@ class ORder(models.Model):
                     taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty,
                                                     product=line.product_id, partner=line.order_id.partner_shipping_id)
                     line.update({
-                        'dist_amount': price1 * ((line.dist_discount or 0.0) / 100) * line.product_uom_qty,
-                        'cash_amount': price2 * ((line.cash_discount or 0.0) / 100) * line.product_uom_qty,
+                        'dist_amount': price1 * ((line.order_id.dis_discount_sale or 0.0) / 100) * line.product_uom_qty,
+                        'cash_amount': price2 * ((line.order_id.cash_discount_sale or 0.0) / 100) * line.product_uom_qty,
                         'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                         'price_total': taxes['total_included'],
                         'price_subtotal': taxes['total_excluded'],
@@ -228,12 +243,12 @@ class ORder(models.Model):
                 price1 = (line.price_unit * (1.0 - (line.discount or 0.0) / 100.0))
 
                 price2 = price1 * (1.0 - (line.dist_discount or 0.0) / 100.0)
-                price = price2 * (1.0 - (line.cash_discount or 0.0) / 100.0)
+                price = price2 * (1.0 - (line.cash_discount_sale or 0.0) / 100.0)
                 print(line.price_unit, price1, price2, price)
 
                 if line.sale_type == 'bouns':
 
-                    taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty,
+                    taxes = line.tax_id.compute_all(price1, line.order_id.currency_id, line.product_uom_qty,
                                                     product=line.product_id, partner=line.order_id.partner_shipping_id)
 
                     line.update({
@@ -277,6 +292,8 @@ class ORder(models.Model):
             'product_uom_id': self.product_uom.id,
             'quantity': self.qty_to_invoice,
             'discount': self.discount,
+            'cash_discount_sale': self.cash_discount_sale,
+            'dis_discount_sale': self.dis_discount_sale,
             'store_price': self.store_price,
             'publicprice': self.publicprice,
             'price_unit': self.price_unit,
@@ -307,7 +324,8 @@ class ORder(models.Model):
 class Invoceder(models.Model):
     _name = 'account.move.line'
     _inherit = 'account.move.line'
-
+    cash_discount_sale = fields.Float('Cash Discount', store=True)
+    dis_discount_sale = fields.Float('Distributor Discount', store=True)
     publicprice = fields.Float("Public Price", store=True, digits=('Product Price'))
 
     @api.onchange('product_id')
@@ -614,7 +632,7 @@ class Invoceder(models.Model):
 
                 if self.sale_type == 'bouns':
                     price_unit_wo_discount1 = (price_unit * (1.0 - (discount / 100.0)))
-                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount1,
                                                           quantity=quantity, currency=currency, product=product,
                                                           partner=partner,
                                                           is_refund=move_type in ('out_refund', 'in_refund'))
@@ -671,7 +689,8 @@ class Invoceder(models.Model):
 class Move(models.Model):
     _name = 'account.move'
     _inherit = 'account.move'
-
+    cash_discount_sale = fields.Float('Cash Discount', store=True)
+    dis_discount_sale = fields.Float('Distributor Discount', store=True)
     cust_categ_id = fields.Many2one(string="Customer Category", related="partner_id.categ_id")
 
     warehouse_id = fields.Many2one(
@@ -958,7 +977,7 @@ class Move(models.Model):
                         discount_pharm = (base_line.product_id.list_price * (1.0 - (base_line.discount / 100.0)))
                         discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
                         discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
-                        price_unit_wo_discount = sign * discount_cash
+                        price_unit_wo_discount = sign * discount_pharm
 
                     else:
                         price_unit_wo_discount = sign * base_line.price_unit

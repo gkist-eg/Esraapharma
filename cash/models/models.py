@@ -16,8 +16,9 @@ class cash(models.Model):
     _inherit = ['mail.thread']
     _rec_name = 'code'
     _order = "create_date desc"
-    catg_id = fields.Many2one('product.category' ,store=True,string='Expense Category', domain="[('is_expense','=',True)]")
-    product_id = fields.Many2one('product.product' ,store=True,domain="[('categ_id', 'in', [catg_id])]")
+    catg_id = fields.Many2one('product.category', store=True, string='Expense Category',
+                              domain="[('is_expense','=',True)]")
+    product_id = fields.Many2one('product.product', store=True, domain="[('categ_id', 'in', [catg_id])]")
 
     payment_type = fields.Selection([
         ('send_money', 'Send Money'),
@@ -39,7 +40,7 @@ class cash(models.Model):
         string='Type', default='expense')
 
     code = fields.Char('Reference', size=32, copy=False,
-                       track_visibility='onchange',readonly=1,
+                       track_visibility='onchange', readonly=1,
                        default=lambda self: (" "))
     bank_receive = fields.Char('Bank')
     bank_account_receive = fields.Char('Account Number')
@@ -69,7 +70,7 @@ class cash(models.Model):
     @api.onchange('catg_id')
     def _onchangeproduct(self):
         if self.catg_id:
-                self.product_id = False
+            self.product_id = False
 
     @api.onchange('payment_type')
     def _onchange_payment_type(self):
@@ -99,7 +100,7 @@ class cash(models.Model):
     # partner
 
     partner_id = fields.Many2one('res.partner', 'Partner', store=True, track_visibility='onchange',
-                                )
+                                 )
     partner_other = fields.Many2one('res.partner', 'Partner Other', store=True, track_visibility='onchange',
                                     )
     check_safe = fields.Many2one('account.journal', 'Safe of Check', store=True, track_visibility='onchange',
@@ -126,7 +127,7 @@ class cash(models.Model):
     amount_re = fields.Float('Amount Receive', store=True, track_visibility='onchange', required=True)
     analytic_account_id = fields.Many2one('account.analytic.account', string='Cost Center', store=True,
                                           track_visibility='onchange')
-    date = fields.Date("Date", default=fields.Datetime.now, store=True,readonly=1)
+    date = fields.Date("Date", default=fields.Datetime.now, store=True, readonly=1)
 
     # loan
     payment_condation = fields.Integer('Payment Condition', track_visibility='onchange', )
@@ -148,11 +149,11 @@ class cash(models.Model):
     analytic_account_custody = fields.Many2one('account.analytic.account', string='Expense Type', store=True,
                                                track_visibility='onchange')
     account_cus = fields.Many2one('account.account', string='Account Expense', store=True,
-                                  domain=[ ('deprecated', '=', False)])
+                                  domain=[('deprecated', '=', False)])
 
     # income
     account_income = fields.Many2one('account.account', string='Account Income', store=True,
-                                     domain=[ ('deprecated', '=', False)])
+                                     domain=[('deprecated', '=', False)])
 
     _sql_constraints = [
         ('name_unique', 'unique(check_number)', 'Check Number Must Be Unique')
@@ -314,7 +315,6 @@ class cash(models.Model):
                                 'employee_expense': s_expense.employee_expense.id,
                                 'cash_id': self.id,
 
-
                             })]
                         }
 
@@ -364,7 +364,6 @@ class cash(models.Model):
                                 'account_id': s_other.check_send.default_account_id.id,
                                 'employee_expense': s_other.employee_expense.id,
                                 'cash_id': self.id,
-
 
                             })]
                         }
@@ -441,7 +440,6 @@ class cash(models.Model):
                                 'employee_expense': cus.employee_expense.id,
                                 'cash_id': self.id,
 
-
                             })
                                          ]
 
@@ -492,7 +490,6 @@ class cash(models.Model):
                                 'account_id': partner.check_send.default_account_id.id,
                                 'partner_id': partner.partner_id.id,
                                 'cash_id': self.id,
-
 
                             })]
                         }
@@ -591,7 +588,6 @@ class cash(models.Model):
                                 'account_id': income.catg_id.property_account_expense_categ_id.id,
                                 'employee_expense': income.employee_expense.id,
                                 'cash_id': self.id,
-
 
                             })]
                         }
@@ -718,7 +714,6 @@ class cash(models.Model):
                                 'employee_expense': cus.employee_expense.id,
                                 'cash_id': self.id,
 
-
                             })
                                          ]
 
@@ -728,9 +723,6 @@ class cash(models.Model):
                 expense.write({'state': 'posted'})
             else:
                 raise ValidationError(_('You are already clicked'))
-
-
-
 
 
 class planConfirm(models.TransientModel):
@@ -753,13 +745,14 @@ class user_unlink(models.Model):
     _inherit = "res.users"
 
     def unlink(self):
-        if self.journal_item_count != 0:
-            raise UserError(_('Cannot delete this user'))
+        for record in self:
+            if record.journal_item_count != 0:
+                raise UserError(_('Cannot delete this user'))
 
-        return super(user_unlink, self).unlink()
+            return super(user_unlink, self).unlink()
+
+
 class AccountMoveLinee(models.Model):
     _inherit = 'account.move.line'
 
-
     employee_expense = fields.Many2one(comodel_name="hr.employee", track_visibility='onchange', )
-

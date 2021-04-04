@@ -287,11 +287,16 @@ class EditPurchaseOrderLin(models.Model):
     @api.depends('product_id')
     def get_last_purchase_price(self):
         for rec in self:
-            lastprice = self.env['purchase.order.line'].search(
-                [('product_id', '=', rec.product_id.id), ('order_id.state', '=', 'purchase')], limit=1)
-            print('lastpricelastpricelastprice', lastprice)
-            rec.last_price_purchase = lastprice.price_unit
-            rec.last_date_purchase = lastprice.order_id.date_approve
+            if rec.product_id:
+                lastprice = self.env['account.move.line'].search(
+                    [('product_id', '=', rec.product_id.id), ('move_type', 'in', ('in_invoice', 'in_refund'))], limit=1)
+                print('lastpricelastpricelastprice', lastprice.name)
+
+                rec.last_price_purchase = lastprice.price_unit
+                rec.last_date_purchase = lastprice.date
+            else:
+                rec.last_price_purchase = False
+                rec.last_date_purchase = False
 
 # class PurchaseOrderForeign(models.Model):
 #     _name = "purchase.foreignn"

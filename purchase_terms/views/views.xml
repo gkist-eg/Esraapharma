@@ -1,0 +1,19 @@
+<odoo>
+  <data>
+<!-- Inherit Form View to Modify it -->
+<record id="purchase_order_form_edit" model="ir.ui.view">
+    <field name="name">purchase.order</field>
+    <field name="model">purchase.order</field>
+    <field name="inherit_id" ref="purchase.purchase_order_form"/>
+    <field name="arch" type="xml">
+
+       <xpath expr="//page[1]" position="after">
+                    <page name='terms' string="Terms and Conditions" >
+                        <field name="due_term" widget="html" />
+                    </page>
+        </xpath>
+
+    </field>
+</record>
+  </data>
+</odoo>

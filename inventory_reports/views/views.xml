@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_wizard_val_stock" model="ir.ui.view">
+        <field name="name">Inventory at Date</field>
+        <field name="model">stock.wizerd.quantity</field>
+        <field name="arch" type="xml">
+        <form string="Choose your date">
+                <p class="oe_gray">
+                </p>
+                <group>
+                        <group>
+                                <field name="product_id"/>
+                                <field name="location_id"/>
+                                <field name="lot_id" widget="many2many_tags"/>
+                        </group> <group>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                        </group>
+                </group>
+                <footer>
+                        <button name="print_pdf_stock"
+                                string="Print "
+                                type="object"
+                                class="btn-primary"
+                                context="{'location_id': location_id}"/>
+                        <button string="Cancel" class="btn-default" special="cancel" />
+                </footer>
+        </form>
+        </field>
+        </record>
+
+        <record id="action_wizard_stock" model="ir.actions.act_window">
+        <field name="name">Item Quantity</field>
+        <field name="res_model">stock.wizerd.quantity</field>
+        <field name="view_id" ref="view_wizard_val_stock"/>
+        <field name="target">new</field>
+        </record>
+
+        <menuitem
+                id="menu_action_wizard_stock"
+                action="action_wizard_stock"
+                parent="stock.menu_warehouse_report"
+                sequence="1"
+        />
+
+    </data>
+</odoo>

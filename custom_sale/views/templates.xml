@@ -116,7 +116,7 @@
                                 <td style="border: 1px solid black;">
                                     <span t-field="l.name" />
                                 </td>
-                                        <td style="border: 1px solid black;">
+                                        <td style="border: 1px solid black;" >
                                     <span t-esc="l.discount_amount+l.amount_untaxed" t-options='{"widget": "float", "precision": 2}'/>
                                 </td>
 
@@ -131,7 +131,7 @@
                                     <span t-field="l.amount_tax"  t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
 
                                 </td>
-                                       <td style="border: 1px solid black;">
+                                       <td style="border: 1px solid black;" >
                                     <span t-field="l.amount_total"  t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
                                 </td>
                                              <td style="border: 1px solid black;">
@@ -458,13 +458,13 @@
                                     untaxed Amount
                                 </th>
                                 <th style="border: 1px solid black;">
-                                    tax
+                                    Tax %
                                 </th>
                                 <th style="border: 1px solid black;">
-                                    unit tax
+                                    Unit tax
                                 </th>
                                 <th style="border: 1px solid black;">
-                                    taxes
+                                    Taxes
                                 </th>
                                 <th style="border: 1px solid black;">
                                     Total Invoice
@@ -494,7 +494,7 @@
                                     <span t-field="l.sale_type" />
                                 </td>
                                 <td style="border: 1px solid black;">
-                                    <span t-field="l.discount"/>
+                                    <span t-field="l.discount"/>,<span t-field="l.cash_discount"/>,<span t-field="l.dist_discount"/>
                                 </td>
                                 <td style="border: 1px solid black;">
                                     <span t-field="l.move_id.partner_id.name"/>
@@ -512,16 +512,25 @@
                                     <span t-field="l.move_id.invoice_date"/>
 
                                 </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-esc="l.price_unit" />
+                                      <td style="border: 1px solid black;" t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender')">
+                                    <span t-esc="l.price_unit" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
+
+                                </td><td style="border: 1px solid black;" t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender')">
+                                    <span t-esc="l.store_price" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
+
                                 </td>
+
                                 <td style="border: 1px solid black;">
                                     <span t-field="l.quantity"/>
 
                                 </td>
 
-                                  <td style="border: 1px solid black;">
-                                    <span t-field="l.price_total"/>
+                                  <td style="border: 1px solid black;" t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender')">
+                                    <span t-esc="l.price_unit*l.quantity" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
+
+                                </td>
+                                     <td style="border: 1px solid black;" t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender')">
+                                    <span t-esc="l.store_price*l.quantity" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
 
                                 </td>
                                   <td style="border: 1px solid black;">
@@ -557,7 +566,7 @@
 
                                 </td>
                                         <td style="border: 1px solid black;">
-                                     <span t-field="l.price_subtotal"/>
+                                     <span t-field="l.price_subtotal" t-options='{"widget": "float", "precision": 2}'/>
 
                                 </td>
 
@@ -566,7 +575,7 @@
 
                                 </td>
                                        <td style="border: 1px solid black;">
-                                     <span t-esc="l.price_total - l.price_subtotal" t-options='{"widget": "float", "precision": 2}'/>
+                                     <span t-esc="l.move_id.amount_tax/l.quantity" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
 
                                 </td>
                                       <td style="border: 1px solid black;">

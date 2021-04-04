@@ -51,7 +51,7 @@ class Move(models.Model):
             order.amount_totals = 0.00
             for line in order.invoice_line_ids:
                 if line:
-                    if order.partner_id.categ_id.category_type == 'store' or order.partner_id.categ_id.category_type == 'tender':
+                    if order.partner_id.categ_id.category_type == 'store':
                         pharmacy = 0
                         cash = 0
                         dist = 0
