@@ -1,4 +1,3 @@
-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from itertools import groupby
@@ -8,23 +7,24 @@ import time
 import datetime
 from dateutil.relativedelta import relativedelta
 
+
 class PRFollowup(models.TransientModel):
     _name = 'pr.followup'
     _description = 'PR Follow Up'
 
-    choose_from = fields.Selection([('all', 'All'), ('other', 'Other')], default='all', string='Choose From', store=True)
-    department = fields.Many2one('hr.department', string='Department',store=True)
-    product = fields.Many2one('product.product',string='Product',store=True,domain="[('purchase_ok','=',True)]")
+    choose_from = fields.Selection([('all', 'All'), ('other', 'Other')], default='all', string='Choose From',
+                                   store=True)
+    department = fields.Many2one('hr.department', string='Department', store=True)
+    product = fields.Many2one('product.product', string='Product', store=True, domain="[('purchase_ok','=',True)]")
     choose = fields.Selection([('department', 'Department'), ('product', 'Product')], string='Choose', store=True)
     date_from = fields.Date(string="From Date", default=time.strftime('%Y-%m-01'), store=True)
     date_to = fields.Date("To Date", store=True, default=datetime.datetime.now())
     company = fields.Many2one('res.company', 'Company', required=True, index=True,
-                                 default=lambda self: self.env.user.company_id.id)
-    line_ids =fields.One2many('pr.followup.line','wizard_id',required=True,ondelete='cascade',store=True)
+                              default=lambda self: self.env.user.company_id.id)
+    line_ids = fields.One2many('pr.followup.line', 'wizard_id', required=True, ondelete='cascade', store=True)
 
     def print_pdf_pr_followup(self):
         line_ids = []
-
 
         # Unlink All one2many Line Ids from same wizard
         for wizard_id in self.env['pr.followup.line'].search([('wizard_id', '=', self.id)]):
@@ -36,14 +36,19 @@ class PRFollowup(models.TransientModel):
             if wizard.department:
                 request = self.env['purchase.request.line'].search(
                     [('request_line_id.start_date', '>=', wizard.date_from),
-                     ('request_line_id.start_date', '<=', wizard.date_to), ('request_line_id.departmnt_id', '=', self.department.id), ('state', 'in', ('fully_quotationed','request_approved'))])
+                     ('request_line_id.start_date', '<=', wizard.date_to),
+                     ('request_line_id.departmnt_id', '=', self.department.id),
+                     ('state', 'in', ('fully_quotationed', 'request_approved'))])
                 request2 = self.env['purchase.request.line'].search(
                     [('request_line_id.start_date', '>=', wizard.date_from),
-                     ('request_line_id.start_date', '<=', wizard.date_to), ('request_line_id.departmnt_id', '=', self.department.id),('request_line_id.state', '!=', 'request_approved')])
+                     ('request_line_id.start_date', '<=', wizard.date_to),
+                     ('request_line_id.departmnt_id', '=', self.department.id),
+                     ('request_line_id.state', '!=', 'request_approved')])
 
                 for resource in request:
                     for rec in self.env['purchase.order.line'].search(
-                            [('order_id.purchase_requests', '=', resource.request_line_id.id),('product_id', '=', resource.product_id.id)]):
+                            [('order_id.purchase_requests', '=', resource.request_line_id.id),
+                             ('product_id', '=', resource.product_id.id)]):
                         for move in rec.move_ids:
                             l = None
                             s = None
@@ -83,7 +88,8 @@ class PRFollowup(models.TransientModel):
 
                 for r in request:
                     for order in self.env['purchase.order.line'].search(
-                            [('order_id.purchase_requests', '=', r.request_line_id.id), ('product_id', '=', r.product_id.id),
+                            [('order_id.purchase_requests', '=', r.request_line_id.id),
+                             ('product_id', '=', r.product_id.id),
                              ('state', 'not in', ('purchase', 'done'))]):
                         line_ids.append((0, 0, {
                             'pr_no': r.request_line_id.name,
@@ -97,32 +103,34 @@ class PRFollowup(models.TransientModel):
                         }))
                 for res in request2:
                     not_po = self.env['purchase.order.line'].search(
-                        [('order_id.purchase_requests', '=', res.request_line_id.id),('product_id', '=', res.product_id.id), ])
+                        [('order_id.purchase_requests', '=', res.request_line_id.id),
+                         ('product_id', '=', res.product_id.id), ])
                     if not not_po:
                         line_ids.append((0, 0, {
-                        'pr_no': res.request_line_id.name,
-                        'pr_date': res.request_line_id.start_date,
-                        'state': res.request_line_id.state,
-                        'product_code': res.product_id.default_code,
-                        'product_id': res.product_id.id,
-                        'requested_qty': res.product_qty,
+                            'pr_no': res.request_line_id.name,
+                            'pr_date': res.request_line_id.start_date,
+                            'state': res.request_line_id.state,
+                            'product_code': res.product_id.default_code,
+                            'product_id': res.product_id.id,
+                            'requested_qty': res.product_qty,
 
                         }))
-
-
 
             if wizard.product:
 
                 request = self.env['purchase.request.line'].search(
                     [('request_line_id.start_date', '>=', wizard.date_from),
-                     ('request_line_id.start_date', '<=', wizard.date_to), ('product_id', '=', self.product.id),('request_line_id.state', 'in', ('fully_quotationed','request_approved'))])
+                     ('request_line_id.start_date', '<=', wizard.date_to), ('product_id', '=', self.product.id),
+                     ('request_line_id.state', 'in', ('fully_quotationed', 'request_approved'))])
                 request2 = self.env['purchase.request.line'].search(
                     [('request_line_id.start_date', '>=', wizard.date_from),
-                     ('request_line_id.start_date', '<=', wizard.date_to), ('product_id', '=', self.product.id),('request_line_id.state', '!=', 'request_approved')
+                     ('request_line_id.start_date', '<=', wizard.date_to), ('product_id', '=', self.product.id),
+                     ('request_line_id.state', '!=', 'request_approved')
                      ])
                 for resource in request:
                     for rec in self.env['purchase.order.line'].search(
-                    [('order_id.purchase_requests', '=', resource.request_line_id.id),('product_id', '=', resource.product_id.id)]):
+                            [('order_id.purchase_requests', '=', resource.request_line_id.id),
+                             ('product_id', '=', resource.product_id.id)]):
                         for move in rec.move_ids:
                             l = None
                             s = None
@@ -158,8 +166,9 @@ class PRFollowup(models.TransientModel):
                                 }))
                 for r in request:
                     orders = self.env['purchase.order.line'].search(
-                            [('order_id.purchase_requests', '=', r.request_line_id.id), ('product_id', '=', r.product_id.id),
-                             ('state', 'not in', ('purchase', 'done'))])
+                        [('order_id.purchase_requests', '=', r.request_line_id.id),
+                         ('product_id', '=', r.product_id.id),
+                         ('state', 'not in', ('purchase', 'done'))])
                     for order in orders:
                         line_ids.append((0, 0, {
                             'pr_no': r.request_line_id.name,
@@ -172,23 +181,24 @@ class PRFollowup(models.TransientModel):
                         }))
                     if not orders:
                         line_ids.append((0, 0, {
-                                'pr_no': r.request_line_id.name,
-                                'pr_date': r.request_line_id.start_date,
-                                'state': r.request_line_id.state,
-                                'requesting_department': r.request_line_id.departmnt_id.id,
-                                'requested_qty': r.product_qty,
+                            'pr_no': r.request_line_id.name,
+                            'pr_date': r.request_line_id.start_date,
+                            'state': r.request_line_id.state,
+                            'requesting_department': r.request_line_id.departmnt_id.id,
+                            'requested_qty': r.product_qty,
 
-                            }))
+                        }))
                 for res in request2:
                     not_po = self.env['purchase.order.line'].search(
-                        [('order_id.purchase_requests', '=', res.request_line_id.id), ('product_id', '=', res.product_id.id), ])
+                        [('order_id.purchase_requests', '=', res.request_line_id.id),
+                         ('product_id', '=', res.product_id.id), ])
                     if not not_po:
                         line_ids.append((0, 0, {
-                        'pr_no': res.request_line_id.name,
-                        'pr_date': res.request_line_id.start_date,
-                        'state': res.request_line_id.state,
-                        'requesting_department': res.request_line_id.departmnt_id.id,
-                        'requested_qty': res.product_qty,
+                            'pr_no': res.request_line_id.name,
+                            'pr_date': res.request_line_id.start_date,
+                            'state': res.request_line_id.state,
+                            'requesting_department': res.request_line_id.departmnt_id.id,
+                            'requested_qty': res.product_qty,
 
                         }))
 
@@ -196,14 +206,17 @@ class PRFollowup(models.TransientModel):
 
                 request = self.env['purchase.request.line'].search(
                     [('request_line_id.start_date', '>=', wizard.date_from),
-                     ('request_line_id.start_date', '<=', wizard.date_to),('request_line_id.state', 'in', ('fully_quotationed','request_approved'))])
+                     ('request_line_id.start_date', '<=', wizard.date_to),
+                     ('request_line_id.state', 'in', ('fully_quotationed', 'request_approved'))])
                 request2 = self.env['purchase.request.line'].search(
                     [('request_line_id.start_date', '>=', wizard.date_from),
-                     ('request_line_id.start_date', '<=', wizard.date_to),('request_line_id.state', '!=', 'request_approved')])
+                     ('request_line_id.start_date', '<=', wizard.date_to),
+                     ('request_line_id.state', '!=', 'request_approved')])
 
                 for resource in request:
                     for rec in self.env['purchase.order.line'].search(
-                    [('order_id.purchase_requests', '=', resource.request_line_id.id),('product_id', '=', resource.product_id.id)]):
+                            [('order_id.purchase_requests', '=', resource.request_line_id.id),
+                             ('product_id', '=', resource.product_id.id)]):
                         for move in rec.move_ids:
                             l = None
                             s = None
@@ -244,7 +257,8 @@ class PRFollowup(models.TransientModel):
 
                 for r in request:
                     for order in self.env['purchase.order.line'].search(
-                            [('order_id.purchase_requests', '=', r.request_line_id.id), ('product_id', '=', r.product_id.id),
+                            [('order_id.purchase_requests', '=', r.request_line_id.id),
+                             ('product_id', '=', r.product_id.id),
                              ('state', 'not in', ('purchase', 'done'))]):
                         line_ids.append((0, 0, {
                             'pr_no': r.request_line_id.name,
@@ -259,21 +273,19 @@ class PRFollowup(models.TransientModel):
                         }))
                 for res in request2:
                     not_po = self.env['purchase.order.line'].search(
-                        [('order_id.purchase_requests', '=', res.request_line_id.id), ('product_id', '=', res.product_id.id), ])
+                        [('order_id.purchase_requests', '=', res.request_line_id.id),
+                         ('product_id', '=', res.product_id.id), ])
                     if not not_po:
                         line_ids.append((0, 0, {
-                                'pr_no': resource.request_line_id.name,
-                                'pr_date': res.request_line_id.start_date,
-                                'state': res.request_line_id.state,
-                                'requesting_department': res.request_line_id.departmnt_id.id,
-                                'product_code': res.product_id.default_code,
-                                'product_id': res.product_id.id,
-                                'requested_qty': res.product_qty,
+                            'pr_no': res.request_line_id.name,
+                            'pr_date': res.request_line_id.start_date,
+                            'state': res.request_line_id.state,
+                            'requesting_department': res.request_line_id.departmnt_id.id,
+                            'product_code': res.product_id.default_code,
+                            'product_id': res.product_id.id,
+                            'requested_qty': res.product_qty,
 
                         }))
-
-
-
 
         # writing to One2many line_ids
         self.write({'line_ids': line_ids})
@@ -293,21 +305,20 @@ class PRFollowup(models.TransientModel):
         }
 
 
-
 class PRFollowUpLine(models.TransientModel):
     _name = 'pr.followup.line'
 
     wizard_id = fields.Many2one('pr.followup', required=True, ondelete='cascade')
-    pr_no = fields.Char('Date',store=True)
-    pr_date = fields.Date('Date',store=True)
-    product_id = fields.Many2one( 'product.product','Product',store=True)
-    product_code = fields.Char('Product Code',store=True)
+    pr_no = fields.Char('Date', store=True)
+    pr_date = fields.Date('Date', store=True)
+    product_id = fields.Many2one('product.product', 'Product', store=True)
+    product_code = fields.Char('Product Code', store=True)
     requested_qty = fields.Float('Qty', store=True)
     qty_received = fields.Float('Qty', store=True)
-    requesting_department = fields.Many2one( 'hr.department','Department',store=True)
+    requesting_department = fields.Many2one('hr.department', 'Department', store=True)
     received_date = fields.Date('Received Date', store=True)
     backorder_id = fields.Many2one('stock.picking', 'Back Order of', store=True)
-    product_uom_qty = fields.Float( 'Back Order Qty', store=True)
+    product_uom_qty = fields.Float('Back Order Qty', store=True)
     po = fields.Char('PO', store=True)
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -316,9 +327,4 @@ class PRFollowUpLine(models.TransientModel):
         ('maneger_approved', 'Manager Approved'),
         ('request_approved', 'Request Approved'),
         ('fully_quotationed', 'Fully Quotationed'),
-    ],)
-
-
-
-
-
+    ], )
