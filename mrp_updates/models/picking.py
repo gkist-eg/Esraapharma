@@ -35,7 +35,7 @@ class StockMove(models.Model):
     def _set_quantity_done_prepare_vals(self, qty):
         res = []
         if self.state not in ('done' ,'cancel'):
-            for ml in self.move_lline_ids:
+            for ml in self.move_line_ids:
                 ml_qty = ml.product_uom_qty - ml.qty_done
                 if float_compare(ml_qty, 0, precision_rounding=ml.product_uom_id.rounding) <= 0:
                     continue
