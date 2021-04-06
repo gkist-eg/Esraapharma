@@ -526,11 +526,11 @@
                                 </td>
 
                                   <td style="border: 1px solid black;" t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender')">
-                                    <span t-esc="l.price_unit*l.quantity" t-options='{"widget": "False", "precision": 2}'/>
+                                    <span t-esc="'%.2f'% (l.price_unit*l.quantity)"  widget='float'/>
 
                                 </td>
                                      <td style="border: 1px solid black;" t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender')">
-                                    <span t-esc="l.store_price*l.quantity" t-options='{"widget": "False", "precision": 2}'/>
+                                    <span t-esc="'%.2f'% (l.store_price*l.quantity)"  widget='float'/>
 
                                 </td>
                                   <td style="border: 1px solid black;">
@@ -575,7 +575,7 @@
 
                                 </td>
                                        <td style="border: 1px solid black;">
-                                     <span t-esc="l.move_id.amount_tax/l.quantity" t-options='{"widget": "False", "precision": 2}'/>
+                                     <span t-esc="'%.2f'% (l.move_id.amount_tax/l.quantity)"  widget='float'/>
 
                                 </td>
                                       <td style="border: 1px solid black;">
