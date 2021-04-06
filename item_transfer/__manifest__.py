@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Items Transfer",
+    'name': "Items Transfer gg",
 
     'summary': """
         Short (1 phrase/line) summary of the module's purpose, used as
@@ -25,9 +25,12 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/group.xml',
         'views/views.xml',
         'views/templates.xml',
         'views/location.xml',
+        'views/product_map.xml',
+        'views/sale_in_month.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
