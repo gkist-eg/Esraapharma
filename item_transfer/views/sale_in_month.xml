@@ -1,0 +1,50 @@
+<odoo>
+        <record id="sale_in_month_view" model="ir.ui.view">
+            <field name="name">sale.in.month.form</field>
+            <field name="model">sale.in.month</field>
+            <field name="arch" type="xml">
+                <form string="Sale Information">
+                    <sheet>
+                        <group col="2">
+                            <group>
+                                <field name="product_id" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                                <field name="distributor"/>
+                                <field name="month" />
+                                <field name="quantity" />
+                                <field name="product_code" />
+
+                            </group>
+
+                        </group>
+
+
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+
+        <record id="sale_in_month_action" model="ir.actions.act_window">
+            <field name="name">Sale In Month</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.in.month</field>
+            <field name="view_mode">tree,form</field>
+
+        </record>
+
+     <menuitem
+            id="menu_sale_in_month_action"
+            action="sale_in_month_action"
+            name ='Sale In Month'
+            parent="stock.menu_stock_warehouse_mgmt"
+            sequence="8"
+            />
+
+
+
+</odoo>
