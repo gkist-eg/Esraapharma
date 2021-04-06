@@ -171,7 +171,8 @@
 
   </record>
     <!-- This Menu Item must have a parent and an action -->
-    <menuitem id="payment_request_action_menu" name="Payment Request"  action="payment_request_action_form" groups="purchase.group_purchase_user" />
+    <menuitem id="payment_request_action_menu" name="Payment Request" parent="purchase.menu_procurement_management" action="payment_request_action_form" groups="purchase.group_purchase_user" />
+    <menuitem id="payment_request_action_menu_account" name="Payment Request" parent="account.menu_finance_payables" action="payment_request_action_form2" groups="account.group_account_manager" />
 
 
   </data>
