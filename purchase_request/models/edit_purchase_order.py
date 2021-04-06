@@ -143,17 +143,18 @@ class EditPurchaseOrder(models.Model):
                     for line in request.request_line_ids:
                         order_lines.append((0, 0, {
                             'product_id': line.product_id.id,
-                            'name': line.name,
+                            'name': line.product_id.name,
                             'product_qty': line.product_qty,
                             'product_uom': line.product_uom_id.id,
                             'price_unit': 0,
-                            'purchase_request_line': [line.id],
+                            'purchase_request_line': line.id,
+                            'purchase_requests_id': request.id,
                             'attachmentt_ids': [a.id for a in line.attachment_ids],
                             'date_planned': line.due_date or self.date_order,
                         }))
 
             self.write({'order_line': False})
-            self.sudo().write({'order_line': order_lines, 'attachmentt_ids': self.attachmentt_ids.ids})
+            self.sudo().write({'order_line': order_lines,})
 
     # @api.depends("purchase_request_ids")
     # def get_line_purchase_request(self):
@@ -268,30 +269,21 @@ class EditPurchaseOrderLin(models.Model):
 
     attachmentt_ids = fields.Many2many('ir.attachment',"attachmen", string='Attachments')
     # purchase_requests = fields.Char(string='PR.NO', readonly=True,store=True)
-    purchase_requests_id = fields.Many2one('purchase.requests', string='Purchase Request',compute="get_purchase_requests_id")
-    last_price_purchase=fields.Float("Last Price Purchase",compute="get_last_purchase_price")
-    last_date_purchase=fields.Date("Last Date Purchase",compute="get_last_purchase_price")
+    purchase_requests_id = fields.Many2one('purchase.requests', string='Purchase Request',store=True)
+    last_price_purchase=fields.Float("Last Price Purchase",compute="get_last_purchase_price", store=True)
+    last_date_purchase=fields.Date("Last Date Purchase",compute="get_last_purchase_price", store=True)
     # purchase_request_line = fields.Many2one("purchase.request.line", "purchase request line")
     categ_id = fields.Many2one('product.category', string='product Category', related="order_id.product_category_id")
-    purchase_request_line = fields.Many2many(comodel_name="purchase.request.line", string="Service Type", )
+    purchase_request_line = fields.Many2one("purchase.request.line", string="Purchase Requast Line", )
 
-    @api.depends('purchase_request_line')
-    def get_purchase_requests_id(self):
-        for rec in self:
-            if rec.purchase_request_line:
-                for line in rec.purchase_request_line:
-                    rec.purchase_requests_id = line.request_line_id.id
-            else:
-                rec.purchase_requests_id = False
+
 
     @api.depends('product_id')
     def get_last_purchase_price(self):
         for rec in self:
             if rec.product_id:
                 lastprice = self.env['account.move.line'].search(
-                    [('product_id', '=', rec.product_id.id), ('move_type', 'in', ('in_invoice', 'in_refund'))], limit=1)
-                print('lastpricelastpricelastprice', lastprice.name)
-
+                    [('product_id', '=', rec.product_id.id), ('move_id.move_type', 'in', ('in_invoice', 'in_refund'))], limit=1)
                 rec.last_price_purchase = lastprice.price_unit
                 rec.last_date_purchase = lastprice.date
             else:

@@ -57,7 +57,7 @@ class PurchaseRequests(models.Model):
     approver_id = fields.Many2one('hr.employee', string='Direct Manager', readonly=False , copy=False,default=_get_default_approver_id,tracking=True)
     purchase_approver_id = fields.Many2one('res.users', string='Purchase Approver', readonly=True, copy=False,default=gettt_values,tracking=True)
     prioritty=fields.Selection([('urgent', 'Urgent'),('high', 'High'),('low', 'Low')],string="Priority",tracking=True, required=True)
-    start_date=fields.Date("Start Date" ,default=fields.Date.today,tracking=True, readonly=False)
+    start_date=fields.Date("Creation Date" ,default=fields.Date.today,tracking=True, readonly=False)
     due_date=fields.Date("Due Date",tracking=True)
     attachment_ids = fields.Many2many('ir.attachment', string='Attachments',tracking=True)
     request_category_id = fields.Many2one('product.category', string='Request Category',tracking=True, required=True)

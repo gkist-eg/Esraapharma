@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_payment_request_payment_request,payment_request.payment_request,model_payment_request,purchase.group_purchase_user,1,1,1,1
+access_payment_request_payment_request2,payment_request.payment_request,model_payment_request_line,purchase.group_purchase_user,1,1,1,1
+access_payment_request_payment_request3,payment_request.payment_request,model_payment_request,account.group_account_manager,1,1,0,0
+access_payment_request_payment_request4,payment_request.payment_request,model_payment_request_line,account.group_account_manager,1,1,1,1
