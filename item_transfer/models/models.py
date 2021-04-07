@@ -92,7 +92,6 @@ class ItemTransfer(models.Model):
     def _compute_warehouse(self):
         self.warehouse_dest_id = self.requested_by.warehouse_ids
 
-
     @api.depends('requested_by')
     def _onchange_state(self):
         assigned_to = None
