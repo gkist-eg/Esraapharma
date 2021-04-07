@@ -3,6 +3,7 @@ from odoo import models, fields, api
 
 class InvoiceReport(models.TransientModel):
     _name = 'invoice.wizard'
+    lines = fields.Many2many(comodel_name="account.move.line")
 
     from_date = fields.Date(string="", required=False, )
     to_date = fields.Date(string="", required=False, )
