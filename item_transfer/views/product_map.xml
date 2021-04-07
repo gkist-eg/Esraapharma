@@ -1,0 +1,58 @@
+<odoo>
+        <record id="product_map_view" model="ir.ui.view">
+            <field name="name">product.map.form</field>
+            <field name="model">product.map</field>
+            <field name="arch" type="xml">
+                <form string="Product Information">
+                    <sheet>
+                        <group col="2">
+                            <group>
+                                <field name="product_id" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                                <field name="valid" invisible="1"/>
+                                <field name="manager_valid" invisible="1"/>
+                            </group>
+
+                        </group>
+                        <notebook>
+                            <page name="sale_mapping" string="Sales Mapping">
+                                <field name="map_line">
+                                    <tree editable="bottom">
+                                        <field name="distributor" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                                        <field name="sale_code"/>
+                                        <field name="product_id"/>
+
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+
+        <record id="product_map_action" model="ir.actions.act_window">
+            <field name="name">Product Information</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.map</field>
+            <field name="view_mode">tree,form</field>
+
+        </record>
+
+     <menuitem
+            id="menu_product_map"
+            action="product_map_action"
+            name ='Product Map'
+            parent="stock.menu_stock_warehouse_mgmt"
+            sequence="7"
+            />
+
+
+
+</odoo>
