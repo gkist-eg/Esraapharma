@@ -58,6 +58,7 @@
                                     string="Import" type="object"
                                    icon="fa-bars"
          attrs="{'invisible': [('state', '!=', 'draft')]}"
+        groups="item_transfer.group_confirm_qty"
 >
                                 </button>
                 </header>
@@ -100,7 +101,7 @@
                         <page name='lines' string="Products">
                             <field name="line_ids"   >
                                 <tree editable="bottom">
-                                    <field name="product_code"  attrs="{'readonly': [('parent.state','not in',('draft' ,'to_approve'))]}" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
+                                    <field name="product_code" groups="item_transfer.group_confirm_qty" attrs="{'readonly': [('parent.state','not in',('draft' ,'to_approve'))]}" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
                                     <field name="product_id"  attrs="{'readonly': [('parent.state','not in',('draft' ,'to_approve'))]}"  options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
                                     <field name="store_qty" attrs="{'readonly': [('parent.state','not in',('draft' ,'to_approve'))]}" />
                                     <field name="product_qty" attrs="{'readonly': [('parent.state','not in',('draft' ,'to_approve'))]}" />
