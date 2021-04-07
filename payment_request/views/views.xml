@@ -1,0 +1,179 @@
+<odoo>
+  <data>
+      <record id="payment_request_form" model="ir.ui.view">
+          <field name="name">Payment Request</field>
+          <field name="model">payment.request</field>
+          <field name="arch" type="xml">
+              <form >
+                  <header>
+                                     <button name="button_confirmed" string="Confirm" type="object"  class="oe_highlight" states="confirmed"  groups="purchase.group_purchase_manager"/>
+                                     <button name="button_confirm" string="Confirm" type="object"  class="oe_highlight" states="draft" groups="purchase_approve.group_purchase_leader"/>
+                                     <button name="button_valdite" string="Validate" type="object"  class="oe_highlight" states="pending" groups="account.group_account_manager"/>
+                                     <button name="button_done" string="Done" type="object"  class="oe_highlight" states="validated" groups="account.group_account_manager"/>
+
+                      <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,pending,validated,done"
+                           statusbar_colors='{"draft":"blue"}'/>
+                  </header>
+                  <sheet>
+                       <div class="oe_button_box" name="button_box" >
+                        <button type="object" name="action_view_picking" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible':[('bill_ids','=',[])]}" >
+                            <field name="bill_numbers" widget="statinfo" string="Bills" help="Vendor Bill"/>
+                            <field name="bill_ids" invisible="1"/>
+                        </button>
+                    </div>
+                         <h1>
+
+                        <field name="name" class="oe_inline" attrs="{'readonly': 1 }"/>
+                    </h1>
+                      <group>
+                          <group>
+                          <field name="order_id" options="{'no_create_edit':True, 'no_create':True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                              <field name="picking_ids" widget="many2many_tags"  style="column-count:2;" options="{'no_create_edit':True, 'no_create':True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+</group>
+                          <group>
+
+
+                          <field name="partner_id" readonly="1"/>
+                          <field name="currency_id" readonly="1"/>
+                          <field name="order_date" readonly="1"/>
+                          <field name="allowance_discount" widget='radio' attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'horizontal': true}" />
+                               <label for="discount_rate" attrs="{'readonly': [('state', '!=', 'draft')],'invisible': ['|',('allowance_discount', '=', False),('allowance_discount', '=', 'amount')]}"/>
+                                        <div attrs="{'readonly': [('state', '!=', 'draft')],'invisible': ['|',('allowance_discount', '=', False),('allowance_discount', '=', 'amount')]}">
+                                            <field name="discount_rate" attrs="{'readonly': [('state', '!=', 'draft')],'invisible': ['|',('allowance_discount', '=', False),('allowance_discount', '=', 'amount')]}"/> %
+                                        </div>
+                          <field name="discount" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'readonly': [('state', '!=', 'draft')],'invisible': ['|',('allowance_discount', '=', False),('allowance_discount', '=', 'percentage')]}"/>
+
+                          </group>
+
+
+
+</group>
+                       <notebook>
+                              <page string ='Items'>
+                                  <field name="line_ids" readonly="1">
+                                      <tree>
+                                          <field name="product_id"/>
+                                          <field name="uom_id"/>
+                                          <field name="qty"/>
+                                          <field name="price_unit"/>
+                                          <field name="picking_id"/>
+                                          <field name="taxes_id" widget="many2many_tags"/>
+                                          <field name="total"/>
+                                      </tree>
+                                      <form string="Purchase Order Line">
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="product_id" />
+                                                <label for="qty"/>
+                                                <div>
+                                                    <field name="qty" class="oe_inline"/>
+                                                    <span class="oe_inline"> </span>
+                                                    <field name="uom_id" groups="product.group_uom" class="oe_inline"/>
+                                                </div>
+                                                <field name="price_unit"/>
+
+                                            </group>
+                                            <group>
+                                                  <field name="picking_id"/>
+                                                  <field name="taxes_id" widget="many2many_tags"/>
+                                                  <field name="total"/>
+
+                                            </group>
+                                        </group>
+                                    </sheet></form>
+
+                                  </field>
+                                  <group class="oe_subtotal_footer oe_right">
+                                <field name="untaxed_amount" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                                <field name="taxed_amount" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                                <div class="oe_subtotal_footer_separator oe_inline">
+                                    <label for="total_amount"/>
+                                </div>
+                                <field name="total_amount" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            </group>
+                              </page>
+                           <page string ='Information'>
+                                 <group>
+                                     <group> <field name="create_uid" readonly="1"/>
+                                        <field name="origin" invisible="1"/>
+                               </group>
+                                     <group>
+                                         <field name="create_date" readonly="1"/>
+                                    </group>
+                                 </group>
+
+
+
+                              </page>
+                          </notebook>
+                  </sheet>
+                   <div class="oe_chatter">
+                  <field name="message_follower_ids" widget="mail_followers"/>
+                  <field name="message_ids" widget="mail_thread"/>
+                </div>
+              </form>
+          </field>
+      </record>
+      <record id="payment_request_tree_form" model="ir.ui.view">
+          <field name="name">payment.request</field>
+          <field name="model">payment.request</field>
+          <field name="arch" type="xml">
+              <tree>
+                  <field name="name"/>
+                    <field name="order_id"/>
+                    <field name="picking_ids" widget="many2many_tags"/>
+                    <field name="partner_id" readonly="1"/>
+                          <field name="currency_id" readonly="1"/>
+                          <field name="create_date" readonly="1"/>
+                          <field name="state" readonly="1"/>
+              </tree>
+          </field>
+      </record>
+      <!-- Inherit Form View to Modify it -->
+      <record id="purchase_order_form_request" model="ir.ui.view">
+          <field name="name">purchase.order</field>
+          <field name="model">purchase.order</field>
+          <field name="inherit_id" ref="purchase.purchase_order_form"/>
+          <field name="arch" type="xml">
+                  <button name='action_view_invoice' position="after">
+                        <button type="object" name="action_view_request" class="oe_stat_button" icon="fa-paper-plane" attrs="{'invisible':[('request_ids','=',[])]}" >
+                            <field name="request_cont" widget="statinfo" string="Payment Request" help="Vendor Bill"/>
+                            <field name="request_ids" invisible="1"/>
+                        </button>
+                 </button>
+
+
+
+              <xpath expr="//button[@name='button_confirm']" position="after">
+                   <button name="button_payment_request" type="object" states="done" string="Payment Request"/>
+              </xpath>
+
+          </field>
+      </record>
+  <record id="payment_request_action_form" model="ir.actions.act_window" >
+      <field name="name">Payment Request</field>
+      <field name="res_model">payment.request</field>
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="oe_view_nocontent_create">
+          <!-- Add Text Here -->
+        </p><p>
+          <!-- More details about what a user can do with this object will be OK -->
+        </p>
+      </field>
+  </record> <record id="payment_request_action_form2" model="ir.actions.act_window">
+      <field name="name">Payment Request</field>
+      <field name="res_model">payment.request</field>
+      <field name="view_mode">tree,form</field>
+      <field name ='domain'>[('state','!=', 'draft'),('state','!=', 'confirmed')]</field>
+
+  </record>
+    <!-- This Menu Item must have a parent and an action -->
+    <menuitem id="payment_request_action_menu" name="Payment Request" parent="purchase.menu_procurement_management" action="payment_request_action_form" groups="purchase.group_purchase_user" />
+    <menuitem id="payment_request_action_menu_account" name="Payment Request" parent="account.menu_finance_payables" action="payment_request_action_form2" groups="account.group_account_manager" />
+
+
+  </data>
+</odoo>

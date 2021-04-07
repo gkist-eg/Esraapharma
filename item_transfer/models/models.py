@@ -547,7 +547,7 @@ class ItemTransferLine(models.Model):
 
     product_id = fields.Many2one(
         'product.product', 'Product',
-        track_visibility='onchange', compute='compute_onchange_product')
+        track_visibility='onchange')
 
     product_uom_id = fields.Many2one('uom.uom', 'Product Unit of Measure', track_visibility='onchange')
 
