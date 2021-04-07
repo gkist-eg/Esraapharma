@@ -7,8 +7,6 @@ _STATES = [
     ('draft', 'Draft'),
     ('to_approve', 'To be approved'),
     ('leader_approved', 'Leader Approved'),
-    ('qty_approved', 'Quantity Approved'),
-    ('date_approved', 'Delivery Date Approved'),
     ('source_approved', 'Approved'),
     ('source_lapproved', 'Issued'),
     ('rejected', 'Rejected'),
@@ -24,31 +22,6 @@ class ItemTransfer(models.Model):
     _sql_constraints = [
         ('name_company_uniq', 'unique (name)', 'Transfer Referance must be unique per company !'),
     ]
-
-    def confirm_qty(self):
-        """Actions to perform when cancelling a purchase request line."""
-        self.write({'state': 'qty_approved'})
-
-    def delivery_date(self):
-        """Actions to perform when cancelling a purchase request line."""
-        self.write({'state': 'date_approved'})
-
-    def button_import_transfer(self):
-
-        self.ensure_one()
-        context = {
-            'default_request_id': self.id
-        }
-        return {
-            'name': _('Import'),
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            'res_model': 'item.transfer.line',
-            'view_id': False,
-            'type': 'ir.actions.act_window',
-            'context': context,
-            'domain': [('request_id', '=', self.id)],
-        }
 
     @api.model
     def _get_default_requested_by(self):
@@ -87,7 +60,6 @@ class ItemTransfer(models.Model):
                              copy=False,
                              default='draft')
     source_approve = fields.Many2one("res.users", store=True, copy=False, )
-    delivery_date_x = fields.Datetime(store=True, copy=False, )
 
     location_id = fields.Many2one('stock.location', store=True
                                   , string='Source Location',
@@ -105,7 +77,7 @@ class ItemTransfer(models.Model):
                                        domain=_getUserGroupId)
 
     warehouse_id = fields.Many2one('stock.warehouse', string='Source Warehouse',
-                                   domain="[('id', 'not in',[warehouse_dest_id]) ]",
+                                   # domain="[('id', 'not in',[warehouse_dest_id]) ]",
                                    store=True)
 
     warehouse_dest_id = fields.Many2one('stock.warehouse', copy=False, store=True, string='Destination Warehouse'
@@ -137,7 +109,7 @@ class ItemTransfer(models.Model):
             assigned_to = self.requested_by
         self.assigned_to = assigned_to
 
-    assigned_to = fields.Many2one('res.users', 'Approver', compute='_onchange_state', store=True, readonly=False)
+    assigned_to = fields.Many2one('res.users', 'Approver', compute='_onchange_state', store=True,readonly=False)
 
     @api.depends('requested_by')
     def _compute_department(self):
@@ -174,9 +146,9 @@ class ItemTransfer(models.Model):
         user_locations = self.env.user.stock_location_ids
 
         if self.env.user.restrict_locations:
-            if self.location_id in user_locations and self.state == 'date_approved':
+            if self.location_id in user_locations and self.state == 'leader_approved':
                 self.can_source_approved = True
-            if self.location_id in user_locations and self.state == 'date_approved':
+            if self.location_id in user_locations and self.state == 'leader_approved':
                 self.can_source_approved = True
             else:
                 self.can_source_approved = False
@@ -292,121 +264,29 @@ class ItemTransfer(models.Model):
                 raise UserError(_('AlReady Issued '))
             order_lines = []
             for line in record.line_ids:
-                if record.warehouse_dest_id.sale_store == False:
-                    if line.product_qty == line.qty_confirm:
-                        order_lines.append(
-                            (0, 0,
-                             {
-                                 'name': line.product_id.name,
-                                 'product_id': line.product_id.id,
-                                 'product_uom': line.product_id.uom_id.id,
-                                 'location_id': self.location_id.id,
-                                 'location_dest_id': self.env.ref("item_transfer.transit_location").id,
-                                 'product_uom_qty': line.product_qty,
-                                 'origin': self.name,
+                order_lines.append(
+                    (0, 0,
+                     {
+                         'name': line.product_id.name,
+                         'product_id': line.product_id.id,
+                         'product_uom': line.product_id.uom_id.id,
+                         'location_id': self.location_id.id,
+                         'location_dest_id': self.env.ref("item_transfer.transit_location").id,
+                         'product_uom_qty': line.product_qty,
+                         'origin': self.name,
 
-                             }
-                             ))
+                     }
+                     ))
 
-                        copy_record.create({
-                            'origin': self.name + '-01',
-                            'picking_type_id': self.warehouse_id.int_type_id.id,
-                            'move_ids_without_package': order_lines,
-                            'location_id': self.location_id.id,
-                            'location_dest_id': self.env.ref("item_transfer.transit_location").id,
-                            'location': self.location_dest_id.id,
-                        }).action_confirm()
-                        self.assigned_for = self.env.user
-                    if line.product_qty > line.qty_confirm:
-                        order_lines.append(
-                            (0, 0,
-                             {
-                                 'name': line.product_id.name,
-                                 'product_id': line.product_id.id,
-                                 'product_uom': line.product_id.uom_id.id,
-                                 'location_id': self.location_id.id,
-                                 'location_dest_id': self.env.ref("item_transfer.transit_location").id,
-                                 'product_uom_qty': line.product_qty - line.qty_confirm,
-                                 'origin': self.name,
-
-                             }
-                             ))
-
-                        copy_record.create({
-                            'origin': self.name + '-02',
-                            'picking_type_id': self.warehouse_id.int_type_id.id,
-                            'move_ids_without_package': order_lines,
-                            'location_id': self.location_id.id,
-                            'location_dest_id': self.env.ref("item_transfer.transit_location").id,
-                            'location': self.location_dest_id.id,
-                        }).action_confirm()
-                else:
-                    if line.product_qty == line.qty_confirm:
-                        order_lines.append(
-                            (0, 0,
-                             {
-                                 'name': line.product_id.name,
-                                 'product_id': line.product_id.id,
-                                 'product_uom': line.product_id.uom_id.id,
-                                 'location_id': self.location_id.id,
-                                 'location_dest_id': self.location_dest_id.id,
-                                 'product_uom_qty': line.product_qty,
-                                 'origin': self.name,
-
-                             }
-                             ))
-
-                        copy_record.create({
-                            'origin': self.name + '-01',
-                            'picking_type_id': self.warehouse_id.int_type_id.id,
-                            'move_ids_without_package': order_lines,
-                            'location_id': self.location_id.id,
-                            'location_dest_id': self.location_dest_id.id,
-                        }).action_confirm()
-                        self.assigned_for = self.env.user
-                    if line.product_qty > line.qty_confirm:
-                        order_lines.append(
-                            (0, 0,
-                             {
-                                 'name': line.product_id.name,
-                                 'product_id': line.product_id.id,
-                                 'product_uom': line.product_id.uom_id.id,
-                                 'location_id': self.location_id.id,
-                                 'location_dest_id': self.location_dest_id.id,
-                                 'product_uom_qty':line.qty_confirm,
-                                 'origin': self.name,
-
-                             }
-                             ))
-
-                        copy_record.create({
-                            'origin': self.name + '-01',
-                            'picking_type_id': self.warehouse_id.int_type_id.id,
-                            'move_ids_without_package': order_lines,
-                            'location_id': self.location_id.id,
-                            'location_dest_id': self.location_dest_id.id,
-                        }).action_confirm()
-                        order_lines.append(
-                            (0, 0,
-                             {
-                                 'name': line.product_id.name,
-                                 'product_id': line.product_id.id,
-                                 'product_uom': line.product_id.uom_id.id,
-                                 'location_id': self.location_id.id,
-                                 'location_dest_id': self.location_dest_id.id,
-                                 'product_uom_qty': line.product_qty - line.qty_confirm,
-                                 'origin': self.name,
-
-                             }
-                             ))
-
-                        copy_record.create({
-                            'origin': self.name + '-02',
-                            'picking_type_id': self.warehouse_id.int_type_id.id,
-                            'move_ids_without_package': order_lines,
-                            'location_id': self.location_id.id,
-                            'location_dest_id': self.location_dest_id.id,
-                        }).action_confirm()
+            copy_record.create({
+                'origin': self.name,
+                'picking_type_id': self.warehouse_id.int_type_id.id,
+                'move_ids_without_package': order_lines,
+                'location_id': self.location_id.id,
+                'location_dest_id': self.env.ref("item_transfer.transit_location").id,
+                'location': self.location_dest_id.id,
+            }).action_confirm()
+            self.assigned_for = self.env.user
 
         return self.write({'state': 'source_approved'})
 
@@ -462,15 +342,15 @@ class ItemTransfer(models.Model):
                 })
                 for move in picking.move_lines:
                     move.copy({
-                        'location_id': picking.location_dest_id.id,
-                        'picking_id': new_picking.id,
-                        'warehouse_id': self.warehouse_dest_id.id,
-                        'location_dest_id': self.location_dest_id.id,
-                        'picking_type_id': self.warehouse_dest_id.int_type_id.id,
-                        'move_orig_ids': [(6, 0, move.ids)],
+                             'location_id': picking.location_dest_id.id,
+                             'picking_id': new_picking.id,
+                             'warehouse_id': self.warehouse_dest_id.id,
+                             'location_dest_id': self.location_dest_id.id,
+                             'picking_type_id': self.warehouse_dest_id.int_type_id.id,
+                             'move_orig_ids': [(6, 0, move.ids)],
 
-                    }
-                    )
+                         }
+                         )
                 new_picking.action_assign()
 
         return self.write({'state': 'done'})
@@ -521,40 +401,13 @@ class ItemTransferLine(models.Model):
                                  'item Request',
                                  ondelete='cascade', readonly=True)
 
-    product_code = fields.Char(
-        'Product Code', required=True,
-        track_visibility='onchange', )
-
-    @api.onchange('product_qty')
-    def onchange_product_quant(self):
-        if self.product_qty:
-            self.qty_confirm=self.product_qty
-
-    @api.onchange('product_code')
-    def compute_onchange_product(self):
-        for line in self:
-            products = self.env['product.map.line'].search(
-                [('sale_code', '=', line.product_code),
-                 ('distributor', '=', line.request_id.warehouse_dest_id.partner_id.id)
-                 ])
-            if products:
-
-                line.product_id = products.product_id
-
-            else:
-
-                line.product_id = False
-
     product_id = fields.Many2one(
-        'product.product', 'Product',
-        track_visibility='onchange')
+        'product.product', 'Product', required=True,
+        track_visibility='onchange', domain=[('sale_ok', '=', True)])
 
     product_uom_id = fields.Many2one('uom.uom', 'Product Unit of Measure', track_visibility='onchange')
 
     product_qty = fields.Float('Quantity', track_visibility='onchange',
-                               digits='Product Unit of Measure')
-
-    qty_confirm = fields.Float('Qty Confirm', track_visibility='onchange',
                                digits='Product Unit of Measure')
 
     company_id = fields.Many2one('res.company',
@@ -564,7 +417,6 @@ class ItemTransferLine(models.Model):
     date = fields.Date(related='request_id.date',
                        string='Request Date', readonly=True,
                        store=True)
-
     description = fields.Html(related='request_id.description',
                               string='Description', readonly=True,
                               store=True)
@@ -656,7 +508,6 @@ class ItemTransferLine(models.Model):
         store=True,
         help="Quantity in progress.",
     )
-
     qty_done = fields.Float(
         string="Qty Done",
         digits="Product Unit of Measure",
@@ -673,24 +524,3 @@ class ItemTransferLine(models.Model):
         store=True,
         help="Quantity cancelled",
     )
-    @api.onchange('product_code')
-    def compute_onchange_product_store(self):
-        for line in self:
-
-            products = self.env['sale.in.month'].search(
-                [('product_code', '=', line.product_code),('product_id','=',line.product_id.id),
-                 ('distributor', '=', line.request_id.warehouse_dest_id.partner_id.id)
-                 ],order='create_date desc',)
-            t=[]
-            for l in products:
-                t.append(l.quantity)
-            if t:
-                x=t[0]
-                line.store_qty=x
-                return x
-
-            else:
-
-                line.store_qty = 5
-    store_qty = fields.Float('Store Quantity', track_visibility='onchange',
-                             digits='Product Unit of Measure',compute='compute_onchange_product_store')
