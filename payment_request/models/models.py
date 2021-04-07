@@ -67,12 +67,12 @@ class PaymentRequest(models.Model):
                     done=0
                     lines = line.move_line_ids.search(
                         [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=','release'), ('location_id.stock_usage',  '=', 'qrtin'), ('state',  '=', 'done')])
-                    done = sum([quant.qty_done for quant in lines])
+                    done = sum([quant.product_uom_id._compute_quantity(quant.qty_done , quant.product_id.uom_id) for quant in lines])
                     request = line.move_line_ids.search(
                         [('lot_id', '=', move.lot_id.id),
                          ('location_dest_id', '=', self.env.ref("item_request.emploee_location").id),
                          ('location_id.stock_usage', '=', 'qrtin'), ('state',  '=', 'done')])
-                    done += sum([quant.qty_done for quant in request])
+                    done += sum([quant.product_uom_id._compute_quantity(quant.qty_done , quant.product_id.uom_id) for quant in request])
                     if lines:
                         price = move.move_id.purchase_line_id.price_unit
                         taxes = move.move_id.purchase_line_id.taxes_id.compute_all(price, self.currency_id, done,
@@ -133,16 +133,16 @@ class PaymentRequest(models.Model):
                     for ins in line.picking_ids:
                         don_pickings.append(ins.id)
             result = self.env['stock.picking'].search(
-                [('origin', '=', self.order_id.name), ('state', '=', 'done')])
+                [('origin', '=', self.order_id.name), ('state', '=', 'done'), ('picking_type_id.code',  '=', 'incoming')])
             for res in result:
                 for move in res.move_line_ids:
-
-                    lines = res.move_line_ids.search(
-                    [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'), ('location_id.stock_usage',  '=', 'qrtin'), ('state',  '=', 'done')])
-                    if lines:
-                        pickings.append(res.id)
-                    if not move.lot_id:
-                        pickings.append(res.id)
+                    if res.id not in don_pickings:
+                        lines = res.move_line_ids.search(
+                        [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'), ('location_id.stock_usage',  '=', 'qrtin'), ('state',  '=', 'done')])
+                        if lines:
+                            pickings.append(res.id)
+                        if not move.lot_id:
+                            pickings.append(res.id)
             domain = {'picking_ids': [('id', 'in', pickings)]}
             return {'domain': domain}
 
