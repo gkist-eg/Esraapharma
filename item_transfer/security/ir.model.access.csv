@@ -1,7 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_item_transfer_item_transfer,item_transfer.item_transfer,model_item_transfer,stock.group_stock_user,1,1,1,1
 access_item_transfer_item_transfer_manger,item_transfer.item_transfer,model_item_transfer_line,stock.group_stock_user,1,1,1,1
-
-access_product_map,product.map,model_product_map,stock.group_stock_user,1,1,1,1
-access_product_map_line,product.map.line,model_product_map_line,stock.group_stock_user,1,1,1,1
-access_sale_in_month,sale.in.month,model_sale_in_month,stock.group_stock_user,1,1,1,1
