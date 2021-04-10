@@ -508,11 +508,11 @@
               </xpath>
               <xpath expr="//field[@name='partner_id']" position="after">
 
-                      <field name="cash_discount_sale"  readonly="1" />
+                      <field name="cash_discount_sale"  readonly="1" attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))]}"/>
 
               </xpath> <xpath expr="//field[@name='partner_id']" position="after">
 
-                      <field name="dis_discount_sale"  readonly="1" />
+                      <field name="dis_discount_sale"  readonly="1" attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))]}"/>
 
               </xpath>
  <xpath expr="//field[@name='invoice_date']" position="after">
