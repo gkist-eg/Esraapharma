@@ -45,7 +45,6 @@
                 <thead>
                     <tr>
                         <th><strong>Product</strong></th>
-                        <th class="text-center"><strong>Inspection</strong></th>
                         <th class="text-center"><strong>Picking</strong></th>
                         <th class="text-center"><strong>Taxes</strong></th>
                         <th class="text-center"><strong>Qty</strong></th>
@@ -57,10 +56,6 @@
                     <tr t-foreach="o.line_ids" t-as="line">
                         <td>
                             <span t-field="line.product_id"/>
-                        </td>
-
-                        <td class="text-center">
-                            <span t-field="line.inspection_id.name"/>
                         </td>
                         <td class="text-center">
                             <span t-field="line.picking_id.name"/>
