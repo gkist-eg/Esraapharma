@@ -26,12 +26,12 @@
 
 
             <div class="row mt32 mb32">
-                <div t-if="o.order_id" class="col-xs-3">
+                <div t-if="o.order_id"   class="col-auto">
                     <strong>Order Reference:</strong>
                     <p t-field="o.order_id"/>
                 </div>
 
-                <div t-if="o.order_date" class="col-xs-3">
+                <div t-if="o.order_date"  class="col-auto">
                     <strong>Order Date:</strong>
                     <p t-field="o.order_date"/>
                 </div> <div t-if="o.allowance_discount" class="col-xs-3">
@@ -45,7 +45,6 @@
                 <thead>
                     <tr>
                         <th><strong>Product</strong></th>
-                        <th class="text-center"><strong>Inspection</strong></th>
                         <th class="text-center"><strong>Picking</strong></th>
                         <th class="text-center"><strong>Taxes</strong></th>
                         <th class="text-center"><strong>Qty</strong></th>
@@ -57,10 +56,6 @@
                     <tr t-foreach="o.line_ids" t-as="line">
                         <td>
                             <span t-field="line.product_id"/>
-                        </td>
-
-                        <td class="text-center">
-                            <span t-field="line.inspection_id.name"/>
                         </td>
                         <td class="text-center">
                             <span t-field="line.picking_id.name"/>
@@ -106,28 +101,28 @@
                     </table>
                 </div>
             </div>
-          <table class="table table-bordered">
-    <thead>
-    <tr>
-        <th class="text-center">Prepared by</th>
-        <th class="text-center">Approved by</th>
-        <th class="text-center">Authorized by</th>
-        <th class="text-center">Accountant Approval</th>
+          <div class="row">
+        <div  class="col-auto" >
+                    <span class="text-center">Prepared by</span>
+
+        </div> <div  class="col-auto" >
+                    <th class="text-center">Approved by</th>
+
+        </div> <div  class="col-auto" >
+                    <th class="text-center">Authorized by</th>
+
+        </div> <div  class="col-auto" >
+                    <th class="text-center">Accountant</th>
+
+        </div>
+              <div  class="col-auto" >
         <th class="text-center">Accountant Done</th>
-    </tr>
-    </thead>
 
-                <tbody>
-                    <tr>
-                        <td  style="width:20%"><span t-if="o.create_uid" t-field="o.create_uid.segimage" t-field-options="{'widget': 'image'}" style="height: 20px; width: 20px;"/></td>
-                         <td style="width:20%"><span t-if="o.coach_id" t-field="o.coach_id.segimage" t-field-options="{'widget': 'image'}" style="height: 20px; width: 20px;"/></td>
-                         <td style="width:20%"><span t-if="o.manager_id" t-field="o.manager_id.segimage" t-field-options="{'widget': 'image'}" style="height: 20px; width: 20px;"/></td>
-                         <td style="width:20%"><span t-if="o.accountant_id" t-field="o.accountant_id.segimage" t-field-options="{'widget': 'image'}" style="height: 20px; width: 20px;"/></td>
-                         <td style="width:20%"><span t-if="o.accountant_m_id" t-field="o.accountant_m_id.segimage" t-field-options="{'widget': 'image'}" style="height: 20px; width: 20px;"/></td>
-                    </tr>
-                </tbody>
+        </div>
 
-</table>
+
+
+</div>
 
             <div class="oe_structure"/>
         </div>
