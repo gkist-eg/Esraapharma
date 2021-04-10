@@ -43,10 +43,6 @@ class PurchaseRequests(models.Model):
             res.append((rec.id,name))
         return res
 
-
-
-
-
     nname = fields.Char('Request Name',tracking=True, required=True)
     name = fields.Char('Serial', readonly=False, select=True, copy=False, default='New',tracking=True)
     requested_by_id = fields.Many2one('res.users', string='Requested By', readonly=False
@@ -82,9 +78,6 @@ class PurchaseRequests(models.Model):
     is_readonly = fields.Boolean(string="", compute="get_is_readonly" )
     user_id = fields.Many2one(comodel_name="res.users", string="", required=False)
     # ,compute="get_is_readonly" )
-
-
-
 
 
     @api.depends('state')
@@ -223,7 +216,6 @@ class PurchaseRequests(models.Model):
                 'purchase_request_line':[ line.id],
 
             }))
-                print("order",order_linee)
 
         return {
             'name': 'New Quotation',
