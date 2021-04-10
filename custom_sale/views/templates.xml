@@ -127,9 +127,11 @@
   <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
 <span t-field="l.discount_amount" />
                                 </td>
-                               <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type  in ('store','tender')">
-                                                 <span t-esc="(sum((line.store_price * line.quantity) for line in l.invoice_line_ids)) - l.amount_untaxed" />
-                                </td>
+                               <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type  == 'tender'">
+                                                 <span t-esc="'%.2f'%((sum((line.store_price * line.quantity) for line in l.invoice_line_ids)) - l.amount_untaxed)" widget='float'/>
+                                </td><td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type  == 'store'">
+                                0
+                                         </td>
                                 <td style="border: 1px solid black;">
                                     <span t-field="l.amount_untaxed"  t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
                                 </td>
@@ -275,12 +277,14 @@
                                                  <span t-esc="'%.2f'%(sum((line.store_price * line.quantity) for line in l.invoice_line_ids))" widget='float'/>
 
                                 </td>
-  <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
+<td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
 <span t-field="l.discount_amount" />
                                 </td>
-                               <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
-                                                 <span t-esc="'%.2f'%(sum((line.store_price * line.quantity) for line in l.invoice_line_ids))-l.amount_untaxed" widget='float'/>
-                                </td>
+                               <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type  == 'tender'">
+                                                 <span t-esc="'%.2f'%((sum((line.store_price * line.quantity) for line in l.invoice_line_ids)) - l.amount_untaxed)" widget='float'/>
+                                </td><td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type  == 'store'">
+                                0
+                                         </td>
                                 <td style="border: 1px solid black;">
                                     <span t-field="l.amount_untaxed"  t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
                                 </td>
