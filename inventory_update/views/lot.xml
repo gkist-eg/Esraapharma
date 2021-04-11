@@ -14,6 +14,7 @@
                 <field name="attachment_ids" groups="stock.group_production_lot" widget="many2many_binary" force_save="1"  invisible="not context.get('show_lots_text')" required=" context.get('show_lots_text')" />
                 <field name="balet_ids" groups="stock.group_production_lot" widget="many2many_tags"  invisible="not context.get('show_lots_text')" force_save="1"/>
             </xpath>
+
             <xpath expr="//field[@name='expiration_date']" position="before">
                 <field name="prod_date" force_save="1" attrs="{'column_invisible': ['|', ('parent.use_expiration_date', '!=', True), ('parent.picking_code', '!=', 'incoming')],                     'readonly': [('picking_type_use_existing_lots', '=', True)],                 }"/>
             </xpath>
@@ -32,7 +33,6 @@
                         invisible="not context.get('show_lots_text')" force_save="1" />
             </xpath>
 
-
         </field>
     </record>
     <record id="view_move_form_expiry_production" model="ir.ui.view">
@@ -50,16 +50,15 @@
                     <group>
                         <field name="suplier_lot" />
                         <field name="box_qty" />
-                                                                <field name="balet_ids" widget="many2many_tags"/>
-
+                        <field name="balet_ids" widget="many2many_tags"/>
                     </group>
-                    <group>                        <field name="box_no" />
-
-                                        <field name="attachment_ids" widget="many2many_binary"/>
-
+                    <group>
+                        <field name="box_no" />
+                        <field name="attachment_ids" widget="many2many_binary"/>
                     </group>
                 </group>
-            </page></xpath>
+            </page>
+            </xpath>
 
         </field>
     </record>
