@@ -3,11 +3,11 @@ from odoo import models, fields, api,_
 
 class Quant(models.Model):
     _inherit = 'stock.quant'
-    value = fields.Monetary('Value', compute='_compute_value', groups=False)
+    value = fields.Monetary('Value', compute='_compute_value', groups='account.group_account_manager')
 
     removal_date = fields.Date(related='lot_id.removal_date', store=True, readonly=False)
 
-    @api.model2
+    @api.model
     def action_view_quants(self):
         self = self.with_context(search_default_internal_loc=1)
         if not self.user_has_groups('stock.group_stock_multi_locations'):
