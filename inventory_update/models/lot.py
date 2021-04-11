@@ -3,6 +3,7 @@ from odoo import models, fields, api,_
 
 class Quant(models.Model):
     _inherit = 'stock.quant'
+    value = fields.Monetary('Value', compute='_compute_value', groups='account.group_account_manager')
 
     removal_date = fields.Date(related='lot_id.removal_date', store=True, readonly=False)
 
@@ -19,7 +20,6 @@ class Quant(models.Model):
         if self.user_has_groups('stock.group_stock_manager'):
             self = self.with_context(inventory_mode=False)
         return self._get_quants_action(extend=True)
-
 
 
 class LotNumber(models.Model):
