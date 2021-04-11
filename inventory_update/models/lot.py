@@ -3,7 +3,7 @@ from odoo import models, fields, api,_
 
 class Quant(models.Model):
     _inherit = 'stock.quant'
-    value = fields.Monetary('Value', compute='_compute_value', groups='account.group_account_manager')
+    value = fields.Monetary('Value', compute='_compute_value', groups=False)
 
     removal_date = fields.Date(related='lot_id.removal_date', store=True, readonly=False)
 
