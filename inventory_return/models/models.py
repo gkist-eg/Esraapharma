@@ -45,7 +45,7 @@ class PickingModule(models.Model):
                         'quantity': move.qty_done,
                     })
                     invoice_line_list.append(vals)
-                    invoice = picking_id.sudo().env['account.move'].create({
+                invoice = picking_id.sudo().env['account.move'].create({
                         'move_type': 'out_refund',
                         'invoice_origin': picking_id.name,
                         'invoice_user_id': current_user,
