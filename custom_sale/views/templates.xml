@@ -627,7 +627,7 @@
         <record id="report_wizard_balance" model="ir.actions.report">
         <field name="name">Customer Balance Report</field>
         <field name="model">report.custom_sale.report_balance</field>
-        <field name="report_type">qweb-html</field>
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">custom_sale.wizard_balance_template</field>
     </record>
 
