@@ -3,6 +3,7 @@ from odoo import models, fields, api,_
 
 class Quant(models.Model):
     _inherit = 'stock.quant'
+    value = fields.Monetary('Value', compute='_compute_value', groups='account.group_account_manager')
 
     removal_date = fields.Date(related='lot_id.removal_date', store=True, readonly=False)
 
@@ -39,6 +40,22 @@ class LotNumber(models.Model):
                                    help='This is the date on which the goods with this Serial Number should be removed from the stock. This date will be used in FEFO removal strategy.')
     alert_date = fields.Date(string='Alert Date',
                                  help='Date to determine the expired lots and serial numbers using the filter "Expiration Alerts".')
+    history_count = fields.Integer(compute='_compute_history', string='Receptions', default=0)
+
+    history_ids = fields.One2many('balet.change', 'lot_id', string='Receptions', copy=False)
+
+    def _compute_history(self):
+        for order in self:
+            order.history_count = len(order.history_ids)
+
+    def action_view_history(self):
+        action = self.env.ref('inventory_update.action_balet_change_location')
+        result = action.read()[0]
+        result.pop('id', None)
+        result['context'] = {}
+        pick_ids = sum([order.history_ids.ids for order in self], [])
+        result['domain'] = "[('id','in',[" + ','.join(map(str, pick_ids)) + "])]"
+        return result
 
     @api.depends('expiration_date')
     def _compute_product_expiry_alert(self):
