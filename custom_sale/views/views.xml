@@ -601,8 +601,8 @@
                       <group>
                           <field name="from_date" required="1"/>
                           <field name="to_date" required="1"/>
-                          <field name="partner_ids" attrs="{'invisible':[('state','=','all')],'required': [('state', '=', 'only')],}" widget="many2many_tags"/>
-                          <field name="invoices" widget="many2many_tags" invisible="1"/>
+                          <field name="partner_ids" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}" attrs="{'invisible':[('state','=','all')],'required': [('state', '=', 'only')],}" widget="many2many_tags"/>
+                          <field name="invoices" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}" widget="many2many_tags" invisible="1"/>
                           <field name="invoice_inv" widget="many2many_checkbox"/>
                           <field name="return_inv" widget="many2many_checkbox"/>
 
@@ -638,7 +638,7 @@
                       <group>
                           <field name="from_date" required="1"/>
                           <field name="to_date" required="1"/>
-                          <field name="partner_ids" attrs="{'invisible':[('state','=','all')],'required':[('state', '=', 'only')]}" widget="many2many_tags"/>
+                          <field name="partner_ids" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}" attrs="{'invisible':[('state','=','all')],'required':[('state', '=', 'only')]}" widget="many2many_tags"/>
                          <field name="invoice_inv" widget="many2many_checkbox"/>
                           <field name="return_inv" widget="many2many_checkbox"/>
 
@@ -679,8 +679,8 @@
                       <group>
                           <field name="from_date" required="1"/>
                           <field name="to_date" required="1"/>
-                          <field name="partner_ids" attrs="{'invisible':[('state','!=','only')],'required':[('state', '=', 'only')]}" widget="many2many_tags"/>
-                          <field name="category_type" attrs="{'invisible':[('state','!=','category')],'required':[('state', '=', 'category')]}"/>
+                          <field name="partner_ids" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}" attrs="{'invisible':[('state','!=','only')],'required':[('state', '=', 'only')]}" widget="many2many_tags"/>
+                          <field name="category_type" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}" attrs="{'invisible':[('state','!=','category')],'required':[('state', '=', 'category')]}"/>
 <!--                          <field name="invoices" widget="many2many_tags" invisible="1"/>-->
                       </group>
                       </group>
