@@ -14,7 +14,6 @@
                 <field name="attachment_ids" groups="stock.group_production_lot" widget="many2many_binary" force_save="1"  invisible="not context.get('show_lots_text')" required=" context.get('show_lots_text')" />
                 <field name="balet_ids" groups="stock.group_production_lot" widget="many2many_tags"  invisible="not context.get('show_lots_text')" force_save="1"/>
             </xpath>
-
             <xpath expr="//field[@name='expiration_date']" position="before">
                 <field name="prod_date" force_save="1" attrs="{'column_invisible': ['|', ('parent.use_expiration_date', '!=', True), ('parent.picking_code', '!=', 'incoming')],                     'readonly': [('picking_type_use_existing_lots', '=', True)],                 }"/>
             </xpath>
@@ -33,6 +32,7 @@
                         invisible="not context.get('show_lots_text')" force_save="1" />
             </xpath>
 
+
         </field>
     </record>
     <record id="view_move_form_expiry_production" model="ir.ui.view">
@@ -50,16 +50,130 @@
                     <group>
                         <field name="suplier_lot" />
                         <field name="box_qty" />
-                        <field name="balet_ids" widget="many2many_tags"/>
+                                                                <field name="balet_ids" widget="many2many_tags"/>
+
                     </group>
-                    <group>
-                        <field name="box_no" />
-                        <field name="attachment_ids" widget="many2many_binary"/>
+                    <group>                        <field name="box_no" />
+
+                                        <field name="attachment_ids" widget="many2many_binary"/>
+
                     </group>
                 </group>
-            </page>
-            </xpath>
+            </page></xpath>
 
         </field>
     </record>
+
+
+    <record id="view_wizard_balet_stock" model="ir.ui.view">
+        <field name="name">Balet Change</field>
+        <field name="model">balet.change</field>
+        <field name="arch" type="xml">
+        <form string="">
+                <p class="oe_gray">
+                </p>
+                <group>
+
+                                <field name="lot_id"/>
+                                <field name="balet_ids" widget="many2many_tags"/>
+                                <field name="balet_new_ids" widget="many2many_tags"/>
+
+                </group>
+                <footer>
+                        <button name="confirm"
+                                string="Confirm "
+                                type="object"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel" />
+                </footer>
+        </form>
+        </field>
+        </record>
+         <record id="view_wizard_balet_stock2s" model="ir.ui.view">
+        <field name="name">Balet Change</field>
+        <field name="model">balet.change</field>
+        <field name="arch" type="xml">
+        <form string="" edit="0"  create="0">
+                <p class="oe_gray">
+                </p>
+                <group>
+                                <field name="create_date"/>
+
+                                <field name="lot_id"/>
+                                <field name="create_uid"/>
+                                <field name="balet_new_ids" widget="many2many_tags"/>
+
+                </group>
+
+        </form>
+        </field>
+        </record>
+ <record id="view_wizard_balet_stock_tree" model="ir.ui.view">
+        <field name="name">Inventory at Date</field>
+        <field name="model">balet.change</field>
+        <field name="arch" type="xml">
+        <tree  edit="0" create="0">
+            <field name="create_date"/>
+
+            <field name="lot_id"/>
+            <field name="create_uid"/>
+            <field name="balet_new_ids" widget="many2many_tags"/>
+        </tree>
+        </field>
+        </record>
+
+        <record id="action_wizard_balet_change" model="ir.actions.act_window">
+        <field name="name">Balet Change</field>
+        <field name="res_model">balet.change</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_wizard_balet_stock"/>
+        <field name="target">new</field>
+        </record>
+        <record id="action_balet_change_location" model="ir.actions.act_window">
+            <field name="name">Balet Change</field>
+            <field name="res_model">balet.change</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('inventory_update.view_wizard_balet_stock_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('inventory_update.view_wizard_balet_stock2s')})]"/>
+
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p>
+                <p>
+                    <!-- More details about what a user can do with this object will be OK -->
+                </p>
+            </field>
+        </record>
+          <record model="ir.actions.act_window" id="lot_balet_change">
+            <field name="name">Balet</field>
+           <field name="domain">[('lot_id' ,'in' ,[active_id])]</field>
+          <field name="res_model">balet.change</field>
+           <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('inventory_update.view_wizard_balet_stock_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('inventory_update.view_wizard_balet_stock2s')})]"/>
+        </record>
+        <record id="view_production_lot_form3" model="ir.ui.view">
+            <field name="model">stock.production.lot</field>
+            <field name="inherit_id" ref="stock.view_production_lot_form"/>
+            <field name="arch" type="xml" >
+            <div name="button_box" position="inside">
+                <button class="oe_inline oe_stat_button" type="action" name="%(lot_balet_change)d" string="Balet History" icon="fa-history" attrs="{'invisible': [('history_ids','=',[])]}">
+                            <field name="history_ids" invisible="1"/>
+                </button>
+
+            </div>
+            </field>
+
+        </record>
+        <menuitem
+                id="menu_action_balet_change"
+                action="action_wizard_balet_change"
+                sequence="105"
+                parent="stock.menu_stock_inventory_control"
+                groups= "stock.group_stock_user"
+        />
 </odoo>

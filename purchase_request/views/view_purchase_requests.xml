@@ -132,11 +132,6 @@
             <field name="arch" type="xml">
                 <search string="">
                     <field name="name"/>
-                    <field name="nname"/>
-                    <field name="requested_by_id"/>
-                    <field name="approver_id"/>
-                    <field name="departmnt_id"/>
-                    <field name="request_category_id"/>
                 </search>
             </field>
         </record>
