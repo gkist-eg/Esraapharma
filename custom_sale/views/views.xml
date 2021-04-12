@@ -142,14 +142,8 @@
 <xpath expr="//field[@name='validity_date']"
                      position="attributes">
                  <attribute name="readonly">True</attribute></xpath>
-
-                <xpath expr="//field[@name='date_order']"
-                     position="attributes">
-                 <attribute name="options">{'no_create_edit': True, 'no_create':True, 'no_open':True}</attribute>
-                    <attribute name="readonly">True</attribute>
-                </xpath>
               <xpath expr="//field[@name='partner_id']" position="before">
-                  <field name="cust_categ_id" attrs="{'readonly': [('state', '=', 'sale')]}"/>
+                  <field name="cust_categ_id" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"  attrs="{'readonly': [('state', '=', 'sale')]}"/>
                   <!-- Add your fields or attributes here -->
               </xpath>
               <xpath expr="//field[@name='partner_id']" position="after">
