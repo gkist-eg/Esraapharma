@@ -68,6 +68,7 @@ class PurchaseRequests(models.Model):
     ], default='draft', readonly=False, tracking=True, store=True)
 
     to_be_approve = fields.Boolean("To Be Approved", default=False, compute="get_buttom_to_be_approv")
+    to_reset = fields.Boolean("To Be Approved", default=False, compute="get_buttom_to_be_approv")
     is_approve_leader = fields.Boolean("leader Approved", default=False, compute="hide_buttom_leader_approv")
     is_leader_purchase = fields.Boolean("is_leader_purchase", default=False, compute="get_button_general")
     is_request_approv = fields.Boolean("is_request_approv", default=False, compute="get_button_request_approve")
@@ -112,6 +113,14 @@ class PurchaseRequests(models.Model):
                 rec.to_be_approve = True
             else:
                 rec.to_be_approve = False
+            if rec.env.user.id == rec.requested_by_id.id and rec.state == "to_be_approved":
+                rec.to_reset = True
+            elif rec.env.user.id == rec.approver_id.user_id.id and rec.state == "leader_approved":
+                rec.to_reset = True
+            elif rec.env.user.id == rec.purchase_approver_id.id and rec.state == "maneger_approved":
+                rec.to_reset = True
+            else :
+                rec.to_reset =  False
 
     def hide_buttom_leader_approv(self):
         for rec in self:
@@ -180,6 +189,8 @@ class PurchaseRequests(models.Model):
         for rec in self:
             if rec.state == "request_approved":
                 rec.state = "maneger_approved"
+            elif rec.state == 'maneger_approved':
+                rec.state = "leader_approved"
             elif rec.state == 'leader_approved':
                 rec.state = "to_be_approved"
             elif rec.state == 'to_be_approved':
