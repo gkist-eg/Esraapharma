@@ -154,43 +154,42 @@ class StockProduction(models.Model):
                             asset.name))
         return res
 
+
     @api.model
-    def name_search(self, name='', args=None, operator='ilike', limit=100):
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
         if not args:
             args = []
         if name:
             positive_operators = ['=', 'ilike', '=ilike', 'like', '=like']
-            products = self.env['stock.production.lot']
+            product_ids = []
             if operator in positive_operators:
-                products = self.search([('ref', '=', name)] + args, limit=limit)
-                if not products:
-                    products = self.search([('name', '=', name)] + args, limit=limit)
-            if not products and operator not in expression.NEGATIVE_TERM_OPERATORS:
+                product_ids = list(self._search([('ref', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
+                if not product_ids:
+                    product_ids = list(self._search([('ref', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
+            if not product_ids and operator not in expression.NEGATIVE_TERM_OPERATORS:
                 # Do not merge the 2 next lines into one single search, SQL search performance would be abysmal
                 # on a database with thousands of matching products, due to the huge merge+unique needed for the
                 # OR operator (and given the fact that the 'name' lookup results come from the ir.translation table
                 # Performing a quick memory merge of ids in Python will give much better performance
-                products = self.search(args + [('ref', operator, name)], limit=limit)
-                if not limit or len(products) < limit:
+                product_ids = list(self._search(args + [('ref', operator, name)], limit=limit))
+                if not limit or len(product_ids) < limit:
                     # we may underrun the limit because of dupes in the results, that's fine
-                    limit2 = (limit - len(products)) if limit else False
-                    products += self.search(args + [('name', operator, name), ('id', 'not in', products.ids)],
-                                            limit=limit2)
-            elif not products and operator in expression.NEGATIVE_TERM_OPERATORS:
+                    limit2 = (limit - len(product_ids)) if limit else False
+                    product2_ids = self._search(args + [('name', operator, name), ('id', 'not in', product_ids)], limit=limit2, access_rights_uid=name_get_uid)
+                    product_ids.extend(product2_ids)
+            elif not product_ids and operator in expression.NEGATIVE_TERM_OPERATORS:
                 domain = expression.OR([
                     ['&', ('ref', operator, name), ('name', operator, name)],
                     ['&', ('ref', '=', False), ('name', operator, name)],
                 ])
                 domain = expression.AND([args, domain])
-                products = self.search(domain, limit=limit)
-            if not products and operator in positive_operators:
+                product_ids = list(self._search(domain, limit=limit, access_rights_uid=name_get_uid))
+            if not product_ids and operator in positive_operators:
                 ptrn = re.compile('(\[(.*?)\])')
                 res = ptrn.search(name)
                 if res:
-                    products = self.search([('ref', '=', res.group(2))] + args, limit=limit)
+                    product_ids = list(self._search([('ref', '=', res.group(2))] + args, limit=limit, access_rights_uid=name_get_uid))
             # still no results, partner in context: search on supplier info as last hope to find something
-
         else:
-            products = self.search(args, limit=limit)
-        return products.name_get()
-
+            product_ids = self._search(args, limit=limit, access_rights_uid=name_get_uid)
+        return product_ids

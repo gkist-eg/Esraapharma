@@ -6,6 +6,8 @@ class Quant(models.Model):
     value = fields.Monetary('Value', compute='_compute_value', groups='account.group_account_manager')
 
     removal_date = fields.Date(related='lot_id.removal_date', store=True, readonly=False)
+    suplier_lot = fields.Char(related='lot_id.suplier_lot',string='Suplier Lot', store=True, readonly=False)
+    batch = fields.Char(related='lot_id.ref', store=True, readonly=False)
 
     @api.model
     def action_view_quants(self):
@@ -30,7 +32,7 @@ class LotNumber(models.Model):
     prod_date = fields.Date(string='Production Date', help='This is the date on which the product made.', store=True)
     attachment_ids = fields.Many2many('ir.attachment', string='Attachments', )
     balet_ids = fields.Many2many('balet.location', string="Ballets")
-    suplier_lot = fields.Char(string='supplier lot', store=True)
+    suplier_lot = fields.Char(string='Supplier Lot', store=True)
 
     expiration_date = fields.Date(string='Expiration Date',
                                       help='This is the date on which the goods with this Serial Number may become dangerous and must not be consumed.')
