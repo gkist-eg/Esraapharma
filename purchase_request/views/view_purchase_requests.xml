@@ -48,6 +48,8 @@
                                 type="object" attrs="{'invisible': [('is_approve_leader', '=', False)]}"/>
                         <button name="manegr_approved" string="Maneger Approved" class="oe_highlight"
                                 type="object" attrs="{'invisible': [('is_leader_purchase', '=', False)]}"/>
+                        <button name="reset_action" string="Reset" class="oe_highlight"
+                                type="object" />
                         <button name="requst_approved" string="Done" class="oe_highlight"
                                 type="object" attrs="{'invisible': [('is_request_approv', '=', False)]}"/>
                         <button name="tap_for_quotation" string="New Quotation" class="oe_highlight"
@@ -132,6 +134,11 @@
             <field name="arch" type="xml">
                 <search string="">
                     <field name="name"/>
+                    <field name="nname"/>
+                    <field name="requested_by_id"/>
+                    <field name="approver_id"/>
+                    <field name="departmnt_id"/>
+                    <field name="request_category_id"/>
                 </search>
             </field>
         </record>
