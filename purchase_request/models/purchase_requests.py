@@ -21,6 +21,11 @@ class PurchaseRequests(models.Model):
         departmnt = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1).department_id
         return departmnt.id
 
+    # @api.model
+    # def _get_default_departmnt_user_id(self):
+    #     departmnt=self.env['hr.employee'].search([('id','=',self.env.ref('purchase_request.id_department_purchase').id)],limit=1)
+    #     return departmnt.id
+
     @api.model
     def _get_default_approver_id(self):
         approver = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1).parent_id
@@ -63,6 +68,7 @@ class PurchaseRequests(models.Model):
     ], default='draft', readonly=False, tracking=True, store=True)
 
     to_be_approve = fields.Boolean("To Be Approved", default=False, compute="get_buttom_to_be_approv")
+    to_rest = fields.Boolean("To Be Approved", default=False, compute="get_buttom_to_be_approv")
     is_approve_leader = fields.Boolean("leader Approved", default=False, compute="hide_buttom_leader_approv")
     is_leader_purchase = fields.Boolean("is_leader_purchase", default=False, compute="get_button_general")
     is_request_approv = fields.Boolean("is_request_approv", default=False, compute="get_button_request_approve")
@@ -74,8 +80,6 @@ class PurchaseRequests(models.Model):
                                  tracking=True)
     is_readonly = fields.Boolean(string="", compute="get_is_readonly")
     user_id = fields.Many2one(comodel_name="res.users", string="", required=False)
-
-    # ,compute="get_is_readonly" )
 
     @api.depends('state')
     def get_is_readonly(self):
@@ -172,6 +176,15 @@ class PurchaseRequests(models.Model):
     def requst_approved(self):
         for rec in self:
             rec.state = "request_approved"
+
+    def reset_action(self):
+        for rec in self:
+            if rec.state == "request_approved":
+                rec.state = "maneger_approved"
+            elif rec.state == 'leader_approved':
+                rec.state = "to_be_approved"
+            elif rec.state == 'to_be_approved':
+                rec.state = "draft"
 
     def tap_for_quotation(self):
         order_linee = []
