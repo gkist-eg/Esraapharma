@@ -49,7 +49,7 @@
                         <button name="manegr_approved" string="Maneger Approved" class="oe_highlight"
                                 type="object" attrs="{'invisible': [('is_leader_purchase', '=', False)]}"/>
                         <button name="reset_action" string="Reset" class="oe_highlight"
-                                type="object" />
+                                type="object" attrs="{'invisible': [('to_reset', '=', False)]}"/>
                         <button name="requst_approved" string="Done" class="oe_highlight"
                                 type="object" attrs="{'invisible': [('is_request_approv', '=', False)]}"/>
                         <button name="tap_for_quotation" string="New Quotation" class="oe_highlight"
@@ -80,6 +80,7 @@
                                 <field name="is_request_approv" invisible="1" />
                                 <field name="is_tap_qoutation" invisible="1" />
                                 <field name="is_tap_stte" invisible="1" />
+                                <field name="to_reset" invisible="1" />
                             </group>
                             <group>
                                 <field name="start_date"  attrs="{'readonly':[('start_date','!=',False)]}"/>
