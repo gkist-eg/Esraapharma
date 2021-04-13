@@ -168,7 +168,7 @@ class ORder(models.Model):
     dis_discount_sale = fields.Float('Dist Dis%',related='order_id.dis_discount_sale' , store=True)
 
     sale_type = fields.Selection(string="Product Type", selection=[('sale', 'Sale'),('bouns', 'Bouns')],
-                                 required=False, )
+                                 required=False,default='sale' )
     dist_discount = fields.Float(string="", related="order_id.partner_id.dist_discount", store=True)
     cash_discount = fields.Float(string="", related="order_id.partner_id.cash_discount", store=True)
     real_price = fields.Float(string="Real Priice", related="product_id.list_price", store=True)
