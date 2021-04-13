@@ -68,7 +68,6 @@ class PurchaseRequests(models.Model):
     ], default='draft', readonly=False, tracking=True, store=True)
 
     to_be_approve = fields.Boolean("To Be Approved", default=False, compute="get_buttom_to_be_approv")
-    to_rest = fields.Boolean("To Be Approved", default=False, compute="get_buttom_to_be_approv")
     is_approve_leader = fields.Boolean("leader Approved", default=False, compute="hide_buttom_leader_approv")
     is_leader_purchase = fields.Boolean("is_leader_purchase", default=False, compute="get_button_general")
     is_request_approv = fields.Boolean("is_request_approv", default=False, compute="get_button_request_approve")
