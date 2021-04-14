@@ -11,7 +11,10 @@
                />
             <t t-set="has_batch_date" t-value="False"/>
             <t t-set="has_batch_date"
-               t-value="o.move_line_ids.filtered(lambda ml: ml.lot_id.ref or ml.suplier_lot)"
+               t-value="o.move_line_ids.filtered(lambda ml: ml.lot_id.ref or ml.suplier_lot or ml.lot_id.suplier_lot)"
+               />
+            <t t-set="public_price"
+               t-value="o.picking_type_id.code=='internal' and o.move_line_ids.filtered(lambda ml: ml.product_id.pubprice)"
                />
 
             <t name="box_date" t-if="has_box_date">
@@ -30,6 +33,9 @@
             <t name="batch_date" t-if="has_batch_date">
                 <th>Batch NO</th>
 
+            </t> <t name="public" t-if="public_price">
+                <th>Public Price</th>
+
             </t>
         </xpath>
     </template>
@@ -43,14 +49,22 @@
                 <td><span t-field="move_line.box_qty" /></td>
             </t>
              <t t-if="has_expiry_date">
-                <td><span t-if="move_line.lot_id.prod_date" t-field="move_line.lot_id.prod_date" t-options='{"widget": "date"}'/></td>
+                <td><span t-if="move_line.lot_id.prod_date and not move_line.prod_date " t-field="move_line.lot_id.prod_date" t-options='{"widget": "date"}'/>
+                    <span t-if="move_line.prod_date" t-field="move_line.prod_date" t-options='{"widget": "date"}'/></td>
             </t>
             <t t-if="has_expiry_date">
-                <td><span t-if="move_line.lot_id.expiration_date" t-field="move_line.lot_id.expiration_date" t-options='{"widget": "date"}'/></td>
+                <td><span t-if="move_line.lot_id.expiration_date  and not move_line.expiration_date" t-field="move_line.lot_id.expiration_date" t-options='{"widget": "date"}'/>
+                    <span t-if="move_line.expiration_date" t-field="move_line.expiration_date" t-options='{"widget": "date"}'/></td>
 
             </t>
             <t t-if="has_batch_date">
-                <td><span t-if="move_line.suplier_lot" t-field="move_line.suplier_lot"/><span t-if="move_line.lot_id.ref" t-field="move_line.lot_id.ref"/></td>
+                <td><span t-if="move_line.lot_id.suplier_lot and not move_line.suplier_lot" t-field="move_line.lot_id.suplier_lot"/>
+                    <span t-if="move_line.suplier_lot" t-field="move_line.suplier_lot"/>
+                    <span t-if="move_line.lot_id.ref" t-field="move_line.lot_id.ref"/></td>
+            </t>
+            <t t-if="public_price">
+                <td><span t-field="move_line.product_id.pubprice"/>
+                   </td>
             </t>
 
         </xpath>
@@ -63,13 +77,33 @@
                             <strong>From:</strong>
                             <p t-field="o.location_id.name"/>
                         </div>
+                <div t-if="o.location.usage=='internal' and o.location_id.usage !='internal'" class="col-auto" name="from_location">
+                            <strong>From:</strong>
+                            <p t-field="o.location.name"/>
+                        </div>
                 <div t-if="o.location_dest_id.usage=='internal'" class="col-auto" name="to_location">
                             <strong>To:</strong>
                             <p t-field="o.location_dest_id.name"/>
                         </div>
 
+                <div t-if="o.location.usage=='internal' and o.location_dest_id.usage !='internal'" class="col-auto" name="to_location">
+                            <strong>To:</strong>
+                            <p t-field="o.location.name"/>
+                        </div>
+                <div t-if="o.state !='done'" class="col-auto" name="state">
+                            <strong>State:</strong>
+                            <p t-field="o.state"/>
+                        </div>
 
             </xpath>
+        <xpath expr="//table[@name='stock_move_line_table']" position="after">
+<div t-if="o.move_line_ids" class="mt32 ml64 mr4" name="total">
+                        <div class="offset-8">
+                            <strong>Total : <span  t-esc="sum(line.qty_done for line in o.move_line_ids)"/></strong>
+
+                        </div>
+
+                    </div>        </xpath>
 </template>
 
 </odoo>
