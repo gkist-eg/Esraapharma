@@ -592,8 +592,12 @@
                                      <span t-field="l.tax_name"/>
 
                                 </td>
-                                       <td style="border: 1px solid black;">
+                                       <td style="border: 1px solid black;" t-if="l.quantity != 0">
                                      <span t-esc="'%.2f'% (l.move_id.amount_tax/l.quantity)"  widget='float'/>
+
+                                </td>
+                                     <td style="border: 1px solid black;" t-if="l.quantity == 0">
+                                     0
 
                                 </td>
                                       <td style="border: 1px solid black;">
