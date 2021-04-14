@@ -60,6 +60,7 @@
     <div class="col-xs-5 col-xs-offset-4">
                                     <span t-if="o.state == 'category'">Category: </span><span t-field="o.category_type.category_type"/>
                                     <span t-if="o.state == 'only'">Partner: </span><span t-field="o.partner_ids.name"/><br/><br/>
+                                    <span t-if="o.state == 'all'">All Partner </span>
                     </div>
                     <div class="col-xs-5 col-xs-offset-4">
                         <strong  t-if="o.invoice_inv == True">Invoices</strong>
