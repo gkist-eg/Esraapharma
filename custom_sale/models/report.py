@@ -8,11 +8,12 @@ class InvoiceReport(models.TransientModel):
     from_date = fields.Date(string="", required=False, )
     to_date = fields.Date(string="", required=False, )
     invoices = fields.Many2many(comodel_name="account.move")
-    state = fields.Selection(string="", selection=[('all', 'All Partner'), ('only', 'Only Partner'), ],
+    state = fields.Selection(string="", selection=[('all', 'All Partner'), ('only', 'Only Partner'),('category','Category') ],
                              required=False, default='all')
     partner_ids = fields.Many2many(comodel_name="res.partner", string='Partner')
     return_inv=fields.Boolean('Returns')
     invoice_inv=fields.Boolean('Invoices',default=True)
+    category_type = fields.Many2one(comodel_name="category.customer", string="", )
 
     @api.onchange('state')
     def _onchange_FIELD_NAME(self):
@@ -26,6 +27,11 @@ class InvoiceReport(models.TransientModel):
             if rec.partner_ids:
                 for partner in rec.partner_ids:
                     partners.append(partner.id)
+            elif rec.category_type:
+                customer = self.env['res.partner'].search(
+                    [('categ_id.category_type', '=', rec.category_type.category_type)])
+                for partner in customer:
+                    partners.append(partner.id)
             else:
                 customer = self.env['res.partner'].search([])
                 for partner in customer:
@@ -36,15 +42,25 @@ class InvoiceReport(models.TransientModel):
         for rec in self:
             rec.invoices = False
             partners = rec.get_partner()
-
-            invoices = self.env['account.move'].search([
-                ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                    'move_type', 'in', ['out_invoice','out_refund']), ('partner_id', 'in', partners)])
-            invoice = []
-            for inv in invoices:
-                invoice.append(inv.id)
-            # rec.write({'invoices':[(6,0,invoice)]})
-            rec.invoices = [(6, 0, invoice)]
+            for partner in partners:
+              if self.state == 'category':
+                  invoices = self.env['account.move'].search([
+                      ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
+                          'move_type', 'in', ['out_invoice', 'out_refund']),('cust_categ_id.category_type','=',self.category_type.category_type), ('partner_id', 'in', partners)])
+                  invoice = []
+                  for inv in invoices:
+                      invoice.append(inv.id)
+                  # rec.write({'invoices':[(6,0,invoice)]})
+                  rec.invoices = [(6, 0, invoice)]
+              else:
+               invoices = self.env['account.move'].search([
+                   ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
+                       'move_type', 'in', ['out_invoice', 'out_refund']), ('partner_id', 'in', partners)])
+               invoice = []
+               for inv in invoices:
+                   invoice.append(inv.id)
+               # rec.write({'invoices':[(6,0,invoice)]})
+               rec.invoices = [(6, 0, invoice)]
             print(rec.invoices)
             return self.env.ref('custom_sale.report_wizard_invoice').report_action(self)
 

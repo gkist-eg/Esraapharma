@@ -67,10 +67,6 @@ class Sale(models.Model):
     _inherit = 'sale.order'
     cash_discount_sale=fields.Float('Cash Discount',store=True)
     dis_discount_sale=fields.Float('Distributor Discount',store=True)
-    date_order = fields.Datetime(string='Order Date', required=True, readonly=False, index=True,
-                                 states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, copy=False,
-                                 default=False,
-                                 help="Creation date of draft/sent orders,\nConfirmation date of confirmed orders.")
 
     @api.onchange('partner_id')
     def _onchange_ty(self):
