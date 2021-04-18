@@ -31,6 +31,7 @@
         'views/refund.xml',
         'views/templates.xml',
         'views/air_delivery_order.xml',
+        'views/sale_report.xml',
         'demo/demo.xml',
     ],
     # only loaded in demonstration mode

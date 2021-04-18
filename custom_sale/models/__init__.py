@@ -5,3 +5,4 @@ from .import report
 from .import edit
 from .import refund
 from .import public_price
+from .import sale_report
