@@ -16,6 +16,19 @@
                             class="oe_highlight"
                             groups="base.group_user"
                             attrs="{'invisible': [('can_leader_approved', '=', False)]}"/>
+                    <button name="confirm_qty"
+                            string="Confirm Qty"
+                            type="object"
+                            class="oe_highlight"
+                            states="leader_approved"
+                            groups="item_transfer.group_confirm_qty"/>
+                    <button name="delivery_date"
+                            string="Delivery Dated"
+                            type="object"
+                            class="oe_highlight"
+                                                        states="qty_approved"
+
+                            groups="item_transfer.group_delivery_date"/>
                     <button name="button_manager_approved"
                             string="Source Approve"
                             type="object"
@@ -38,15 +51,21 @@
                     />
 
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,to_approve,leader_approved,source_approved,source_lapproved,done"
+                           statusbar_visible="draft,to_approve,leader_approved,qty_approved,date_approved,,source_approved,source_lapproved,done"
                            statusbar_colors='{"source_approved":"blue"}'/>
 
-
+<button class="oe_stat_button" name="button_import_transfer"
+                                    string="Import" type="object"
+                                   icon="fa-bars"
+         attrs="{'invisible': [('state', '!=', 'draft')]}"
+        groups="item_transfer.group_confirm_qty"
+>
+                                </button>
                 </header>
                 <sheet>
 
                       <div class="oe_button_box" name="button_box">
-                        <button type="object" name="action_view_picking" class="oe_stat_button" icon="fa-truck" attrs="{'invisible':[('state', 'in', ('draft','to_approve','leader_approved')),('picking_ids','=',[])]}">
+                        <button type="object" name="action_view_picking" class="oe_stat_button" icon="fa-truck" attrs="{'invisible':[('state', 'in', ('draft','to_approve','leader_approved','qty_approved','date_approved')),('picking_ids','=',[])]}">
                             <field name="picking_count" widget="statinfo" string="Shipment" help="Incoming Shipments"/>
                             <field name="picking_ids" invisible="1"/>
                         </button>
@@ -72,6 +91,7 @@
                              <field name="can_source_approved" invisible="1"/>
                              <field name="can_reject" invisible="1"/>
                              <field name="date" attrs="{'readonly' :[('date' , '!=' ,False)]}"/>
+                             <field name="delivery_date_x" attrs="{'required':[('state','=','qty_approved')],'readonly': [('state','in', ('draft','to_approve','leader_approved','source_approved','source_lapproved','date_approved','done'))]}"/>
                              <field name="warehouse_id" invisible="1" />
                              <field name="location_id" attrs="{'required' :1 , 'readonly' :[('state' , 'not in' ,('draft','to_approve'))]}" />
                         </group>
@@ -79,10 +99,14 @@
                     </group>
                     <notebook>
                         <page name='lines' string="Products">
-                            <field name="line_ids"  attrs="{'readonly': [('state','not in',('draft' ,'to_approve'))]}" >
-                                <tree editable="bottom">
-                                    <field name="product_id"  options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
-                                    <field name="product_qty"/>
+                            <field name="line_ids"   >
+                                <tree attrs="{'readonly': [('parent.state','not in',('draft' ,'to_approve'))]}"   editable="bottom">
+                                    <field name="product_code" groups="item_transfer.group_confirm_qty" attrs="{'readonly': [('parent.state','not in',('draft' ,'to_approve'))]}" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
+                                    <field name="product_id"  attrs="{'readonly': [('parent.state','not in',('draft' ,'to_approve'))]}"  options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
+                                    <field name="product_id2" invisible="1" groups="item_transfer.group_confirm_qty" attrs="{'readonly': [('parent.state','not in',('draft' ,'to_approve'))]}"  options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
+                                    <field name="store_qty" groups="item_transfer.group_confirm_qty" readonly="1" />
+                                    <field name="product_qty" attrs="{'readonly': [('parent.state','not in',('draft' ,'to_approve'))]}" />
+                                    <field name="qty_confirm" attrs="{'readonly': [('parent.state','in', ('draft','to_approve','source_approved','source_lapproved','date_approved','done'))]}"/>
                                     <field name="qty_in_progress" attrs="{'column_invisible': [('parent.state','not in', ('done','source_approved'))]}"/>
                                     <field name="qty_done" attrs="{'column_invisible': [('parent.state','not in', ('done','source_approved'))]}"/>
                                     <field name="qty_cancelled" attrs="{'column_invisible': [('parent.state','not in', ('done','source_approved'))]}"/>
@@ -113,6 +137,10 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                  <field name="message_follower_ids" widget="mail_followers"/>
+                  <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>
@@ -128,6 +156,25 @@
                     <field name="requested_by"/>
                     <field name="warehouse_id"/>
                     <field name="state"/>
+                </tree>
+          </field>
+        </record>
+    <record model="ir.ui.view" id="view_item_transfer_line_tree">
+            <field name="name">item.transfer.line.tree</field>
+            <field name="model">item.transfer.line</field>
+            <field name="arch" type="xml">
+                <tree string="Item transfer Line">
+                    <field name="product_code"  options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
+                                    <field name="product_id"  options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
+                                    <field name="product_id2" invisible="1" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
+                                    <field name="product_qty"/>
+                                    <field name="qty_confirm"/>
+                                    <field name="qty_in_progress" attrs="{'column_invisible': [('parent.state','not in', ('done','source_approved'))]}"/>
+                                    <field name="qty_done" attrs="{'column_invisible': [('parent.state','not in', ('done','source_approved'))]}"/>
+                                    <field name="qty_cancelled" attrs="{'column_invisible': [('parent.state','not in', ('done','source_approved'))]}"/>
+                                    <field name="product_uom_id" />
+                                    <field name="cancelled" invisible="1"/>
+                                    <field name="is_editable" invisible="1"/>
                 </tree>
           </field>
         </record>
@@ -194,6 +241,7 @@
                                             <group>
                                                 <field name="is_editable" invisible="1"/>
                                                 <field name="product_id"  options="{'no_create_edit':True}"/>
+                                                <field name="product_id2"  invisible="1" options="{'no_create_edit':True}"/>
 
                                          </group>
                                         </group>
@@ -205,6 +253,7 @@
                                               <div>
 
                                                    <field name="product_qty" />
+                                                   <field name="qty_confirm" />
                                                    <field name="product_uom_id" readonly="1"/>
                                               </div>
 

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "GKIST Items Transfer",
+    'name': "Items Transfer",
 
     'summary': """
         Short (1 phrase/line) summary of the module's purpose, used as
         subtitle on modules listing or apps.openerp.com""",
 
     'description': """
+        Long description of module's purpose
     """,
 
     'author': "My Company",
@@ -19,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','mail','stock'],
+    'depends': ['base','mail','stock','hr'],
 
     # always loaded
     'data': [
@@ -28,8 +29,8 @@
         'views/views.xml',
         'views/templates.xml',
         'views/location.xml',
-        # 'views/product_map.xml',
-        # 'views/sale_in_month.xml',
+        'views/product_map.xml',
+        'views/sale_in_month.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
