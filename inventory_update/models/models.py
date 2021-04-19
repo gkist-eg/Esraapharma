@@ -189,7 +189,8 @@ class StockPicking(models.Model):
                 picking.show_validate = False
 
     def _check_expired_lots(self):
-        expired_pickings = self.move_line_ids.filtered(lambda ml: ml.lot_id.product_expiry_alert and (not ml.location_id.scrap_location or not ml.location_dest_id.scrap_location) ).picking_id
+        super(StockPicking, self)._check_expired_lots()
+        expired_pickings = self.move_line_ids.filtered(lambda ml: ml.lot_id.product_expiry_alert and (not ml.location_id.scrap_location and not ml.location_dest_id.scrap_location )).picking_id
         return expired_pickings
 
     @api.depends('state')
