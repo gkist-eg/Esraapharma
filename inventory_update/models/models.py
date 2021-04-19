@@ -19,7 +19,7 @@ from odoo.tools.misc import format_date, OrderedSet
 
 
 class ProductTemplate(models.Model):
-    _inherit = 'stock.move'
+    _inherit = 'product.template'
     pubprice = fields.Float("Customer Price", store=True, index=True)
 
 class StockMove(models.Model):
@@ -187,6 +187,11 @@ class StockPicking(models.Model):
                 picking.show_validate = True
             else:
                 picking.show_validate = False
+
+    def _check_expired_lots(self):
+        super(StockPicking, self)._check_expired_lots()
+        expired_pickings = self.move_line_ids.filtered(lambda ml: ml.lot_id.product_expiry_alert and (not ml.location_id.scrap_location and not ml.location_dest_id.scrap_location )).picking_id
+        return expired_pickings
 
     @api.depends('state')
     def compute_show_confirm(self):

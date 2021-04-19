@@ -24,9 +24,10 @@ class Picking(models.Model):
     location = fields.Many2one('stock.location', string='Location', store=True, copy=True, readonly=True, index=True)
 
     def _action_done(self):
+      if self.origin:
         res = super()._action_done()
         for picking2 in self:
-            for item in self.env['item.transfer'].search([('name', '=', picking2.origin)]):
+            for item in self.env['item.transfer'].search([('name', '=', (picking2.origin)[:7])]):
                 item.line_ids._compute_qty()
                 if item.state == 'source_approved':
                     item.state = 'source_lapproved'
