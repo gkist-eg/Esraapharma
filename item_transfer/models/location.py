@@ -25,9 +25,10 @@ class Picking(models.Model):
 
     def _action_done(self):
         res = super()._action_done()
-        for picking2 in self:
-            for item in self.env['item.transfer'].search([('name', '=', picking2.origin)]):
-                item.line_ids._compute_qty()
-                if item.state == 'source_approved':
-                    item.state = 'source_lapproved'
+        if self.origin:
+            for picking2 in self:
+                for item in self.env['item.transfer'].search([('name', '=', (picking2.origin)[:7])]):
+                    item.line_ids._compute_qty()
+                    if item.state == 'source_approved':
+                        item.state = 'source_lapproved'
         return res
