@@ -171,10 +171,15 @@ class PurchaseRequests(models.Model):
 
     def purchase_approval(self):
         for rec in self:
+            self.env['mail.message'].send("Purchase Request", 'Purchase Request need to be approved', self._name, self.id,
+                                          self.name, self.approver_id.user_id)
             rec.state = "to_be_approved"
 
     def leadr_approved(self):
         for rec in self:
+            self.env['mail.message'].send("Purchase Request", 'Purchase Request need to be approved', self._name,
+                                          self.id,
+                                          self.name, self.purchase_approver_id)
             rec.state = "leader_approved"
 
     def manegr_approved(self):
@@ -183,6 +188,11 @@ class PurchaseRequests(models.Model):
 
     def requst_approved(self):
         for rec in self:
+            recive = self.env['res.users'].search(
+                [("groups_id", "=", self.env.ref('purchase.group_purchase_user').id)])
+
+            self.env['mail.message'].send("Purchase Request", 'New Purchase Request been approved', self._name, self.id,
+                                          self.name, recive)
             rec.state = "request_approved"
 
     def reset_action(self):
