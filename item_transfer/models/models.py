@@ -285,7 +285,7 @@ class ItemTransfer(models.Model):
 
         return self.write({'state': 'leader_approved'})
 
-    @api.constrains('qty_confirm')
+    @api.constrains('line_ids.qty_confirm')
     def qty_confirm_x(self):
         for record in self:
             for line in record.line_ids:
@@ -679,3 +679,12 @@ class ItemTransferLine(models.Model):
 
     store_qty = fields.Float('Store Quantity', tracking=True,
                              digits='Product Unit of Measure', compute='compute_onchange_product_store')
+
+    @api.onchange('qty_confirm')
+    def _onchangeqtycon(self):
+        if self.qty_confirm:
+
+            if self.qty_confirm > self.product_qty:
+                self.qty_confirm = 0
+                return {
+                    'warning': {'title': "Warning", 'message': "Qty Confirm must not more than Quantity"}}
