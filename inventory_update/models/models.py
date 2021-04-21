@@ -24,7 +24,8 @@ class ProductTemplate(models.Model):
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
-
+    restrict_lot_id = fields.Many2one(
+        'stock.production.lot', string='Restricted Lot Numbers', readonly=False)
     @api.depends('has_tracking', 'picking_type_id.use_create_lots', 'picking_type_id.use_existing_lots', 'state')
     def _compute_display_assign_serial(self):
         for move in self:

@@ -1,9 +1,6 @@
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_round
-
-
 
 
 class ReturnPickingLine(models.TransientModel):
@@ -23,7 +20,6 @@ class ReturnPickingLine(models.TransientModel):
 class ReturnPicking(models.TransientModel):
     _inherit = 'stock.return.picking'
     _description = 'Return Picking'
-
 
     @api.onchange('picking_id')
     def _onchange_picking_id(self):
@@ -49,7 +45,8 @@ class ReturnPicking(models.TransientModel):
                     product_return_moves_data.update(return_lines)
                     product_return_moves.append((0, 0, product_return_moves_data))
         if self.picking_id and len(product_return_moves) < 1:
-            raise UserError(_("No products to return (only lines in Done state and not fully returned yet can be returned)."))
+            raise UserError(
+                _("No products to return (only lines in Done state and not fully returned yet can be returned)."))
         if self.picking_id:
             self.product_return_moves = product_return_moves
             self.move_dest_exists = move_dest_exists
@@ -67,7 +64,8 @@ class ReturnPicking(models.TransientModel):
             if move.origin_returned_move_id and move.origin_returned_move_id != move_line.move_id:
                 continue
             if move.state in ('partially_available', 'assigned') and move.location_dest_id.usage != 'production':
-                quantity -= sum(move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('product_qty'))
+                quantity -= sum(
+                    move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('product_qty'))
             elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage == 'production':
                 quantity -= sum(move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
             elif move.state in ('done'):
@@ -94,6 +92,7 @@ class ReturnPicking(models.TransientModel):
             'state': 'draft',
             'date': fields.Datetime.now(),
             'location_id': return_line.move_id.location_dest_id.id,
+            'restrict_lot_id': return_line.lot_id.id,
             'location_dest_id': self.location_id.id or return_line.move_id.location_id.id,
             'picking_type_id': new_picking.picking_type_id.id,
             'warehouse_id': self.picking_id.picking_type_id.warehouse_id.id,
@@ -117,65 +116,61 @@ class ReturnPicking(models.TransientModel):
             'location_id': self.picking_id.location_dest_id.id,
             'location_dest_id': self.location_id.id})
         new_picking.message_post_with_view('mail.message_origin_link',
-            values={'self': new_picking, 'origin': self.picking_id},
-            subtype_id=self.env.ref('mail.mt_note').id)
+                                           values={'self': new_picking, 'origin': self.picking_id},
+                                           subtype_id=self.env.ref('mail.mt_note').id)
         returned_lines = 0
-        moves=[]
+        moves = []
         for return_line in self.product_return_moves:
             if not return_line.move_id:
                 raise UserError(_("You have manually created product lines, please delete them to proceed."))
             # TODO sle: float_is_zero?
             if return_line.quantity > 0.0:
-                if return_line.move_id not in moves:
-                    moves.append(return_line.move_id)
-                    returned_lines += 1
-                    vals = self._prepare_move_default_values(return_line, new_picking)
-                    r = return_line.move_id.copy(vals)
-                    vals = {}
+                moves.append(return_line.move_id)
+                returned_lines += 1
+                vals = self._prepare_move_default_values(return_line, new_picking)
+                r = return_line.move_id.copy(vals)
+                vals = {}
 
-                    # +--------------------------------------------------------------------------------------------------------+
-                    # |       picking_pick     <--Move Orig--    picking_pack     --Move Dest-->   picking_ship
-                    # |              | returned_move_ids              ↑                                  | returned_move_ids
-                    # |              ↓                                | return_line.move_id              ↓
-                    # |       return pick(Add as dest)          return toLink                    return ship(Add as orig)
-                    # +--------------------------------------------------------------------------------------------------------+
-                    move_orig_to_link = return_line.move_id.move_dest_ids.mapped('returned_move_ids')
-                    # link to original move
-                    move_orig_to_link |= return_line.move_id
-                    # link to siblings of original move, if any
-                    move_orig_to_link |= return_line.move_id \
-                        .mapped('move_dest_ids').filtered(lambda m: m.state not in ('cancel')) \
-                        .mapped('move_orig_ids').filtered(lambda m: m.state not in ('cancel'))
-                    move_dest_to_link = return_line.move_id.move_orig_ids.mapped('returned_move_ids')
-                    # link to children of originally returned moves, if any. Note that the use of
-                    # 'return_line.move_id.move_orig_ids.returned_move_ids.move_orig_ids.move_dest_ids'
-                    # instead of 'return_line.move_id.move_orig_ids.move_dest_ids' prevents linking a
-                    # return directly to the destination moves of its parents. However, the return of
-                    # the return will be linked to the destination moves.
-                    move_dest_to_link |= return_line.move_id.move_orig_ids.mapped('returned_move_ids') \
-                        .mapped('move_orig_ids').filtered(lambda m: m.state not in ('cancel')) \
-                        .mapped('move_dest_ids').filtered(lambda m: m.state not in ('cancel'))
-                    vals['move_orig_ids'] = [(4, m.id) for m in move_orig_to_link]
-                    vals['move_dest_ids'] = [(4, m.id) for m in move_dest_to_link]
-                    r.write(vals)
-                else:
-                    r = new_picking.move_lines.filtered(
-                        lambda r: return_line.move_id == r.origin_returned_move_id)
-                    r.product_uom_qty += return_line.quantity
-                new_picking.move_line_ids.create(
-                    {
-                        'lot_id': return_line.lot_id.id,
-                        'product_id': return_line.product_id.id,
-                        'qty_done': return_line.quantity,
-                        'product_uom_qty': return_line.quantity,
-                        'move_id': r.id,
-                        'picking_id': new_picking.id,
-                        'product_uom_id': return_line.uom_id.id,
-                        'location_id': r.location_id.id,
-                        'location_dest_id': r.location_dest_id.id,
+                # +--------------------------------------------------------------------------------------------------------+
+                # |       picking_pick     <--Move Orig--    picking_pack     --Move Dest-->   picking_ship
+                # |              | returned_move_ids              ↑                                  | returned_move_ids
+                # |              ↓                                | return_line.move_id              ↓
+                # |       return pick(Add as dest)          return toLink                    return ship(Add as orig)
+                # +--------------------------------------------------------------------------------------------------------+
+                move_orig_to_link = return_line.move_id.move_dest_ids.mapped('returned_move_ids')
+                # link to original move
+                move_orig_to_link |= return_line.move_id
+                # link to siblings of original move, if any
+                move_orig_to_link |= return_line.move_id \
+                    .mapped('move_dest_ids').filtered(lambda m: m.state not in ('cancel')) \
+                    .mapped('move_orig_ids').filtered(lambda m: m.state not in ('cancel'))
+                # move_dest_to_link = return_line.move_id.move_orig_ids.mapped('returned_move_ids')
+                # # link to children of originally returned moves, if any. Note that the use of
+                # # 'return_line.move_id.move_orig_ids.returned_move_ids.move_orig_ids.move_dest_ids'
+                # # instead of 'return_line.move_id.move_orig_ids.move_dest_ids' prevents linking a
+                # # return directly to the destination moves of its parents. However, the return of
+                # # the return will be linked to the destination moves.
+                # move_dest_to_link |= return_line.move_id.move_orig_ids.mapped('returned_move_ids') \
+                #     .mapped('move_orig_ids').filtered(lambda m: m.state not in ('cancel')) \
+                #     .mapped('move_dest_ids').filtered(lambda m: m.state not in ('cancel'))
+                # vals['move_orig_ids'] = [(4, m.id) for m in move_orig_to_link]
+                # vals['move_dest_ids'] = [(4, m.id) for m in move_dest_to_link]
+                r.write(vals)
+                if new_picking.location_id.usage not in ('internal', 'transit'):
+                    new_picking.move_line_ids.create(
+                        {
+                            'lot_id': return_line.lot_id.id,
+                            'product_id': return_line.product_id.id,
+                            'qty_done': return_line.quantity,
+                            'product_uom_qty': return_line.quantity,
+                            'move_id': r.id,
+                            'picking_id': new_picking.id,
+                            'product_uom_id': return_line.uom_id.id,
+                            'location_id': r.location_id.id,
+                            'location_dest_id': r.location_dest_id.id,
 
-                    }
-                )
+                        }
+                    )
 
         if not returned_lines:
             raise UserError(_("Please specify at least one non-zero quantity."))
@@ -194,4 +189,3 @@ class ReturnPicking(models.TransientModel):
         #         move.unlink()
 
         return new_picking.id, picking_type_id
-
