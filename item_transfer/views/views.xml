@@ -94,6 +94,7 @@
                              <field name="delivery_date_x" attrs="{'required':[('state','=','qty_approved')],'readonly': [('state','in', ('draft','to_approve','leader_approved','source_approved','source_lapproved','date_approved','done'))]}"/>
                              <field name="warehouse_id" invisible="1" />
                              <field name="location_id" attrs="{'required' :1 , 'readonly' :[('state' , 'not in' ,('draft','to_approve'))]}" />
+                             <field name="note"  />
                         </group>
 
                     </group>

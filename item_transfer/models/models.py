@@ -25,7 +25,7 @@ class ItemTransfer(models.Model):
     _sql_constraints = [
         ('name_company_uniq', 'unique (name)', 'Transfer Referance must be unique per company !'),
     ]
-
+    note=fields.Char('Note')
     def confirm_qty(self):
         """Actions to perform when cancelling a purchase request line."""
         self.write({'state': 'qty_approved'})
