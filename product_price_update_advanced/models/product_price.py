@@ -28,12 +28,12 @@ class ProductPrice(models.TransientModel):
 
     name = fields.Many2one('product.template', string="Product", required=True)
     sale_price = fields.Integer(string="Sale Price", required=True)
-    cost_price = fields.Integer(string="Cost Price", required=True)
+    cost_price = fields.Integer(string="Cost Price")
 
     def change_product_price(self):
         prod_obj = self.env['product.template'].search([('id', '=', self.name.id)])
-        prod_value = {'list_price': self.sale_price, 'standard_price': self.cost_price}
-        prod_obj.write(prod_value)
+        prod_value = {'list_price': self.sale_price}
+        prod_obj.sudo().write(prod_value)
         return {
             'name': _('Products'),
             'view_mode': 'form',
