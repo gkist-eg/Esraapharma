@@ -184,6 +184,7 @@ class ProductTemplate(models.TransientModel):
                         }))
                     if not resource.picking_id:
                         lb -= resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id)
+                        name=''
                         if resource.move_id.inventory_id:
                             name += 'Inv. Adj.: ' + resource.move_id.inventory_id.name
                         line_ids.append((0, 0, {
@@ -207,6 +208,7 @@ class ProductTemplate(models.TransientModel):
                      ('date', '>', date_from),
                      ('date', '<', date_to)], order="date"):
                 batch = ''
+                name=''
                 if resource.state == 'done' and resource.location_dest_id == self.location_id:
                     if resource.picking_id:
                         lb += resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id)
