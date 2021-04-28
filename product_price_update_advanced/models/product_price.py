@@ -27,7 +27,7 @@ class ProductPrice(models.TransientModel):
     _name = 'product.price'
 
     name = fields.Many2one('product.template', string="Product", required=True)
-    sale_price = fields.Integer(string="Sale Price", required=True)
+    sale_price = fields.Float(string="Sale Price", required=True)
     cost_price = fields.Integer(string="Cost Price")
 
     def change_product_price(self):
