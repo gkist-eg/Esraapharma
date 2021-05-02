@@ -25,7 +25,7 @@
         </field>
     </record>
         <record id="action_balet_location" model="ir.actions.act_window">
-            <field name="name">Balet Location</field>
+            <field name="name">Pallet Location</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">balet.location</field>
             <field name="view_mode">tree,form</field>

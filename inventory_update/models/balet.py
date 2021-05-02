@@ -13,8 +13,8 @@ class BaletLocation(models.Model):
 class BaletLocationChange(models.Model):
     _name = 'balet.change'
     lot_id = fields.Many2one('stock.production.lot', 'Lots/Serial Numbers', required=True)
-    balet_ids = fields.Many2many('balet.location',"balet_location_change_old", string="Old Ballets", readonly='1', store=True)
-    balet_new_ids = fields.Many2many('balet.location',"balet_location_change_new", string="New Ballets")
+    balet_ids = fields.Many2many('balet.location',"balet_location_change_old", string="Old Pallets", readonly='1', store=True)
+    balet_new_ids = fields.Many2many('balet.location',"balet_location_change_new", string="New Pallets")
     check = fields.Boolean('Checked', default=False)
 
     @api.onchange('lot_id')

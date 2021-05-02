@@ -31,7 +31,7 @@ class LotNumber(models.Model):
     box_qty = fields.Float('Box weight / Qty', default=1.0, store=True)
     prod_date = fields.Date(string='Production Date', help='This is the date on which the product made.', store=True)
     attachment_ids = fields.Many2many('ir.attachment', string='Attachments', )
-    balet_ids = fields.Many2many('balet.location', string="Ballets")
+    balet_ids = fields.Many2many('balet.location', string="Pallets")
     suplier_lot = fields.Char(string='Supplier Lot', store=True)
 
     expiration_date = fields.Date(string='Expiration Date',
@@ -78,7 +78,7 @@ class LotNumberLot(models.Model):
     suplier_lot = fields.Char(string='supplier lot', store=True)
     prod_date = fields.Date(string='Production Date', help='This is the date on which the product made.', store=True)
     attachment_ids = fields.Many2many('ir.attachment', string='Attachments', )
-    balet_ids = fields.Many2many('balet.location', string="Ballets")
+    balet_ids = fields.Many2many('balet.location', string="Pallets")
     lot_name = fields.Char('Lot/Serial Number Name', store=True)
 
     @api.onchange('box_no', 'box_qty')
