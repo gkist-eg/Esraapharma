@@ -32,7 +32,7 @@ class account_payment_registerr(models.TransientModel):
                 ]
 
     journal_id = fields.Many2one('account.journal', required=True, store=True, readonly=False, string='Payment Journal',
-                                 domain=_getUserGroupId )
+                                 domain=_getUserGroupId,default=False)
     type = fields.Selection('x', related='journal_id.type')
     cash_receive = fields.Many2one('hr.employee', 'Cash Recipient', store=True, index=True)
     check_receive = fields.Many2one('hr.employee', 'Check Recipient', store=True, index=True)
@@ -117,7 +117,6 @@ class account_payment_registerr(models.TransientModel):
 class accountt_payment(models.Model):
     _inherit = 'account.payment'
 
-
     type = fields.Selection('x', related='journal_id.type')
     cash_receive = fields.Many2one('hr.employee', 'Cash Recipient', store=True, index=True)
     check_receive = fields.Many2one('hr.employee', 'Check Recipient', store=True, index=True)
@@ -144,7 +143,6 @@ class accountt_payment(models.Model):
             self.cash_method = ''
         else:
             self.cash_method = ''
-
 
     def _prepare_move_line_default_vals(self, write_off_line_vals=None):
         ''' Prepare the dictionary to create the default account.move.lines for the current payment.
@@ -178,14 +176,15 @@ class accountt_payment(models.Model):
 
         balance = self.currency_id._convert(counterpart_amount, self.company_id.currency_id, self.company_id, self.date)
         counterpart_amount_currency = counterpart_amount
-        write_off_balance = self.currency_id._convert(write_off_amount, self.company_id.currency_id, self.company_id, self.date)
+        write_off_balance = self.currency_id._convert(write_off_amount, self.company_id.currency_id, self.company_id,
+                                                      self.date)
         write_off_amount_currency = write_off_amount
         currency_id = self.currency_id.id
 
         if self.is_internal_transfer:
             if self.payment_type == 'inbound':
                 liquidity_line_name = _('Transfer to %s', self.journal_id.name)
-            else: # payment.payment_type == 'outbound':
+            else:  # payment.payment_type == 'outbound':
                 liquidity_line_name = _('Transfer from %s', self.journal_id.name)
         else:
             liquidity_line_name = self.payment_reference
@@ -200,7 +199,8 @@ class accountt_payment(models.Model):
         }
 
         default_line_name = self.env['account.move.line']._get_default_line_name(
-            _("Internal Transfer") if self.is_internal_transfer else payment_display_name['%s-%s' % (self.payment_type, self.partner_type)],
+            _("Internal Transfer") if self.is_internal_transfer else payment_display_name[
+                '%s-%s' % (self.payment_type, self.partner_type)],
             self.amount,
             self.currency_id,
             self.date,
@@ -274,8 +274,3 @@ class AccountMoveLine(models.Model):
                                  domain=_getUserGroupIddaccount,
                                  check_company=True,
                                  tracking=True)
-
-
-
-
-

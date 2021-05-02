@@ -86,7 +86,7 @@ class AccountCheckDeposit(models.Model):
 
     state = fields.Selection(
         [
-            ('draft', 'Draft'),
+            ('draft', 'Draft'),('confirm','Confirm'),
             ('done', 'Done'),
         ], string='Status', default='draft', readonly=True)
     move_id = fields.Many2one(
