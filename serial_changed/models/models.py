@@ -13,8 +13,6 @@ class Partner(models.Model):
 
 class Move(models.Model):
     _inherit = 'account.move'
-    name = fields.Char(string='Number', copy=False, readonly=False, store=True, index=True,
-                       tracking=True, )
 
     @api.depends('name')
     def compute_serial(self):
