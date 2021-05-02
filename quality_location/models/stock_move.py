@@ -51,19 +51,24 @@ class StockMove(models.Model):
 
     def _create_quality_checks(self):
         # Groupby move by picking. Use it in order to generate missing quality checks.
+        res = super(StockMove, self)._create_quality_checks()
         pick_moves = defaultdict(lambda: self.env['stock.move'])
         check_vals_list = []
         for move in self:
             quality_points_domain = self.env['quality.point']._get_domain(move.product_id, move.picking_id.picking_type_id)
             quality_points = self.env['quality.point'].sudo().search(quality_points_domain)
 
-            if not quality_points:
-                continue
-            picking_check_vals_list = quality_points._get_checks_values(move.product_id, move.picking_id.company_id.id, existing_checks=move.picking_id.sudo().check_ids)
-            for check_value in picking_check_vals_list:
-                check_value.update({
-                    'picking_id': move.picking_id.id,
-                    'lot_id': move.restrict_lot_id.id,
+            if quality_points:
+                picking_check_vals_list = quality_points._get_checks_values(move.product_id, move.picking_id.company_id.id, existing_checks=move.picking_id.sudo().check_ids)
+                for check_value in picking_check_vals_list:
+                    check_value.update({
+                        'picking_id': move.picking_id.id,
+                        'lot_id': move.restrict_lot_id.id,
                 })
-            check_vals_list += picking_check_vals_list
-        self.env['quality.check'].sudo().create(check_vals_list)
+                check_vals_list += picking_check_vals_list
+            if move.location_id.stock_usage == 'qrtin':
+                quality_checks = self.env['quality.check'].sudo().search([('product_id','=',move.product_id.id), ('picking_id', '=', False), ('finished_lot_id', '=', move.restrict_lot_id.id)])
+                quality_checks.sudo().write({ 'picking_id': move.picking_id.id,})
+            if check_vals_list:
+                self.env['quality.check'].sudo().create(check_vals_list)
+        return True

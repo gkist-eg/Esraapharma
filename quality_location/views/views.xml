@@ -57,12 +57,28 @@
         <field name="inherit_id" ref="quality_control.quality_check_view_form_small"/>
         <field name="arch" type="xml">
           <xpath expr="//field[@name='name']" position="after">
-             :
+              :
                             <field name="lot_id" readonly="1" options="{'no_open': True}" />
+              :
+                            <field name="finished_lot_id" readonly="1" options="{'no_open': True}" />
           </xpath>
 
         </field>
     </record>
+      <!-- Inherit Form View to Modify it -->
+      <record id="quality_alert_team_view_form" model="ir.ui.view">
+          <field name="name">quality.alert.team</field>
+          <field name="model">quality.alert.team</field>
+          <field name="inherit_id" ref="quality_control.quality_alert_team_view_form"/>
+          <field name="arch" type="xml">
+
+              <xpath expr="//field[@name='company_id']" position="after">
+                  <field name="users_ids"  widget="many2many_tags" />
+                  <field name="read_users_ids"  widget="many2many_tags" />
+              </xpath>
+
+          </field>
+      </record>
 
   </data>
 </odoo>
