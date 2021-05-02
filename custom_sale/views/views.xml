@@ -512,7 +512,7 @@
               </xpath>
  <xpath expr="//field[@name='invoice_date']" position="after">
 
-                      <field name="warehouse_id"  attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))],'readonly':[('state','=','posted')]}"/>
+                      <field name="warehouse_id" readonly="True" attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))]" />
                       <field name="delivery_rep"  attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))],'readonly':[('state','=','posted')]}"/>
                       <field name="sales_rep"  attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))],'readonly':[('state','=','posted')]}"/>
                       <field name="supervisor"  attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))],'readonly':[('state','=','posted')]}"/>

@@ -14,7 +14,7 @@
     <record id="sequence_customer_seq" model="ir.sequence">
             <field name="name">Customer Invoice</field>
             <field name="code">customer_invoice</field>
-            <field name="prefix">Qc</field>
+            <field name="prefix">CV</field>
             <field name="padding">8</field>
       </record>
       <record id="sequence_distributor_seq" model="ir.sequence">

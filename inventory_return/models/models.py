@@ -54,7 +54,8 @@ class PickingModule(models.Model):
                         'currency_id': picking_id.env.user.company_id.currency_id.id,
                         'payment_reference': picking_id.name,
                         'picking_id': picking_id.id,
-                        'invoice_line_ids': invoice_line_list
+                        'invoice_line_ids': invoice_line_list,
+                        'warehouse_id': picking_id.picking_type_id.warehouse_id.id
                     })
 
 

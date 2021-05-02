@@ -25,8 +25,8 @@ class Move(models.Model):
             else:
                 record.serial_name = ''
 
-    serial_name = fields.Char(string='Number', copy=False,  store=True, index=True,
-                              tracking=True,compute='compute_serial')
+    serial_name = fields.Char(string='Number', copy=False, store=True, index=True,
+                              tracking=True, compute='compute_serial')
     warehouse_id = fields.Many2one(
         'stock.warehouse', string='Warehouse', readonly=True, store=True, states={'draft': [('readonly', False)]},
     )
@@ -122,6 +122,7 @@ class Move(models.Model):
                 'discount': item.move_id.sale_line_id.discount,
             })
         return lot_values
+
     def action_post(self):
         for invoice in self:
             if self.move_type != 'entry':
@@ -131,7 +132,7 @@ class Move(models.Model):
                     invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
                 else:
                     if invoice.move_type == 'out_invoice' and not invoice.partner_id.change_serial:
-                        invoice.name = self.env['ir.sequence'].next_by_code('draft_invoice')
+                        invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
                 if invoice.move_type == 'out_refund' and invoice.move_type != 'entry':
                     invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
                 if invoice.move_type == 'in_refund' and invoice.move_type != 'entry':
