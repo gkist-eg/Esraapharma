@@ -40,7 +40,7 @@ class cash(models.Model):
         string='Type', default='expense')
 
     code = fields.Char('Reference', size=32, copy=False,
-                       track_visibility='onchange', readonly=1,
+                       track_visibility='onchange',
                        default=lambda self: (" "))
     bank_receive = fields.Char('Bank')
     bank_account_receive = fields.Char('Account Number')
@@ -267,7 +267,7 @@ class cash(models.Model):
                     self['code'] = self.env['ir.sequence'].next_by_code('code.check.in') or ('New')
 
         for expense in self:
-            res = self.env['account.move'].search([('ref', '=', expense.code)])
+            res = self.env['account.move'].search([('ref', '=', expense.code),('ref','!=','')])
             if not res:
                 if self.payment_type == 'send_money' and self.payment_partner == 'expense' and self.cash_method == 'cash':
                     for expense_cash in self:

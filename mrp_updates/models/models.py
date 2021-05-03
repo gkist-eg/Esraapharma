@@ -422,7 +422,7 @@ class MrpUpdates(models.Model):
             bulk = self.env['mrp.bom']
             if bulks:
                 bulk = bulks[0].child_bom_id
-            if production.bom_id and bulk and self.product_id.mfg:
+            if production.bom_id and bulk and production.product_id.mfg:
                 if round(production.product_qty * production.product_id.mfg) > round(bulk.product_qty):
                     production.product_qty = production.bom_id.product_qty
             factor = production.product_uom_id._compute_quantity(production.product_qty,
@@ -488,7 +488,7 @@ class MrpUpdates(models.Model):
                     production.product_qty = production.bom_id.product_qty
             if production.product_id in production.bom_id.byproduct_ids.mapped('product_id'):
                 raise UserError(
-                    _("You cannot have %s  as the finished product and in the Byproducts", self.product_id.name))
+                    _("You cannot have %s  as the finished product and in the Byproducts", production.product_id.name))
             moves.append(production._get_move_finished_values(production.product_id.id, production.product_qty,
                                                               production.product_uom_id.id))
             for byproduct in production.bom_id.byproduct_ids:
