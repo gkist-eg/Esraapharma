@@ -43,7 +43,7 @@ class Quality(models.Model):
              ('lot_id', '=', self.lot_id.id)])
         body =""
         if self.finished_lot_id :
-            body += self.finished_lot_id.dispaly_name
+            body += self.finished_lot_id.display_name
         if not quality_checks:
             self.env['mail.message'].send("Finished test", " QC tests of lot " + body + " is finished and ready to be transferred", self._name,
                                       self.id,
