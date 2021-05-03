@@ -29,6 +29,7 @@
         'views/account.xml',
         'views/cash.xml',
         'views/code.xml',
+        'views/templates.xml',
         'report/report.xml',
         'report/safe_statement_report.xml',
         'report/bank_statement_report.xml',

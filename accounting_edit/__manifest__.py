@@ -31,6 +31,7 @@
         'views/templates.xml',
         'views/preference.xml',
         'views/move.xml',
+        'views/employee.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

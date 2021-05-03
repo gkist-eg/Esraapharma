@@ -33,15 +33,13 @@ class Quality(models.Model):
     def do_pass(self):
         if self.env.user not in self.team_id.users_ids:
             raise UserError(_("You Don't have the authority to confirm"))
-        rec = []
-        recive = self.env['res.users'].search(
-            [("groups_id", "=", self.env.ref('stock.group_stock_manager').id)])
+
         quality_checks = self.env['quality.check'].sudo().search(
             [('product_id', '=', self.product_id.id), ('team_id', '=', self.team_id.id),
              ('id', '!=', self.id), ('quality_state', '=', 'none'),'|',
              ('finished_lot_id', '=', self.finished_lot_id.id),
              ('lot_id', '=', self.lot_id.id)])
-        body =""
+        body = ""
         if self.finished_lot_id :
             body += self.finished_lot_id.display_name
         if not quality_checks:

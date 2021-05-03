@@ -1,24 +1,81 @@
 <odoo>
-    <data>
-<!--
-        <template id="listing">
-          <ul>
-            <li t-foreach="objects" t-as="object">
-              <a t-attf-href="#{ root }/objects/#{ object.id }">
-                <t t-esc="object.display_name"/>
-              </a>
-            </li>
-          </ul>
-        </template>
-        <template id="object">
-          <h1><t t-esc="object.display_name"/></h1>
-          <dl>
-            <t t-foreach="object._fields" t-as="field">
-              <dt><t t-esc="field"/></dt>
-              <dd><t t-esc="object[field]"/></dd>
+    <template id="report_request_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <t t-set="o" t-value="o.with_context({'lang':o.employee_id.lang})" />
+                <div class="page">
+                    <div class="oe_structure"/>
+                     <center><h1><td t-if="o.payment_type in ('receive_money') and o.payment_partner in ('expense','other','partner') "><span>Receipt of cash</span></td></h1></center>
+                     <center><h1><td t-if="o.payment_type in ('send_money') and o.payment_partner in ('expense','other','partner') "><span>Payment of cash</span></td></h1></center>
+                     <center><h1><td t-if="o.payment_type in ('send_money') and o.payment_partner in ('loan') "><span>Receipt of Loan</span></td></h1></center>
+                     <center><h1><td t-if="o.payment_type in ('send_money') and o.payment_partner in ('custody') "><span>Receipt of Custody</span></td></h1><br/></center>
+
+                        <div class="row mt32 mb32">
+                             <div class="col-xs-12">
+                                 <h4><span>Signed In: </span><sapn t-field="o.date"/></h4><br/>
+                                 <h4><span>Number: </span><sapn t-field="o.code"/></h4><br/>
+                                 <h4><td t-if="o.payment_type in ('send_money','receive_money') and  o.cash_method == 'cash' "><span>Journal: </span><sapn t-field="o.journal_id"/></td></h4>
+                                 <h4><td t-if="o.payment_type == 'send_money' and o.cash_method == 'check' "><span>Journal: </span><sapn t-field="o.check_send"/></td></h4>
+                                 <h4><td t-if="o.payment_type == 'receive_money' and o.cash_method == 'check' "><span>Journal: </span><sapn t-field="o.check_receive"/></td></h4>
+                                 <h4><td t-if="o.payment_type in ('send_money','receive_money') and o.payment_partner in ('expense','loan','custody','other') "><span>Received From: </span><span t-field="o.employee_expense"/></td></h4><br/>
+                                 <h4><td t-if="o.payment_type == 'send_money'"><span>Amount: </span><sapn t-field="o.amount"/></td></h4>
+                                 <h4><td t-if="o.payment_type == 'receive_money'"><span>Amount of Only: </span><sapn t-field="o.amount_re"/></td></h4>
+
+                             </div>
+                                 <div class="col-xs-12">
+                                     <h4><span>Description: </span><sapn t-field="o.description"/></h4><br/></div>
+
+
+                               <div>
+                                </div><div class="col-xs-3">
+                                 <h4><td t-if="o.payment_type in ('send_money','receive_money') and o.payment_partner in ('expense','partner','other')  and o.cash_method == 'check'"><span>Check Number : </span><span t-field="o.check_number"/></td></h4></div>
+                                 <div class="col-xs-3">
+                                     <h4><td t-if="o.payment_type in ('send_money','receive_money') and o.payment_partner in ('expense','partner','other')  and o.cash_method == 'check'"><span>Due Date : </span><span t-field="o.due_date"/></td></h4></div>
+                                <div class="col-xs-6">
+                                    <h4><td t-if="o.payment_type == 'send_money' and o.payment_partner in ('expense','partner','other')  and o.cash_method == 'check'"><span>Bank: </span><span t-field="o.bank"/></td></h4>
+                                    <h4><td t-if="o.payment_type == 'receive_money' and o.payment_partner in ('expense','partner','other')  and o.cash_method == 'check'"><span>Bank: </span><span t-field="o.bank_receive"/></td></h4>
+                                </div>
+                             </div>
+
+                        <td class="text-left" t-if="o.payment_type in ('send_money') "><span>The Receipt </span></td>
+
+                         <td class="text-center" t-if="o.payment_type in ('receive_money','send_money')"><span>The Safe </span></td>
+
+
+                        <td class="text-right" t-if="o.payment_type in ('send_money') "><span>Relies </span></td>
+
+                    <td class="text-left" t-if="o.payment_type in ('send_money') "><span>.............</span></td>
+
+                    <td class="text-center" t-if="o.payment_type in ('send_money') "><span>.............</span></td>
+
+
+                   <td class="text-right" t-if="o.payment_type in ('send_money') "><span>.............</span></td>
+
+
+
+
+</div>
             </t>
-          </dl>
-        </template>
--->
-    </data>
+        </t>
+    </template>
+    <template id="report_request_item">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="cash.report_request_document" t-lang="o.employee_id.lang"/>
+        </t>
+    </template>
+
+
+      <report
+            string="Cash"
+            id="action_report_request"
+            model="cash.cash"
+            report_type="qweb-html"
+            name="cash.report_request_item"
+            file="cash.report_request_item"
+        />
 </odoo>
+
+
+
+
+
