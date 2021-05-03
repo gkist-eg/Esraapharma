@@ -20,6 +20,16 @@
                 </xpath>
             </field>
         </record>
+        <record id="view_picking_internal_search2" model="ir.ui.view">
+            <field name="name">stock.picking</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+            <field name="arch" type="xml">
+                  <xpath expr="//field[@name='origin']" position="after">
+                     <field name="batch"/>
+                </xpath>
+            </field>
+        </record>
         <record id="workcenter_line_kanban_batch" model="ir.ui.view">
          <field name="name">mrp.workorder</field>
           <field name="model">mrp.workorder</field>

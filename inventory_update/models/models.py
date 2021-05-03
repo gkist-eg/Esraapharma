@@ -171,6 +171,8 @@ class StockPicking(models.Model):
         states={'draft': [('readonly', False)]},
         help="Reference of the document")
 
+    lot_id = fields.Many2one('stock.production.lot', 'Lots/Serial Numbers', related='move_line_ids.lot_id')
+
     @api.depends('state')
     def _compute_show_validate(self):
         for picking in self:
