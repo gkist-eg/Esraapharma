@@ -140,6 +140,7 @@
                 <field name="amount_re" invisible="1" />
                 <field name="payment_type" />
                 <field name="journal_id" />
+
                 <field name="partner_id" invisible="1" />
                 <field name="employee_expense" />
                 <field name="state" />

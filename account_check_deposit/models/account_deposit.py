@@ -86,11 +86,13 @@ class AccountCheckDeposit(models.Model):
 
     state = fields.Selection(
         [
-            ('draft', 'Draft'),('confirm','Confirm'),
-            ('done', 'Done'),
+            ('draft', 'Draft'),
+            ('done', 'Done'),('reconcile','Reconcile')
         ], string='Status', default='draft', readonly=True)
     move_id = fields.Many2one(
         'account.move', string='Journal Entry', readonly=True)
+    move_id2 = fields.Many2one(
+        'account.move', string='Reconcile Journal Entry', readonly=True)
     bank_journal_id = fields.Many2one(
         'account.journal', string='Journal Bank',
         domain=[('type', '=', 'bank'), ('account_check', 'not in', ('check_received', 'check_send'))],
@@ -98,6 +100,7 @@ class AccountCheckDeposit(models.Model):
     line_ids = fields.One2many(
         'account.move.line', related='move_id.line_ids',
         string='Lines', readonly=True)
+
     company_id = fields.Many2one(
         'res.company', string='Company', required=True,
         states={'done': [('readonly', '=', True)]},
@@ -204,17 +207,20 @@ class AccountCheckDeposit(models.Model):
                     "You must configure the 'Check Deposit Offsetting Account' "
                     "on the Accounting Settings page"))
             if company.check_deposit_offsetting_account == 'bank_account':
-                if not deposit.bank_journal_id.default_account_id:
+                if not deposit.bank_journal_id.payment_debit_account_id:
                     raise UserError(_(
                         "Missing 'Default Debit Account' on bank journal '%s'")
                                     % deposit.bank_journal_id.name)
-                account_id = deposit.bank_journal_id.default_account_id.id
+                account_id = deposit.bank_journal_id.payment_debit_account_id.id
             elif company.check_deposit_offsetting_account == 'transfer_account':
                 if not company.check_deposit_transfer_account_id:
                     raise UserError(_(
                         "Missing 'Account for Check Deposits' on the "
                         "company '%s'.") % company.name)
                 account_id = company.check_deposit_transfer_account_id.id
+            else:
+
+                account_id = deposit.bank_journal_id.payment_debit_account_id.id
             return {
                 'name': _('Check Deposit %s') % deposit.name,
                 'debit': total_debit,
@@ -229,17 +235,19 @@ class AccountCheckDeposit(models.Model):
                     "You must configure the 'Check Deposit Offsetting Account' "
                     "on the Accounting Settings page"))
             if company.check_deposit_offsetting_account == 'bank_account':
-                if not deposit.bank_journal_id.default_account_id:
+                if not deposit.bank_journal_id.payment_credit_account_id:
                     raise UserError(_(
                         "Missing 'Default Debit Account' on bank journal '%s'")
                                     % deposit.bank_journal_id.name)
-                account_id = deposit.bank_journal_id.default_account_id.id
+                account_id = deposit.bank_journal_id.payment_credit_account_id.id
             elif company.check_deposit_offsetting_account == 'transfer_account':
                 if not company.check_deposit_transfer_account_id:
                     raise UserError(_(
                         "Missing 'Account for Check Deposits' on the "
                         "company '%s'.") % company.name)
                 account_id = company.check_deposit_transfer_account_id.id
+            else:
+                account_id = deposit.bank_journal_id.payment_credit_account_id.id
             return {
                 'name': _('Check Deposit %s') % deposit.name,
                 'debit': 0,
@@ -302,7 +310,172 @@ class AccountCheckDeposit(models.Model):
                 deposit.write({'state': 'done', 'move_id': move.id})
 
             return True
+    @api.model
+    def _prepare_account_move_vals2(self, deposit):
 
+        if (
+                deposit.company_id.check_deposit_offsetting_account ==
+                'bank_account'):
+            journal_id = deposit.bank_journal_id.id
+        else:
+            journal_id = deposit.journal_id.id
+        move_vals = {
+            'journal_id': journal_id,
+            'date': deposit.deposit_date,
+            'name': _('Reconcile %s') % deposit.name,
+            'ref': deposit.name,
+
+        }
+
+        return move_vals
+
+    @api.model
+    def _prepare_move_line_vals2(self, line):
+
+        if self.journal_id.account_check == 'check_received':
+            assert (line.debit > 0), 'Debit must have a value'
+            return {
+                'name': _('Check Deposit - Ref. Check %s') % line.ref,
+                'credit': line.debit,
+                'debit': 0.0,
+                'account_id': self.bank_journal_id.payment_debit_account_id.id,
+                'partner_id': line.partner_id.id,
+                'currency_id': line.currency_id.id or False,
+                'amount_currency': line.amount_currency * -1,
+                'check_number': line.check_number,
+                'check_due_date': line.check_due_date,
+                'deposit': True,
+                'is_true': True,
+            }
+        elif self.journal_id.account_check == 'check_send':
+            assert (line.credit > 0), 'Debit must have a value'
+            return {
+                'name': _('Check Deposit - Ref. Check %s') % line.ref,
+                'credit': 0.0,
+                'debit': line.credit,
+                'account_id': self.bank_journal_id.payment_credit_account_id.id,
+                'partner_id': line.partner_id.id,
+                'currency_id': line.currency_id.id or False,
+                'amount_currency': line.amount_currency * -1,
+                'check_number': line.check_number,
+                'check_due_date': line.check_due_date,
+                'deposit': True,
+                'is_true': True,
+
+            }
+
+    @api.model
+    def _prepare_counterpart_move_lines_vals2(self, deposit, total_debit, total_credit, total_amount_currency):
+        company = deposit.company_id
+        if self.journal_id.account_check == 'check_received':
+            if not company.check_deposit_offsetting_account:
+                raise UserError(_(
+                    "You must configure the 'Check Deposit Offsetting Account' "
+                    "on the Accounting Settings page"))
+            if company.check_deposit_offsetting_account == 'bank_account':
+                if not deposit.bank_journal_id.default_account_id:
+                    raise UserError(_(
+                        "Missing 'Default Debit Account' on bank journal '%s'")
+                                    % deposit.bank_journal_id.name)
+                account_id = deposit.bank_journal_id.default_account_id.id
+            elif company.check_deposit_offsetting_account == 'transfer_account':
+                if not company.check_deposit_transfer_account_id:
+                    raise UserError(_(
+                        "Missing 'Account for Check Deposits' on the "
+                        "company '%s'.") % company.name)
+                account_id = company.check_deposit_transfer_account_id.id
+            else:
+
+                account_id = deposit.bank_journal_id.default_account_id.id
+            return {
+                'name': _('Check Deposit %s') % deposit.name,
+                'debit': total_debit,
+                'credit': 0.0,
+                'account_id': account_id,
+                'partner_id': False,
+                'amount_currency': total_debit,
+            }
+        elif self.journal_id.account_check == 'check_send':
+            if not company.check_deposit_offsetting_account:
+                raise UserError(_(
+                    "You must configure the 'Check Deposit Offsetting Account' "
+                    "on the Accounting Settings page"))
+            if company.check_deposit_offsetting_account == 'bank_account':
+                if not deposit.bank_journal_id.default_account_id:
+                    raise UserError(_(
+                        "Missing 'Default Debit Account' on bank journal '%s'")
+                                    % deposit.bank_journal_id.name)
+                account_id = deposit.bank_journal_id.default_account_id.id
+            elif company.check_deposit_offsetting_account == 'transfer_account':
+                if not company.check_deposit_transfer_account_id:
+                    raise UserError(_(
+                        "Missing 'Account for Check Deposits' on the "
+                        "company '%s'.") % company.name)
+                account_id = company.check_deposit_transfer_account_id.id
+            else:
+                account_id = deposit.bank_journal_id.default_account_id.id
+            return {
+                'name': _('Check Deposit %s') % deposit.name,
+                'debit': 0,
+                'credit': total_credit,
+                'account_id': account_id,
+                'partner_id': False,
+                'amount_currency': total_credit,
+
+            }
+
+    def validate_deposit2(self):
+        if self.journal_id.account_check == 'check_received':
+            am_obj = self.env['account.move']
+            move_line_obj = self.env['account.move.line']
+            for deposit in self:
+                move_vals = self._prepare_account_move_vals2(deposit)
+                move = am_obj.create(move_vals)
+
+                total_debit = 0.0
+                total_amount_currency = 0.0
+                for line in deposit.check_payment_ids:
+                    total_debit += line.debit
+                    total_amount_currency += line.amount_currency
+                    line_vals = self._prepare_move_line_vals2(line)
+                    line_vals['move_id'] = move.id
+                    move_line = move_line_obj.with_context(
+                        check_move_validity=False).create(line_vals)
+
+                # Create counter-part
+                counter_vals = self._prepare_counterpart_move_lines_vals2(
+                    deposit, total_debit, 0.0, total_amount_currency)
+                counter_vals['move_id'] = move.id
+                move_line_obj.create(counter_vals)
+                move.post()
+                deposit.write({'state': 'reconcile', 'move_id': move.id})
+
+            return True
+        elif self.journal_id.account_check == 'check_send':
+            am_obj = self.env['account.move']
+            move_line_obj = self.env['account.move.line']
+            for deposit in self:
+                move_vals = self._prepare_account_move_vals2(deposit)
+                move = am_obj.create(move_vals)
+                total_credit = 0.0
+                total_amount_currency = 0.0
+                for line in deposit.check_payment_ids:
+                    total_credit += line.credit
+                    total_amount_currency += line.amount_currency
+                    line_vals = self._prepare_move_line_vals2(line)
+                    line_vals['move_id'] = move.id
+                    move_line = move_line_obj.with_context(
+                        check_move_validity=False).create(line_vals)
+
+                # Create counter-part
+                counter_vals = self._prepare_counterpart_move_lines_vals2(
+                    deposit, 0.0, total_credit, total_amount_currency)
+                counter_vals['move_id'] = move.id
+                move_line_obj.create(counter_vals)
+
+                deposit.write({'state': 'reconcile', 'move_id': move.id})
+
+            return True
     @api.onchange('company_id')
     def onchange_company_id(self):
         if self.company_id:

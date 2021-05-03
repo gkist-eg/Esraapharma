@@ -224,22 +224,22 @@ class cash(models.Model):
             self.cash_method = 'cash'
             self.cash_method = 'cash'
 
-    # @api.model
-    # def create(self, vals):
-    #     if vals['payment_type'] == 'send_money' and vals["cash_method"] == 'cash':
-    #         if not self.code or self.code:
-    #             vals['code'] = self.env['ir.sequence'].next_by_code('code.code') or ('New')
-    #     elif vals['payment_type'] == 'receive_money' and vals['cash_method'] == 'cash':
-    #         if not self.code or self.code:
-    #             vals['code'] = self.env['ir.sequence'].next_by_code('code.code.out') or ('New')
-    #
-    #     elif vals['payment_type'] == 'send_money' and vals["cash_method"] == 'check':
-    #         if not self.code or self.code:
-    #             vals['code'] = self.env['ir.sequence'].next_by_code('code.check.out') or ('New')
-    #     elif vals['payment_type'] == 'receive_money' and vals["cash_method"] == 'check':
-    #         if not self.code or self.code:
-    #             vals['code'] = self.env['ir.sequence'].next_by_code('code.check.in') or ('New')
-    #     return super(cash, self).create(vals)
+    @api.model
+    def create(self, vals):
+        if vals['payment_type'] == 'send_money' and vals["cash_method"] == 'cash':
+            if not self.code or self.code:
+                vals['code'] = self.env['ir.sequence'].next_by_code('code.code') or ('New')
+        elif vals['payment_type'] == 'receive_money' and vals['cash_method'] == 'cash':
+            if not self.code or self.code:
+                vals['code'] = self.env['ir.sequence'].next_by_code('code.code.out') or ('New')
+
+        elif vals['payment_type'] == 'send_money' and vals["cash_method"] == 'check':
+            if not self.code or self.code:
+                vals['code'] = self.env['ir.sequence'].next_by_code('code.check.out') or ('New')
+        elif vals['payment_type'] == 'receive_money' and vals["cash_method"] == 'check':
+            if not self.code or self.code:
+                vals['code'] = self.env['ir.sequence'].next_by_code('code.check.in') or ('New')
+        return super(cash, self).create(vals)
 
     def button_confirm(self):
         if self.payment_type == 'send_money':

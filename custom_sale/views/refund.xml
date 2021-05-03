@@ -6,7 +6,7 @@
           <field name="inherit_id" ref="account.view_move_form"/>
           <field name="arch" type="xml">
                    <xpath expr="//field[@name='partner_id']" position="after">
-                      <field name="refund_method"  readonly='1' attrs="{'invisible':[('move_type','not in',('out_refund'))]}" />
+                      <field name="refund_method"   attrs="{'invisible':[('move_type','not in',('out_refund'))],'readonly':True}" />
                       <field name="invoice_number" attrs="{'invisible':[('refund_method', '!=', 'invoice')],'required':[('refund_method', '=', 'invoice')]}"
                              domain="[('move_type','=','out_invoice'), ('state', '=', 'posted'), ('partner_id', 'in', [partner_id])]"
                              options="{'no_create_edit': True, 'no_create':True, 'no_open':True,'no_edit': True}"

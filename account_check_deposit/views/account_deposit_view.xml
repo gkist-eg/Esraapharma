@@ -7,11 +7,13 @@
                     <header>
                         <button name="validate_deposit" states="draft"
                                 string="Validate"
+                                type="object" class="oe_highlight" /><button name="validate_deposit2" states="done"
+                                string="Validate2"
                                 type="object" class="oe_highlight" />
                         <button name="backtodraft" states="done"
                                 string="Back to Draft" type="object" roups="account_parent.group_coas_user"/>
                         <field name="state" widget="statusbar"
-                               statusbar_visible="draft,done" />
+                               statusbar_visible="draft,done,reconcile" />
                     </header>
                     <sheet>
 
@@ -37,6 +39,7 @@
                                 <field name="total_amount" widget="monetary"
                                     options="{'currency_field': 'currency_id'}" invisible="1"/>
                                 <field name="move_id"/>
+                                <field name="move_id2"/>
                             </group>
                         </group>
                        <group string="Check Payments" name="check_payments">

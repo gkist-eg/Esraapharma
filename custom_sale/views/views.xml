@@ -141,7 +141,7 @@
                  <attribute name="readonly">True</attribute></xpath>
 <xpath expr="//field[@name='validity_date']"
                      position="attributes">
-                 <attribute1 name="readonly">True</attribute1
+                 <attribute name="readonly">True</attribute
                  ></xpath>
               <xpath expr="//field[@name='partner_id']" position="before">
                   <field name="cust_categ_id" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"  attrs="{'readonly': [('state', '=', 'sale')]}"/>
@@ -496,6 +496,10 @@
           <field name="model">account.move</field>
           <field name="inherit_id" ref="account.view_move_form"/>
           <field name="arch" type="xml">
+              <xpath expr="//field[@name='name']"
+                     position="attributes">
+                 <attribute name="readonly">True</attribute
+                 ></xpath>
               <xpath expr="//field[@name='partner_id']" position="after">
 
                       <field name="cust_categ_id"  attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))]}" />
@@ -548,7 +552,7 @@
                     <field name="batch_no" invisible="1"/>
                 </xpath>
               <xpath expr="//field[@name='invoice_line_ids']//tree/field[@name='product_id']" position="after">
-                  <field name="sale_type" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))],'required':[('move_type','=','out_invoice')]}"/>
+                  <field name="sale_type" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))],'required':[('move_type','in',('out_invoice','out_refund'))]}"/>
               </xpath>
 
 
