@@ -1,6 +1,27 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import Warning
 
+class StockPickingType(models.Model):
+    _inherit = 'stock.picking.type'
+
+    allow_return = fields.Boolean(
+        string="Return Operation",
+    )
+
+
+class ReturnPicking(models.TransientModel):
+    _inherit = 'stock.return.picking'
+    _description = 'Return Picking'
+
+    @api.model
+    def _getUserGroupId(self):
+        # if self.user_has_groups('restrict_warehouse.group_restrict_warehouse'):
+            return [('id', '=', self.original_location_id.id), ('return_location', '=', True), ('id', 'in',  self.env.user.stock_location_ids.ids), ]
+
+    location_id = fields.Many2one(
+        'stock.location', 'Return Location', domain=_getUserGroupId )
+        # domain="['|', ('id', '=', original_location_id), '|', '&', ('return_location', '=', True), ('company_id', '=', False), '&', ('return_location', '=', True), ('company_id', '=', company_id)]")
+
 
 class Quant(models.Model):
     _inherit = 'stock.quant'
@@ -58,6 +79,7 @@ class Quant(models.Model):
             })
         return action
 
+
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
@@ -83,16 +105,77 @@ class StockPicking(models.Model):
        if self.user_has_groups('restrict_warehouse.group_restrict_warehouse'):
            return [('id', '=', self.env.user.stock_location_ids.ids)]
 
+    @api.model
+    def _getdefaultSrc(self):
+        picking_type = self.env['stock.picking.type'].browse(
+            self._context.get('default_picking_type_id'))
+        if picking_type.code == 'internal':
+            return picking_type.default_location_src_id
+
+    @api.onchange('picking_type_id', 'partner_id','location_id','location_dest_id')
+    def onchange_picking_type(self):
+        if(self.picking_type_id.code == 'internal' or self.picking_type_id.allow_return) and self.state == 'draft':
+            self = self.with_company(self.company_id)
+            if self.picking_type_id.default_location_src_id:
+                location_id = self.picking_type_id.default_location_src_id.id
+            elif self.partner_id:
+                location_id = self.partner_id.property_stock_supplier.id
+            else:
+                customerloc, location_id = self.env['stock.warehouse']._get_partner_locations()
+
+            if self.picking_type_id.default_location_dest_id:
+                location_dest_id = self.picking_type_id.default_location_dest_id.id
+            elif self.partner_id:
+                location_dest_id = self.partner_id.property_stock_customer.id
+            else:
+                location_dest_id, supplierloc = self.env['stock.warehouse']._get_partner_locations()
+
+            self.location_id = location_id
+            self.location_dest_id = location_dest_id
+            (self.move_lines | self.move_ids_without_package).update({
+                "picking_type_id": self.picking_type_id,
+                "company_id": self.company_id,
+            })
+
+            if self.user_has_groups('restrict_warehouse.group_restrict_warehouse'):
+                domain = {'location_id': [('id', '=', self.env.user.stock_location_ids.ids),('usage', '=', 'internal')], 'location_dest_id': [('id', '=', self.env.user.stock_location_ids.ids),('usage', 'in', ('internal', 'inventory'))]}
+                return {'domain': domain}
+        else:
+            if self.user_has_groups('restrict_warehouse.group_restrict_warehouse'):
+                domain = {
+                    'location_id': [('id', '=', False)],
+                    'location_dest_id':  [('id', '=', False)]}
+                return {'domain': domain}
+        if self.partner_id and self.partner_id.picking_warn:
+            if self.partner_id.picking_warn == 'no-message' and self.partner_id.parent_id:
+                partner = self.partner_id.parent_id
+            elif self.partner_id.picking_warn not in (
+            'no-message', 'block') and self.partner_id.parent_id.picking_warn == 'block':
+                partner = self.partner_id.parent_id
+            else:
+                partner = self.partner_id
+            if partner.picking_warn != 'no-message':
+                if partner.picking_warn == 'block':
+                    self.partner_id = False
+                return {'warning': {
+                    'title': ("Warning for %s") % partner.name,
+                    'message': partner.picking_warn_msg
+                }}
+    @api.model
+    def _getdefaultDest(self):
+        picking_type = self.env['stock.picking.type'].browse(
+            self._context.get('default_picking_type_id'))
+        if picking_type.code == 'internal':
+            return picking_type.default_location_dest_id
+
     location_id = fields.Many2one(
         'stock.location', "Source Location",
-        default=lambda self: self.env['stock.picking.type'].browse(
-            self._context.get('default_picking_type_id')).default_location_src_id,
+        default=_getdefaultSrc,
         check_company=True, readonly=True, required=True, domain=_getUserGroupId,
         states={'draft': [('readonly', False)]})
     location_dest_id = fields.Many2one(
         'stock.location', "Destination Location",
-        default=lambda self: self.env['stock.picking.type'].browse(
-            self._context.get('default_picking_type_id')).default_location_dest_id,
+        default=_getdefaultDest,
         check_company=True, readonly=True, required=True, domain=_getUserGroupId,
         states={'draft': [('readonly', False)]})
 

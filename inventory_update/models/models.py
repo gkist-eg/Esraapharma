@@ -1,31 +1,19 @@
-import json
 import time
-from ast import literal_eval
 from odoo import SUPERUSER_ID, _, api, fields, models
-from odoo.addons.stock.models.stock_move import PROCUREMENT_PRIORITIES
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, format_datetime
-import json
-from collections import defaultdict
-from datetime import datetime,date
-from itertools import groupby
-from operator import itemgetter
 from re import findall as regex_findall
 from re import split as regex_split
-from dateutil import relativedelta
 from odoo.exceptions import UserError
-from odoo.osv import expression
 from odoo.tools.float_utils import float_compare, float_is_zero, float_repr, float_round
-from odoo.tools.misc import format_date, OrderedSet
 
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
     pubprice = fields.Float("Customer Price", store=True, index=True)
 
+
 class StockMove(models.Model):
     _inherit = 'stock.move'
-    restrict_lot_id = fields.Many2one(
-        'stock.production.lot', string='Restricted Lot Numbers', readonly=False)
+
     @api.depends('has_tracking', 'picking_type_id.use_create_lots', 'picking_type_id.use_existing_lots', 'state')
     def _compute_display_assign_serial(self):
         for move in self:
@@ -110,7 +98,7 @@ class StockMove(models.Model):
                 self.env.context,
                 show_owner=self.picking_type_id.code != 'incoming',
                 show_lots_m2o=self.has_tracking != 'none' and (
-                            picking_type_id.use_existing_lots or self.state == 'done' or self.origin_returned_move_id.id),
+                        picking_type_id.use_existing_lots or self.state == 'done' or self.origin_returned_move_id.id),
                 # able to create lots, whatever the value of ` use_create_lots`.
                 show_lots_text=self.has_tracking != 'none' and picking_type_id.use_create_lots and not picking_type_id.use_existing_lots and self.state != 'done' and not self.origin_returned_move_id.id,
                 show_source_location=self.picking_type_id.code != 'incoming',
@@ -124,6 +112,9 @@ class StockMove(models.Model):
     def _onchange_domain_id(self):
         if self.location_id.usage == "internal":
             domain = {'product_id': [('stock_quant_ids.location_id', '=', self.location_id.id)]}
+            return {'domain': domain}
+        else:
+            domain = {'product_id': [('type', '=', 'product')]}
             return {'domain': domain}
 
     def do_unreserve(self):
@@ -191,7 +182,8 @@ class StockPicking(models.Model):
 
     def _check_expired_lots(self):
         super(StockPicking, self)._check_expired_lots()
-        expired_pickings = self.move_line_ids.filtered(lambda ml: ml.lot_id.product_expiry_alert and (not ml.location_id.scrap_location and not ml.location_dest_id.scrap_location )).picking_id
+        expired_pickings = self.move_line_ids.filtered(lambda ml: ml.lot_id.product_expiry_alert and (
+                    not ml.location_id.scrap_location and not ml.location_dest_id.scrap_location)).picking_id
         return expired_pickings
 
     @api.depends('state')
@@ -269,8 +261,8 @@ class StockPicking(models.Model):
                     pickings_without_quantities.mapped('name'))
             if pickings_without_lots:
                 message += _('\n\nTransfers %s: You need to supply a Lot/Serial number for products %s.') % (
-                ', '.join(pickings_without_lots.mapped('name')),
-                ', '.join(products_without_lots.mapped('display_name')))
+                    ', '.join(pickings_without_lots.mapped('name')),
+                    ', '.join(products_without_lots.mapped('display_name')))
             if message:
                 raise UserError(message.lstrip())
         self.approve = True
@@ -289,7 +281,7 @@ class StockPicking(models.Model):
         res = super()._action_done()
         for picking in self:
             if picking.picking_type_id.code == 'incoming' and picking.picking_type_id.use_create_lots and not picking.picking_type_id.use_existing_lots:
-               picking.name = self.env['ir.sequence'].next_by_code('delivered.picking')
+                picking.name = self.env['ir.sequence'].next_by_code('delivered.picking')
         return res
 
     def action_confirm(self):

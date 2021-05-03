@@ -21,6 +21,7 @@ class ReturnPicking(models.TransientModel):
     _inherit = 'stock.return.picking'
     _description = 'Return Picking'
 
+
     @api.onchange('picking_id')
     def _onchange_picking_id(self):
         move_dest_exists = False
@@ -60,16 +61,30 @@ class ReturnPicking(models.TransientModel):
     @api.model
     def _prepare_stock_return_picking_line_vals_from_move(self, move_line):
         quantity = move_line.qty_done
-        for move in move_line.move_id.move_dest_ids:
-            if move.origin_returned_move_id and move.origin_returned_move_id != move_line.move_id:
-                continue
-            if move.state in ('partially_available', 'assigned') and move.location_dest_id.usage != 'production':
-                quantity -= sum(
-                    move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('product_qty'))
-            elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage == 'production':
-                quantity -= sum(move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
-            elif move.state in ('done'):
-                quantity -= sum(move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
+        if move_line.move_id.move_dest_ids:
+            for move in move_line.move_id.move_dest_ids:
+                if move.origin_returned_move_id and move.origin_returned_move_id != move_line.move_id:
+                    continue
+                if move.state in ('partially_available', 'assigned') and move.location_dest_id.usage != 'production':
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('product_qty'))
+                elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage == 'production':
+                    quantity -= sum(move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
+                elif move.state in ('done'):
+                    quantity -= sum(move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
+        else:
+            for move in move_line.move_id.search([('origin_returned_move_id' ,'=' ,move_line.move_id.id),('location_id' ,'=' ,move_line.move_id.location_dest_id.id)]):
+                if move.origin_returned_move_id and move.origin_returned_move_id != move_line.move_id:
+                    continue
+                if move.state in ('partially_available', 'assigned') and move.location_dest_id.usage != 'production':
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('product_qty'))
+                elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage == 'production':
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
+                elif move.state in ('done'):
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
 
         quantity = float_round(quantity, precision_rounding=move_line.product_uom_id.rounding)
         if quantity > 0.0:
@@ -144,7 +159,7 @@ class ReturnPicking(models.TransientModel):
                 move_orig_to_link |= return_line.move_id \
                     .mapped('move_dest_ids').filtered(lambda m: m.state not in ('cancel')) \
                     .mapped('move_orig_ids').filtered(lambda m: m.state not in ('cancel'))
-                # move_dest_to_link = return_line.move_id.move_orig_ids.mapped('returned_move_ids')
+                move_dest_to_link = return_line.move_id.move_orig_ids.mapped('returned_move_ids')
                 # # link to children of originally returned moves, if any. Note that the use of
                 # # 'return_line.move_id.move_orig_ids.returned_move_ids.move_orig_ids.move_dest_ids'
                 # # instead of 'return_line.move_id.move_orig_ids.move_dest_ids' prevents linking a
@@ -155,7 +170,9 @@ class ReturnPicking(models.TransientModel):
                 #     .mapped('move_dest_ids').filtered(lambda m: m.state not in ('cancel'))
                 # vals['move_orig_ids'] = [(4, m.id) for m in move_orig_to_link]
                 # vals['move_dest_ids'] = [(4, m.id) for m in move_dest_to_link]
+
                 r.write(vals)
+                return_line.move_id.move_dest_ids |= r
                 if new_picking.location_id.usage not in ('internal', 'transit'):
                     new_picking.move_line_ids.create(
                         {
