@@ -267,7 +267,7 @@ class cash(models.Model):
                     self['code'] = self.env['ir.sequence'].next_by_code('code.check.in') or ('New')
 
         for expense in self:
-            res = self.env['account.move'].search([('ref', '=', expense.code), ('ref', '!=', '')])
+            res = self.env['account.move'].search([('ref', '=', expense.code)])
             if not res:
                 if self.payment_type == 'send_money' and self.payment_partner == 'expense' and self.cash_method == 'cash':
                     for expense_cash in self:
