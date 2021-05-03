@@ -5,7 +5,7 @@
             <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
                   <xpath expr="//field[@name='name']" position="after">
-                    <field name="arabic_name"/>
+                    <field name="arabic_name" placeholder="Arabic Name"/>
                 </xpath>
             </field>
         </record>
