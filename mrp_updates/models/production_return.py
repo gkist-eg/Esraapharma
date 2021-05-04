@@ -51,10 +51,10 @@ class ReturnPicking(models.TransientModel):
                 if move.state in ('partially_available', 'assigned') and move.location_id.usage == 'customer':
                     quantity -= sum(
                         move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
-                elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage != 'production':
+                elif move.state in ('partially_available', 'assigned') :
                     quantity -= sum(
                         move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('product_qty'))
-                elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage == 'production':
+                elif move.state in ('partially_available', 'assigned') :
                     quantity -= sum(
                         move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
                 elif move.state in ('done'):
@@ -68,10 +68,10 @@ class ReturnPicking(models.TransientModel):
                 if move.state in ('partially_available', 'assigned') and move.location_id.usage == 'customer':
                     quantity -= sum(
                         move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
-                elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage != 'production':
+                elif move.state in ('partially_available', 'assigned') :
                     quantity -= sum(
                         move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('product_qty'))
-                elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage == 'production':
+                elif move.state in ('partially_available', 'assigned') :
                     quantity -= sum(
                         move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
                 elif move.state in ('done'):
@@ -82,7 +82,7 @@ class ReturnPicking(models.TransientModel):
         if quantity > 0.0:
             return {
                 'product_id': move_line.product_id.id,
-                'quantity': quantity,
+                'quantity': 0,
                 'max_quantity': quantity,
                 'move_id': move_line.move_id.id,
                 'lot_id': move_line.lot_id.id,
