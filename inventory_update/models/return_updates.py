@@ -65,7 +65,10 @@ class ReturnPicking(models.TransientModel):
             for move in move_line.move_id.move_dest_ids:
                 if move.origin_returned_move_id and move.origin_returned_move_id != move_line.move_id:
                     continue
-                if move.state in ('partially_available', 'assigned') and move.location_dest_id.usage != 'production':
+                if move.state in ('partially_available', 'assigned') and move.location_id.usage == 'customer':
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
+                elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage != 'production':
                     quantity -= sum(
                         move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('product_qty'))
                 elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage == 'production':
@@ -76,7 +79,10 @@ class ReturnPicking(models.TransientModel):
             for move in move_line.move_id.search([('origin_returned_move_id' ,'=' ,move_line.move_id.id),('location_id' ,'=' ,move_line.move_id.location_dest_id.id)]):
                 if move.origin_returned_move_id and move.origin_returned_move_id != move_line.move_id:
                     continue
-                if move.state in ('partially_available', 'assigned') and move.location_dest_id.usage != 'production':
+                if move.state in ('partially_available', 'assigned') and move.location_id.usage == 'customer':
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
+                elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage != 'production':
                     quantity -= sum(
                         move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('product_qty'))
                 elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage == 'production':

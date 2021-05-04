@@ -4,11 +4,6 @@ from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_round
 
 
-
-
-
-
-
 class ReturnPicking(models.TransientModel):
     _inherit = 'stock.return.picking'
     _description = 'Return Picking'
@@ -49,21 +44,45 @@ class ReturnPicking(models.TransientModel):
     @api.model
     def _prepare_stock_return_picking_line_vals_from_move(self, move_line):
         quantity = move_line.qty_done
-        for move in move_line.move_id.move_dest_ids:
-            if move.origin_returned_move_id and move.origin_returned_move_id != move_line.move_id:
-                continue
-            if move.state in ('partially_available', 'assigned') :
-                quantity -= sum(move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('product_qty'))
-            elif move.state in ('partially_available', 'assigned'):
-                quantity -= sum(move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
-            elif move.state in ('done'):
-                quantity -= sum(move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
+        if move_line.move_id.move_dest_ids:
+            for move in move_line.move_id.move_dest_ids:
+                if move.origin_returned_move_id and move.origin_returned_move_id != move_line.move_id:
+                    continue
+                if move.state in ('partially_available', 'assigned') and move.location_id.usage == 'customer':
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
+                elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage != 'production':
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('product_qty'))
+                elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage == 'production':
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
+                elif move.state in ('done'):
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
+        else:
+            for move in move_line.move_id.search([('origin_returned_move_id', '=', move_line.move_id.id),
+                                                  ('location_id', '=', move_line.move_id.location_dest_id.id)]):
+                if move.origin_returned_move_id and move.origin_returned_move_id != move_line.move_id:
+                    continue
+                if move.state in ('partially_available', 'assigned') and move.location_id.usage == 'customer':
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
+                elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage != 'production':
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('product_qty'))
+                elif move.state in ('partially_available', 'assigned') and move.location_dest_id.usage == 'production':
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
+                elif move.state in ('done'):
+                    quantity -= sum(
+                        move.move_line_ids.filtered(lambda x: x.lot_id == move_line.lot_id).mapped('qty_done'))
 
         quantity = float_round(quantity, precision_rounding=move_line.product_uom_id.rounding)
         if quantity > 0.0:
             return {
                 'product_id': move_line.product_id.id,
-                'quantity': 0,
+                'quantity': quantity,
                 'max_quantity': quantity,
                 'move_id': move_line.move_id.id,
                 'lot_id': move_line.lot_id.id,
