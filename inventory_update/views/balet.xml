@@ -38,6 +38,18 @@
                 </p>
             </field>
         </record>
+    <record id="view_production_lot_tree" model="ir.ui.view">
+        <field name="name">stock.production.lot</field>
+        <field name="model">stock.production.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='company_id']" position="after">
+               <field name="balet_ids" widget="many2many_tags"/>
+            </xpath>
+
+        </field>
+    </record>
 
         <!-- This Menu Item must have a parent and an action -->
         <menuitem id="menu_balet_action" name="Balet Location" action="action_balet_location" sequence="30"
