@@ -2,28 +2,28 @@ from datetime import date
 from odoo import api, models, _
 from odoo import fields
 
+
+
 class ResUser(models.Model):
     _inherit = 'res.users'
 
     multi_warehouse = fields.Many2many(
         'stock.warehouse', string='Warehouse',
     )
+
+
 class Partner(models.Model):
     _inherit = 'res.partner'
 
-
-
-
     limit_credit = fields.Float(string='Limit Of Credit', store=True)
+
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     _sql_constraints = [
-         ('name', 'UNIQUE (name,company_id)',
-          'Sales Order Number is unique')]
-
-
+        ('name', 'UNIQUE (name,company_id)',
+         'Sales Order Number is unique')]
 
     credit = fields.Monetary(string='Total Receivable', help="Total amount this customer owes you.",
                              compute='get_credit')
@@ -54,7 +54,7 @@ class SaleOrder(models.Model):
         required=True, domain=_getUserwarehous)
     warehouse = fields.Many2one(
         'stock.warehouse', string='no',
-       domain=_getUserwarehous)
+        domain=_getUserwarehous)
 
     @api.onchange('partner_id')
     def onchange_partner_id_warning(self):
@@ -88,10 +88,10 @@ class SaleOrder(models.Model):
                 return {'warning': warning}
         return res
 
-    #name = fields.Char(string='Order Reference', required=True, copy=False,
-     #              index=True, default=lambda self: _(''),
-     #              states={'draft': [('readonly', False)], 'sent': [('readonly', False)],
-      #                     'approve': [('readonly', False)]})
+    # name = fields.Char(string='Order Reference', required=True, copy=False,
+    #              index=True, default=lambda self: _(''),
+    #              states={'draft': [('readonly', False)], 'sent': [('readonly', False)],
+    #                     'approve': [('readonly', False)]})
 
 
 class Warehouses(models.Model):
@@ -100,11 +100,3 @@ class Warehouses(models.Model):
     sale_store = fields.Boolean(
         string="On Sale Store",
         store=True)
-
-
-
-
-
-
-
-

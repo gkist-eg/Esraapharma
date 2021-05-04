@@ -328,7 +328,7 @@
                                             </td>
 
                                             <td style="border: 1px solid black;">
-                                                <span  t-esc="snln_line['price']" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
+                                                <span  t-esc="snln_line['publicprice']" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
                                             </td>
 
                                             <td style="border: 1px solid black;">
@@ -534,7 +534,7 @@
                                             </td>
 
                                             <td style="border: 1px solid black;">
-                                                <span  t-esc="snln_line['price']"  t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
+                                                <span  t-esc="snln_line['publicprice']"  t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
                                             </td>
 
 <td style="border: 1px solid black;">
