@@ -25,7 +25,8 @@ class ItemTransfer(models.Model):
     _sql_constraints = [
         ('name_company_uniq', 'unique (name)', 'Transfer Referance must be unique per company !'),
     ]
-    note=fields.Char('Note')
+    note = fields.Char('Note')
+
     def confirm_qty(self):
         """Actions to perform when cancelling a purchase request line."""
         self.write({'state': 'qty_approved'})
@@ -195,7 +196,8 @@ class ItemTransfer(models.Model):
     @api.depends('state')
     def _compute_can_done(self):
         x = self.env['stock.picking'].search([
-            ('origin', 'in', ((self.name + '-01'), (self.name), (self.name + '-02'))), ('state', '=', 'done'), ('location_id', '=', self.location_id.id)
+            ('origin', 'in', ((self.name + '-01'), (self.name), (self.name + '-02'))), ('state', '=', 'done'),
+            ('location_id', '=', self.location_id.id)
         ])
         if x:
             for line in x:
@@ -316,7 +318,7 @@ class ItemTransfer(models.Model):
 
                          }
                          ))
-                if line.product_qty > line.qty_confirm :
+                if line.product_qty > line.qty_confirm:
                     order_lines.append(
                         (0, 0,
                          {
@@ -325,7 +327,7 @@ class ItemTransfer(models.Model):
                              'product_uom': line.product_id.uom_id.id,
                              'location_id': self.location_id.id,
                              'location_dest_id': self.location_dest_id.id,
-                             'product_uom_qty':  line.qty_confirm,
+                             'product_uom_qty': line.qty_confirm,
                              'origin': self.name,
 
                          }
@@ -338,7 +340,7 @@ class ItemTransfer(models.Model):
                              'product_uom': line.product_id.uom_id.id,
                              'location_id': self.location_id.id,
                              'location_dest_id': self.location_dest_id.id,
-                             'product_uom_qty': line.product_qty-line.qty_confirm,
+                             'product_uom_qty': line.product_qty - line.qty_confirm,
                              'origin': self.name,
 
                          }
@@ -423,7 +425,8 @@ class ItemTransfer(models.Model):
 
     def make_item_transfer(self):
         x = self.env['stock.picking'].search([
-            ('origin', 'in', ((self.name + '-01'), (self.name), (self.name + '-02'))), ('state', '=', 'done'), ('location_id', '=', self.location_id.id)
+            ('origin', 'in', ((self.name + '-01'), (self.name), (self.name + '-02'))), ('state', '=', 'done'),
+            ('location_id', '=', self.location_id.id)
         ])
         for picking in x:
             order_lines = []
@@ -568,6 +571,11 @@ class ItemTransferLine(models.Model):
 
     cancelled = fields.Boolean(
         string="Cancelled", readonly=True, default=False, copy=False)
+
+    @api.onchange('product_qty')
+    def product_ty(self):
+        if self.product_qty:
+            self.qty_confirm = self.product_qty
 
     @api.onchange('product_id')
     def onchange_product_id(self):

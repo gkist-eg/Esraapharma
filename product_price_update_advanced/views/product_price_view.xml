@@ -11,6 +11,8 @@
                         <group>
                             <field name="name" style="width:55%%"/>
                             <field name="sale_price" style="width:25%%"/>
+                            <field name="tax_ids"  widget="many2many_tags" style="width:25%%"/>
+                            <field name="company_id"  invisible="1"/>
                         </group>
                         <group></group>
                     </group>
