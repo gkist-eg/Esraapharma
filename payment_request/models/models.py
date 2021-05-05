@@ -67,6 +67,9 @@ class PaymentRequest(models.Model):
                     done=0
                     lines = line.move_line_ids.search(
                         [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=','release'), ('location_id.stock_usage',  '=', 'qrtin'), ('state',  '=', 'done')])
+                    if not lines :
+                        lines = line.move_line_ids.search(
+                            [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'), ('state', '=', 'done')])
                     done = sum([quant.product_uom_id._compute_quantity(quant.qty_done , quant.product_id.uom_id) for quant in lines])
                     request = line.move_line_ids.search(
                         [('lot_id', '=', move.lot_id.id),
@@ -143,6 +146,15 @@ class PaymentRequest(models.Model):
                             pickings.append(res.id)
                         if not move.lot_id:
                             pickings.append(res.id)
+                if not pickings:
+                    for move in res.move_line_ids:
+                        if res.id not in don_pickings:
+                            lines = res.move_line_ids.search(
+                                [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'), ('state', '=', 'done')])
+                            if lines:
+                                pickings.append(res.id)
+                            if not move.lot_id:
+                                pickings.append(res.id)
             domain = {'picking_ids': [('id', 'in', pickings)]}
             return {'domain': domain}
 
