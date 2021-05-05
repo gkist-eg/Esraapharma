@@ -689,6 +689,14 @@ class Invoceder(models.Model):
 class Move(models.Model):
     _name = 'account.move'
     _inherit = 'account.move'
+
+    @api.depends('company_id', 'invoice_filter_type_domain')
+    def _compute_suitable_journal_ids2(self):
+        for m in self:
+            domain = [('company_id', '=', m.company_id.id)]
+            m.suitable_journal_ids = self.env['account.journal'].search(domain)
+    suitable_journal_ids = fields.Many2many('account.journal', compute='_compute_suitable_journal_ids2')
+
     cash_discount_sale = fields.Float('Cash Discount', store=True)
     dis_discount_sale = fields.Float('Distributor Discount', store=True)
     cust_categ_id = fields.Many2one(string="Customer Category", related="partner_id.categ_id")
