@@ -17,7 +17,7 @@
   <xpath expr="//div[@id='informations']" position="before">
         <br/>
             </xpath>
-    <xpath expr="//div[@id='inside']" position="before">
+    <xpath expr="//div[@id='informations']" position="inside">
           <div t-if="o.payment_term_id" class="col-3 bm-2">
                     <strong>Payment Term :</strong>
                     <p t-field="o.payment_term_id" class="m-0"/>
