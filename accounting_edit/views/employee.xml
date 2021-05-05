@@ -1,10 +1,9 @@
 <odoo>
-
      <record id="eddt" model="ir.ui.view">
             <field name="model">hr.employee</field>
             <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
-                  <xpath expr="//field[@name='job_title']" position="before">
+                  <xpath expr="//field[@name='job_title']" position="after">
                     <field name="arabic_name" placeholder="Arabic Name"/>
                 </xpath>
             </field>
@@ -13,7 +12,15 @@
             <field name="inherit_id" ref="hr.view_employee_tree"/>
             <field name="arch" type="xml">
                   <xpath expr="//field[@name='name']" position="after">
-                    <field name="arabic_name" placeholder="Arabic Name"/>
+                    <field name="arabic_name"/>
+                </xpath>
+            </field>
+        </record><record id="eddt_tree_user" model="ir.ui.view">
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                  <xpath expr="//field[@name='name']" position="after">
+                    <field name="employee_arabic_name"/>
                 </xpath>
             </field>
         </record>
