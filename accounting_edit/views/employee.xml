@@ -4,6 +4,14 @@
             <field name="model">hr.employee</field>
             <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
+                  <xpath expr="//field[@name='job_title']" position="before">
+                    <field name="arabic_name" placeholder="Arabic Name"/>
+                </xpath>
+            </field>
+        </record><record id="eddt_tree" model="ir.ui.view">
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_tree"/>
+            <field name="arch" type="xml">
                   <xpath expr="//field[@name='name']" position="after">
                     <field name="arabic_name" placeholder="Arabic Name"/>
                 </xpath>

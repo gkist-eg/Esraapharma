@@ -557,7 +557,7 @@
 
                                 </td>
                                   <td style="border: 1px solid black;">
-                                     <span t-field="l.discount"  t-options='{"widget": "float", "precision": 2}'/>
+                                     <span t-field="l.pharmacy_discount"  t-options='{"widget": "float", "precision": 2}'/>
 
                                 </td>
                                      <td style="border: 1px solid black;">
@@ -598,7 +598,7 @@
 
                                 </td>
                                        <td style="border: 1px solid black;" t-if="l.quantity != 0">
-                                     <span t-esc="'%.2f'% ((l.price_total-price_subtotal)/l.quantity)"  widget='float'/>
+                                     <span t-esc="'%.2f'% ((l.price_total-l.price_subtotal)/l.quantity)"  widget='float'/>
 
                                 </td>
                                      <td style="border: 1px solid black;" t-if="l.quantity == 0">
@@ -606,11 +606,11 @@
 
                                 </td>
                                       <td style="border: 1px solid black;">
-                                     <span t-esc="'%.2f'% ((l.price_total-price_subtotal)/l.quantity)*l.quantity" t-options='{"widget": "float", "precision": 2}'/>
+                                     <span t-esc=" ((l.price_total-l.price_subtotal))" t-options='{"widget": "float", "precision": 2}'/>
 
                                 </td>
                                        <td style="border: 1px solid black;">
-                                     <span t-esc="'%.2f'% ((l.price_subtotal+(((l.price_total-price_subtotal)/l.quantity)*l.quantity))"  t-options='{"widget": "float", "precision": 2}'/>
+                                     <span t-esc=" (l.price_total)"  t-options='{"widget": "float", "precision": 2}'/>
 
                                 </td>
 
