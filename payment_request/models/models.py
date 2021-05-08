@@ -175,7 +175,7 @@ class PaymentRequest(models.Model):
                     ])
                     for b in bills:
                         if b.move_id not in order.bill_ids:
-                            order.bill_ids += b.invoice_id
+                            order.bill_ids += b.move_id
                 order.bill_numbers = len(order.bill_ids)
 
     def button_confirmed(self):
