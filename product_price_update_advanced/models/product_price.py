@@ -27,8 +27,8 @@ class ProductPrice(models.TransientModel):
     _name = 'product.price'
 
     name = fields.Many2one('product.template', string="Product", required=True, domain=[('sale_ok', '=',True)],)
-    sale_price = fields.Integer(string="Sale Price", required=True)
-    cost_price = fields.Integer(string="Cost Price")
+    sale_price = fields.Float(string="Sale Price", required=True)
+    cost_price = fields.Float(string="Cost Price")
     tax_ids = fields.Many2many('account.tax', domain=[('type_tax_use', '=', 'sale')], string='Taxes', check_company=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company, )
 
