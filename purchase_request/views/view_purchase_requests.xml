@@ -139,6 +139,7 @@
                     <field name="requested_by_id"/>
                     <field name="approver_id"/>
                     <field name="departmnt_id"/>
+                    <field name="product_id"/>
                     <field name="request_category_id"/>
                 </search>
             </field>

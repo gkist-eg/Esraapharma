@@ -58,6 +58,7 @@ class PurchaseRequests(models.Model):
     due_date = fields.Date("Due Date", tracking=True)
     attachment_ids = fields.Many2many('ir.attachment', string='Attachments', tracking=True)
     request_category_id = fields.Many2one('product.category', string='Request Category', tracking=True, required=True)
+    product_id = fields.Many2one('product.product',related='request_line_ids.product_id', string='Requested Product',)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('to_be_approved', 'To Be Approved'),
@@ -225,7 +226,6 @@ class PurchaseRequests(models.Model):
                     'purchase_request_line': [line.id],
 
                 }))
-                print("order", order_linee)
 
         return {
             'name': 'New Quotation',

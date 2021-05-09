@@ -17,4 +17,38 @@
 
         </field>
     </record>
+     <template id="report_mrporder_inherit" inherit_id="mrp.report_mrporder">
+            <xpath expr="//div[@class='row mt32 mb32']" position="inside">
+
+
+                <div t-if="o.batch" class="col-auto" name="batch">
+                            <strong>Batch Number:</strong>
+                            <p t-field="o.batch"/>
+                        </div>
+
+
+            </xpath>
+         <xpath expr="//div[@class='row mt32 mb32'][2]" position="replace">
+                 <br/>
+                <div t-if="o.move_finished_ids">
+                        <h5>Finished Product</h5>
+                        <table class="table table-condensed">
+                            <tr>
+                                <td class="text-center"><strong>Product Code</strong></td>
+                                <td class="text-center"><strong>Product Name</strong></td>
+                                <td class="text-center"><strong>Quantity</strong></td>
+                            </tr>
+                            <tr t-foreach="o.move_finished_ids" t-as="f">
+                                <td class="text-center"><span t-field="f.product_id.default_code"/></td>
+                                <td class="text-center"><span t-field="f.product_id.name"/></td>
+                                <td class="text-center"><span t-field="f.product_qty"/><span t-field="f.product_uom"/></td>
+                            </tr>
+                        </table>
+                    </div>
+
+            </xpath>
+            </template>
+
+
+
 </odoo>
