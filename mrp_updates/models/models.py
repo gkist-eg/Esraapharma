@@ -30,7 +30,7 @@ class MrpUpdates(models.Model):
     batch = fields.Char('Batch Number', index=True, copy=True, tracking=True, states={'draft': [('readonly', False)]},
                         readonly=True)
     name = fields.Char(
-        'Reference', copy=False, readonly=False, default=lambda x: _('New'))
+        'Reference', copy=False, readonly=True, default=lambda x: _('New'))
     check_repack = fields.Selection([
         ('normal', 'Normal'), ('repack', 'Repackaging'), ('process', 'Reprocess')
     ], string='Type ',
@@ -64,6 +64,10 @@ class MrpUpdates(models.Model):
 
     def post_inventory(self):
         for production in self:
+            if any(production.workorder_ids.filtered(lambda mo: mo.state not in ('done', 'cancel'))):
+                raise UserError (_('There is unfinished work orders please finish it first'))
+
+
             production._post_inventory()
         return True
 
@@ -99,6 +103,12 @@ class MrpUpdates(models.Model):
             order._cal_price(moves_to_do)
 
             moves_to_finish = order.move_finished_ids.filtered(lambda x: x.state not in ('done', 'cancel') and x.quantity_done >0.0)
+
+            for move in moves_to_finish:
+                for line in move.move_line_ids:
+                    if line.product_id.use_expiration_date and (
+                            not line.lot_id.prod_date or not line.lot_id.expiration_date):
+                        raise UserError(_('Please Sit Lot Production and expiration Date for lot %s')% (line.lot_id.display_name))
             moves_to_finish = moves_to_finish._action_done(cancel_backorder=cancel_backorder)
             order.action_assign()
             consume_move_lines = moves_to_do.mapped('move_line_ids')
@@ -520,6 +530,9 @@ class MrpUpdates(models.Model):
             else:
                 self.bom_id = False
                 self.product_uom_id = self.product_id.uom_id.id
+    def _get_quantity_to_backorder(self):
+        self.ensure_one()
+        return max(self.product_qty - self.qty_producing, 1)
 
     def _generate_backorder_productions(self, close_mo=True):
         backorders = self.env['mrp.production']
