@@ -67,7 +67,7 @@ class StockMove(models.Model):
                 })
                 check_vals_list += picking_check_vals_list
             if move.location_id.stock_usage == 'qrtin':
-                quality_checks = self.env['quality.check'].sudo().search([('product_id','=',move.product_id.id), ('picking_id', '=', False), ('finished_lot_id', '=', move.restrict_lot_id.id)])
+                quality_checks = self.env['quality.check'].sudo().search([('product_id','=',move.product_id.id), ('picking_id', '=', False), ('team_id.read_users_ids', 'in', self.env.user.id), ('finished_lot_id', '=', move.restrict_lot_id.id)])
                 quality_checks.sudo().write({ 'picking_id': move.picking_id.id,})
             if check_vals_list:
                 self.env['quality.check'].sudo().create(check_vals_list)
