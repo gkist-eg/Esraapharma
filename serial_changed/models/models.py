@@ -123,17 +123,18 @@ class Move(models.Model):
 
     def action_post(self):
         for invoice in self:
-            if self.move_type != 'entry':
-                if invoice.partner_id.change_serial and invoice.move_type == 'out_invoice' and invoice.move_type != 'entry':
-                    invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
-                if invoice.warehouse_id.sale_store and invoice.move_type == 'out_invoice' and invoice.move_type != 'entry':
-                    invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
-                else:
-                    if invoice.move_type == 'out_invoice' and not invoice.partner_id.change_serial:
+            if not self.name:
+                if self.move_type != 'entry':
+                    if invoice.partner_id.change_serial and invoice.move_type == 'out_invoice' and invoice.move_type != 'entry':
                         invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
-                if invoice.move_type == 'out_refund' and invoice.move_type != 'entry':
-                    invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
-                if invoice.move_type == 'in_refund' and invoice.move_type != 'entry':
-                    invoice.name = self.env['ir.sequence'].next_by_code('refund_bill')
+                    if invoice.warehouse_id.sale_store and invoice.move_type == 'out_invoice' and invoice.move_type != 'entry':
+                        invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
+                    else:
+                        if invoice.move_type == 'out_invoice' and not invoice.partner_id.change_serial:
+                            invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
+                    if invoice.move_type == 'out_refund' and invoice.move_type != 'entry':
+                        invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
+                    if invoice.move_type == 'in_refund' and invoice.move_type != 'entry':
+                        invoice.name = self.env['ir.sequence'].next_by_code('refund_bill')
 
         return super().action_post()
