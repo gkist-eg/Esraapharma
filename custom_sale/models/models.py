@@ -13,6 +13,7 @@ def round_half_up(n, decimals=0):
     multiplier = 10 ** decimals
     return math.floor(n * multiplier + 0.5) / multiplier
 
+
 class PriceList(models.Model):
     _name = 'product.pricelist'
     _inherit = 'product.pricelist'
@@ -65,8 +66,8 @@ class Partner(models.Model):
 class Sale(models.Model):
     _name = 'sale.order'
     _inherit = 'sale.order'
-    cash_discount_sale=fields.Float('Cash Discount',store=True)
-    dis_discount_sale=fields.Float('Distributor Discount',store=True)
+    cash_discount_sale = fields.Float('Cash Discount', store=True)
+    dis_discount_sale = fields.Float('Distributor Discount', store=True)
 
     @api.onchange('partner_id')
     def _onchange_ty(self):
@@ -160,11 +161,11 @@ class Sale(models.Model):
 class ORder(models.Model):
     _name = 'sale.order.line'
     _inherit = 'sale.order.line'
-    cash_discount_sale = fields.Float('Cash Dis%',related='order_id.cash_discount_sale' ,store=True)
-    dis_discount_sale = fields.Float('Dist Dis%',related='order_id.dis_discount_sale' , store=True)
+    cash_discount_sale = fields.Float('Cash Dis%', related='order_id.cash_discount_sale', store=True)
+    dis_discount_sale = fields.Float('Dist Dis%', related='order_id.dis_discount_sale', store=True)
 
-    sale_type = fields.Selection(string="Product Type", selection=[('sale', 'Sale'),('bouns', 'Bouns')],
-                                 required=False,default='sale' )
+    sale_type = fields.Selection(string="Product Type", selection=[('sale', 'Sale'), ('bouns', 'Bouns')],
+                                 required=False, default='sale')
     dist_discount = fields.Float(string="", related="order_id.partner_id.dist_discount", store=True)
     cash_discount = fields.Float(string="", related="order_id.partner_id.cash_discount", store=True)
     real_price = fields.Float(string="Real Priice", related="product_id.list_price", store=True)
@@ -188,7 +189,7 @@ class ORder(models.Model):
         for line in self:
             if line.product_id:
                 if line.sale_type == 'sale':
-                    price3 = line.product_uom_qty*line.price_unit * ((line.discount or 0.0)/100)
+                    price3 = line.product_uom_qty * line.price_unit * ((line.discount or 0.0) / 100)
 
                     line.pharmacy_discount = price3
                 else:
@@ -229,7 +230,8 @@ class ORder(models.Model):
                                                     product=line.product_id, partner=line.order_id.partner_shipping_id)
                     line.update({
                         'dist_amount': price1 * ((line.order_id.dis_discount_sale or 0.0) / 100) * line.product_uom_qty,
-                        'cash_amount': price2 * ((line.order_id.cash_discount_sale or 0.0) / 100) * line.product_uom_qty,
+                        'cash_amount': price2 * (
+                                    (line.order_id.cash_discount_sale or 0.0) / 100) * line.product_uom_qty,
                         'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                         'price_total': taxes['total_included'],
                         'price_subtotal': taxes['total_excluded'],
@@ -547,7 +549,6 @@ class Invoceder(models.Model):
             else:
                 rec.tax_name = ''
 
-
     @api.model
     def _get_price_total_and_subtotal_model(self, price_unit, quantity, discount,
                                             currency, product, partner, taxes,
@@ -569,8 +570,8 @@ class Invoceder(models.Model):
         # Compute 'price_subtotal'.
         if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
             if product:
-                x=round((price_unit * (1.0 - discount / 100.0)), 3)
-                price_unit_wo_discount1 =round_half_up(x,2)
+                x = round((price_unit * (1.0 - discount / 100.0)), 3)
+                price_unit_wo_discount1 = round_half_up(x, 2)
                 price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
                 price_unit_wo_discount = price_unit_wo_discount2 * (1 - (partner.cash_discount or 0.0) / 100.0)
             else:
@@ -695,21 +696,25 @@ class Move(models.Model):
         for m in self:
             domain = [('company_id', '=', m.company_id.id)]
             m.suitable_journal_ids = self.env['account.journal'].search(domain)
+
     suitable_journal_ids = fields.Many2many('account.journal', compute='_compute_suitable_journal_ids2')
 
     @api.depends('invoice_origin')
     def _compute_invoice_return(self):
         for m in self:
-           x = self.env['account.move'].search([('invoice_origin','=',m.invoice_origin)])
-           t=[]
-           if x:
-             for l in x:
-               m.return_source=l.name
-           else:
+            if m.invoice_origin:
+                x = self.env['account.move'].search([('invoice_origin', '=', m.invoice_origin)])
+                t = []
+                if x:
+                    for l in x:
+                        m.return_source = l.name
+                else:
 
-               m.return_source=False
+                    m.return_source = False
+            else:
+                m.return_source = False
 
-    return_source=fields.Char('Return Source',compute='_compute_invoice_return')
+    return_source = fields.Char('Return Source', compute='_compute_invoice_return')
     cash_discount_sale = fields.Float('Cash Discount', store=True)
     dis_discount_sale = fields.Float('Distributor Discount', store=True)
     cust_categ_id = fields.Many2one(string="Customer Category", related="partner_id.categ_id")
