@@ -697,6 +697,19 @@ class Move(models.Model):
             m.suitable_journal_ids = self.env['account.journal'].search(domain)
     suitable_journal_ids = fields.Many2many('account.journal', compute='_compute_suitable_journal_ids2')
 
+    @api.depends('invoice_origin')
+    def _compute_invoice_return(self):
+        for m in self:
+           x = self.env['account.move'].search([('invoice_origin','=',m.invoice_origin)])
+           t=[]
+           if x:
+             for l in x:
+               m.return_source=l.name
+           else:
+
+               m.return_source=False
+
+    return_source=fields.Char('Return Source',compute='_compute_invoice_return')
     cash_discount_sale = fields.Float('Cash Discount', store=True)
     dis_discount_sale = fields.Float('Distributor Discount', store=True)
     cust_categ_id = fields.Many2one(string="Customer Category", related="partner_id.categ_id")
