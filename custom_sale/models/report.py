@@ -72,11 +72,12 @@ class DetailsReport(models.TransientModel):
     to_date = fields.Date(string="", required=False, )
     invoices = fields.Many2many(comodel_name="account.move")
     lines = fields.Many2many(comodel_name="account.move.line")
-    state = fields.Selection(string="", selection=[('all', 'All Partner'), ('only', 'Only Partner'), ],
+    state = fields.Selection(string="", selection=[('all', 'All Partner'), ('only', 'Only Partner'),('category','Category') ],
                              required=False, default='all')
     partner_ids = fields.Many2many(comodel_name="res.partner", string='Partner')
     return_inv = fields.Boolean('Returns')
     invoice_inv = fields.Boolean('Invoices',default=True)
+    category_type = fields.Many2one(comodel_name="category.customer", string="", )
 
     @api.onchange('state')
     def _onchange_FIELD_NAME(self):
@@ -90,6 +91,11 @@ class DetailsReport(models.TransientModel):
             if rec.partner_ids:
                 for partner in rec.partner_ids:
                     partners.append(partner.id)
+            elif rec.category_type:
+                    customer = self.env['res.partner'].search(
+                        [('categ_id.category_type', '=', rec.category_type.category_type)])
+                    for partner in customer:
+                        partners.append(partner.id)
             else:
                 customer = self.env['res.partner'].search([])
                 for partner in customer:
@@ -100,46 +106,88 @@ class DetailsReport(models.TransientModel):
         for rec in self:
             rec.invoices = False
             partners = rec.get_partner()
-            if self.invoice_inv:
-                invoices = self.env['account.move'].search([
-                    ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                        'move_type', '=', 'out_invoice'), ('partner_id', 'in', partners)
+            if self.state == 'category':
+                if self.invoice_inv:
+                    invoices = self.env['account.move'].search([
+                        ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
+                            'move_type', '=', 'out_invoice'), ('partner_id', 'in', partners)
                     ])
 
-                # rec.write({'invoices':[(6,0,invoice)]})
-                lines = self.env['account.move.line'].search([
-                    ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
-                print(lines.ids)
-                rec.invoices = [(6, 0, invoices.ids)]
-                rec.lines = [(6, 0, lines.ids)]
-                print(rec.lines)
-            if self.return_inv:
-                invoices = self.env['account.move'].search([
-                    ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                        'move_type', '=', 'out_refund'), ('partner_id', 'in', partners)
+                    # rec.write({'invoices':[(6,0,invoice)]})
+                    lines = self.env['account.move.line'].search([
+                        ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
+                    print(lines.ids)
+                    rec.invoices = [(6, 0, invoices.ids)]
+                    rec.lines = [(6, 0, lines.ids)]
+                    print(rec.lines)
+                if self.return_inv:
+                    invoices = self.env['account.move'].search([
+                        ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
+                            'move_type', '=', 'out_refund'), ('partner_id', 'in', partners)
                     ])
 
-                # rec.write({'invoices':[(6,0,invoice)]})
-                lines = self.env['account.move.line'].search([
-                    ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
-                print(lines.ids)
-                rec.invoices = [(6, 0, invoices.ids)]
-                rec.lines = [(6, 0, lines.ids)]
-                print(rec.lines)
-            if self.invoice_inv and self.return_inv:
-                invoices = self.env['account.move'].search([
-                    ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                        'move_type', 'in',('out_refund','out_invoice') ), ('partner_id', 'in', partners)
-                ])
+                    # rec.write({'invoices':[(6,0,invoice)]})
+                    lines = self.env['account.move.line'].search([
+                        ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
+                    print(lines.ids)
+                    rec.invoices = [(6, 0, invoices.ids)]
+                    rec.lines = [(6, 0, lines.ids)]
+                    print(rec.lines)
+                if self.invoice_inv and self.return_inv:
+                    invoices = self.env['account.move'].search([
+                        ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
+                            'move_type', 'in', ('out_refund', 'out_invoice')), ('partner_id', 'in', partners)
+                    ])
 
-                # rec.write({'invoices':[(6,0,invoice)]})
-                lines = self.env['account.move.line'].search([
-                    ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
-                print(lines.ids)
-                rec.invoices = [(6, 0, invoices.ids)]
-                rec.lines = [(6, 0, lines.ids)]
-                print(rec.lines)
-            return self.env.ref('custom_sale.report_wizard_detail').report_action(self)
+                    # rec.write({'invoices':[(6,0,invoice)]})
+                    lines = self.env['account.move.line'].search([
+                        ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
+                    print(lines.ids)
+                    rec.invoices = [(6, 0, invoices.ids)]
+                    rec.lines = [(6, 0, lines.ids)]
+                    print(rec.lines)
+                return self.env.ref('custom_sale.report_wizard_detail').report_action(self)
+            else:
+                if self.invoice_inv:
+                    invoices = self.env['account.move'].search([
+                        ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
+                            'move_type', '=', 'out_invoice'), ('partner_id', 'in', partners),('cust_categ_id.category_type','=',self.category_type.category_type)
+                    ])
+
+                    # rec.write({'invoices':[(6,0,invoice)]})
+                    lines = self.env['account.move.line'].search([
+                        ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
+                    print(lines.ids)
+                    rec.invoices = [(6, 0, invoices.ids)]
+                    rec.lines = [(6, 0, lines.ids)]
+                    print(rec.lines)
+                if self.return_inv:
+                    invoices = self.env['account.move'].search([
+                        ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
+                            'move_type', '=', 'out_refund'), ('partner_id', 'in', partners)
+                    ])
+
+                    # rec.write({'invoices':[(6,0,invoice)]})
+                    lines = self.env['account.move.line'].search([
+                        ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
+                    print(lines.ids)
+                    rec.invoices = [(6, 0, invoices.ids)]
+                    rec.lines = [(6, 0, lines.ids)]
+                    print(rec.lines)
+                if self.invoice_inv and self.return_inv:
+                    invoices = self.env['account.move'].search([
+                        ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
+                            'move_type', 'in', ('out_refund', 'out_invoice')), ('partner_id', 'in', partners)
+                    ])
+
+                    # rec.write({'invoices':[(6,0,invoice)]})
+                    lines = self.env['account.move.line'].search([
+                        ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
+                    print(lines.ids)
+                    rec.invoices = [(6, 0, invoices.ids)]
+                    rec.lines = [(6, 0, lines.ids)]
+                    print(rec.lines)
+                return self.env.ref('custom_sale.report_wizard_detail').report_action(self)
 
 
 class BalanceReport(models.TransientModel):
