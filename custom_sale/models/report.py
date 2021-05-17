@@ -92,10 +92,10 @@ class DetailsReport(models.TransientModel):
                 for partner in rec.partner_ids:
                     partners.append(partner.id)
             elif rec.category_type:
-                    customer = self.env['res.partner'].search(
-                        [('categ_id.category_type', '=', rec.category_type.category_type)])
-                    for partner in customer:
-                        partners.append(partner.id)
+                customer = self.env['res.partner'].search(
+                    [('categ_id.category_type', '=', rec.category_type.category_type)])
+                for partner in customer:
+                    partners.append(partner.id)
             else:
                 customer = self.env['res.partner'].search([])
                 for partner in customer:
@@ -151,7 +151,7 @@ class DetailsReport(models.TransientModel):
                 if self.invoice_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                            'move_type', '=', 'out_invoice'), ('cust_categ_id.category_type','=',self.category_type.category_type),('partner_id', 'in', partners)
+                            'move_type', '=', 'out_invoice'), ('partner_id', 'in', partners)
                     ])
 
                     # rec.write({'invoices':[(6,0,invoice)]})
@@ -164,7 +164,7 @@ class DetailsReport(models.TransientModel):
                 if self.return_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                            'move_type', '=', 'out_refund'),('cust_categ_id.category_type','=',self.category_type.category_type), ('partner_id', 'in', partners)
+                            'move_type', '=', 'out_refund'), ('partner_id', 'in', partners)
                     ])
 
                     # rec.write({'invoices':[(6,0,invoice)]})
@@ -177,7 +177,7 @@ class DetailsReport(models.TransientModel):
                 if self.invoice_inv and self.return_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                            'move_type', 'in', ('out_refund', 'out_invoice')), ('cust_categ_id.category_type','=',self.category_type.category_type),('partner_id', 'in', partners)
+                            'move_type', 'in', ('out_refund', 'out_invoice')),('partner_id', 'in', partners)
                     ])
 
                     # rec.write({'invoices':[(6,0,invoice)]})
