@@ -115,7 +115,7 @@ class ChangeInvoicesRequest(models.Model):
                                 invoice.write({
                                     'date': record.reserves.date,
                                     'name': record.reserves.inv_number,
-                                    })
+                                })
 
                 else:
                     raise UserError(_(
@@ -155,9 +155,7 @@ class ReserveInvoicesRequest(models.Model):
                         for seq in self:
                             order_num += self.env['ir.sequence'].next_by_code('sale.order.quot')
                         for seq in self:
-                            inv_num += self.env['ir.sequence'].next_by_code('draft_invoice')
-
-
+                            inv_num += self.env['ir.sequence'].next_by_code('customer_invoice')
 
                         self.env['reserve.invoices'].create({
                             'order_number': order_num,
@@ -173,7 +171,7 @@ class ReserveInvoicesRequest(models.Model):
                             for seq in self:
                                 order_num += self.env['ir.sequence'].next_by_code('sale.order.quot')
                             for seq in self:
-                                inv_num += self.env['ir.sequence'].next_by_code('draft_invoice')
+                                inv_num += self.env['ir.sequence'].next_by_code('customer_invoice')
 
                             self.env['reserve.invoices'].create({
                                 'order_number': order_num,
