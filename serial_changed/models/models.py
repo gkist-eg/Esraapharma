@@ -127,7 +127,7 @@ class Move(models.Model):
                 if self.move_type != 'entry':
                     if invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == False:
                         invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
-                    elif invoice.move_type == 'out_invoice' and invoice.warehou1se_id.sale_store == True:
+                    elif invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == True:
                         invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
                     elif invoice.move_type == 'out_refund':
                         invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
