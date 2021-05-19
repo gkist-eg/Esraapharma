@@ -5,7 +5,7 @@
                 id="q_invoice_new"
                 model="account.move"
                 report_type="qweb-pdf"
-                string="Invoice"
+                string="New Invoice"
                 name="custom_sale.edc_invoice_template"
                 file="custom_sale.edc_invoice_template"
                 groups="custom_sale.group_print_invoice"
@@ -586,13 +586,13 @@
 
                                              </td>
  <td style="border: 1px solid black;">
-                                                 <span t-esc="o.dist_discount_totals"/>
+                                                 <span t-esc="o.dist_discount_totals" t-options='{"widget": "float", "precision": 2}'/>
  </td>
                                              <td style="border: 1px solid black;">
-                                                <span t-field="o.amount_untaxed"/>
+                                                <span t-field="o.amount_untaxed" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
                                              <td style="border: 1px solid black;">
-                                              <span t-esc="o.amount_tax"/>
+                                              <span t-esc="o.amount_tax" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
                                          </tr>
                                 <br></br>
