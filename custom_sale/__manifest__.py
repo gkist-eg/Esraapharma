@@ -22,11 +22,14 @@
 
     # always loaded
     'data': [
+        'views/data.xml',
+
         'security/ir.model.access.csv',
         'security/security.xml',
         'views/public_price.xml',
         'views/views.xml',
         'views/edit.xml',
+        'views/data.xml',
         #'views/report.xml',
         'views/refund.xml',
         'views/templates.xml',

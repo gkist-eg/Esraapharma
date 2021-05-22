@@ -1,0 +1,46 @@
+<odoo>
+  <data>
+      <record id="sequence_draft_seq" model="ir.sequence">
+            <field name="name">Draft Invoice</field>
+            <field name="code">draft_invoice</field>
+            <field name="prefix">QC</field>
+            <field name="padding">7</field>
+      </record>
+      <record id="sequence_draft_seqq" model="ir.sequence">
+            <field name="name">dis</field>
+            <field name="code">invoice_dis</field>
+            <field name="padding">7</field>
+      </record>
+    <record id="sequence_customer_seq" model="ir.sequence">
+            <field name="name">Customer Invoice</field>
+            <field name="code">customer_invoice</field>
+            <field name="prefix">CV</field>
+            <field name="padding">8</field>
+      </record>
+      <record id="sequence_distributor_seq" model="ir.sequence">
+            <field name="name">Customer Invoice Distributor</field>
+            <field name="code">customer_invoice_distributor</field>
+            <field name="prefix">DCV</field>
+            <field name="padding">8</field>
+      </record>
+      <record id="sequence_distributor_seq_x" model="ir.sequence">
+            <field name="name">Customer Invoice Distributor</field>
+            <field name="code">customer_invoice_dis</field>
+            <field name="prefix">DIS</field>
+            <field name="padding">8</field>
+      </record>
+      <record id="sequence_sale_refund_seq" model="ir.sequence">
+            <field name="name">Refund Invoice</field>
+            <field name="code">refund_invoice</field>
+            <field name="prefix">EN</field>
+            <field name="padding">7</field>
+      </record>
+      <record id="sequence_purchase_refund_seq" model="ir.sequence">
+            <field name="name">Refund Bill</field>
+            <field name="code">refund_bill</field>
+            <field name="prefix">PR</field>
+            <field name="padding">7</field>
+      </record>
+
+  </data>
+</odoo>
