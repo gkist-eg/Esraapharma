@@ -691,8 +691,83 @@ class Invoceder(models.Model):
 class Move(models.Model):
     _name = 'account.move'
     _inherit = 'account.move'
+    @api.depends('posted_before', 'state', 'journal_id', 'date')
+    def _compute_name(self):
+      for invoice in self:
 
-    name = fields.Char(string='Number', copy=False, default=lambda self: (" "),  readonly=False, store=True, index=True,
+           if self.move_type != 'entry' and invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == False:
+               invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
+           elif self.move_type != 'entry' and invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == True:
+               invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
+           elif self.move_type != 'entry'and invoice.move_type == 'out_refund':
+               invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
+           elif self.move_type != 'entry' and invoice.move_type == 'in_refund':
+               invoice.name = self.env['ir.sequence'].next_by_code('refund_bill')
+           elif self.move_type == 'entry':
+
+               def journal_key(move):
+                   return (move.journal_id, move.journal_id.refund_sequence and move.move_type)
+
+               def date_key(move):
+                   return (move.date.year, move.date.month)
+
+               grouped = defaultdict(  # key: journal_id, move_type
+                   lambda: defaultdict(  # key: first adjacent (date.year, date.month)
+                       lambda: {
+                           'records': self.env['account.move'],
+                           'format': False,
+                           'format_values': False,
+                           'reset': False
+                       }
+                   )
+               )
+               self = self.sorted(lambda m: (m.date, m.ref or '', m.id))
+               highest_name = self[0]._get_last_sequence() if self else False
+
+               # Group the moves by journal and month
+               for move in self:
+                   if not highest_name and move == self[0] and not move.posted_before:
+                       # In the form view, we need to compute a default sequence so that the user can edit
+                       # it. We only check the first move as an approximation (enough for new in form view)
+                       pass
+                   elif (move.name and move.name != '/') or move.state != 'posted':
+                       # Has already a name or is not posted, we don't add to a batch
+                       continue
+                   group = grouped[journal_key(move)][date_key(move)]
+                   if not group['records']:
+                       # Compute all the values needed to sequence this whole group
+                       move._set_next_sequence()
+                       group['format'], group['format_values'] = move._get_sequence_format_param(move.name)
+                       group['reset'] = move._deduce_sequence_number_reset(move.name)
+                   group['records'] += move
+
+               # Fusion the groups depending on the sequence reset and the format used because `seq` is
+               # the same counter for multiple groups that might be spread in multiple months.
+               final_batches = []
+               for journal_group in grouped.values():
+                   for date_group in journal_group.values():
+                       if not final_batches or final_batches[-1]['format'] != date_group['format']:
+                           final_batches += [date_group]
+                       elif date_group['reset'] == 'never':
+                           final_batches[-1]['records'] += date_group['records']
+                       elif (
+                               date_group['reset'] == 'year'
+                               and final_batches[-1]['records'][0].date.year == date_group['records'][0].date.year
+                       ):
+                           final_batches[-1]['records'] += date_group['records']
+                       else:
+                           final_batches += [date_group]
+
+               # Give the name based on previously computed values
+               for batch in final_batches:
+                   for move in batch['records']:
+                       move.name = batch['format'].format(**batch['format_values'])
+                       batch['format_values']['seq'] += 1
+                   batch['records']._compute_split_sequence()
+
+               self.filtered(lambda m: not m.name).name = '/'
+
+    name = fields.Char(string='Number', copy=False, default=False, compute='_compute_name', store=True, index=True,
                        tracking=True)
 
     @api.depends('company_id', 'invoice_filter_type_domain')
@@ -740,79 +815,6 @@ class Move(models.Model):
 
     def action_post(self):
         rec = 0
-        for invoice in self:
-
-            if self.move_type != 'entry' and invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == False:
-                invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
-            elif self.move_type != 'entry' and invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == True:
-                invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
-            elif self.move_type != 'entry' and invoice.move_type == 'out_refund':
-                invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
-            elif self.move_type != 'entry' and invoice.move_type == 'in_refund':
-                invoice.name = self.env['ir.sequence'].next_by_code('refund_bill')
-            else:
-
-                def journal_key(move):
-                    return (move.journal_id, move.journal_id.refund_sequence and move.move_type)
-
-                def date_key(move):
-                    return (move.date.year, move.date.month)
-
-                grouped = defaultdict(  # key: journal_id, move_type
-                    lambda: defaultdict(  # key: first adjacent (date.year, date.month)
-                        lambda: {
-                            'records': self.env['account.move'],
-                            'format': False,
-                            'format_values': False,
-                            'reset': False
-                        }
-                    )
-                )
-                self = self.sorted(lambda m: (m.date, m.ref or '', m.id))
-                highest_name = self[0]._get_last_sequence() if self else False
-
-                # Group the moves by journal and month
-                for move in self:
-                    if not highest_name and move == self[0] and not move.posted_before:
-                        # In the form view, we need to compute a default sequence so that the user can edit
-                        # it. We only check the first move as an approximation (enough for new in form view)
-                        pass
-                    elif (move.name and move.name != '/') or move.state != 'posted':
-                        # Has already a name or is not posted, we don't add to a batch
-                        continue
-                    group = grouped[journal_key(move)][date_key(move)]
-                    if not group['records']:
-                        # Compute all the values needed to sequence this whole group
-                        move._set_next_sequence()
-                        group['format'], group['format_values'] = move._get_sequence_format_param(move.name)
-                        group['reset'] = move._deduce_sequence_number_reset(move.name)
-                    group['records'] += move
-
-                # Fusion the groups depending on the sequence reset and the format used because `seq` is
-                # the same counter for multiple groups that might be spread in multiple months.
-                final_batches = []
-                for journal_group in grouped.values():
-                    for date_group in journal_group.values():
-                        if not final_batches or final_batches[-1]['format'] != date_group['format']:
-                            final_batches += [date_group]
-                        elif date_group['reset'] == 'never':
-                            final_batches[-1]['records'] += date_group['records']
-                        elif (
-                                date_group['reset'] == 'year'
-                                and final_batches[-1]['records'][0].date.year == date_group['records'][0].date.year
-                        ):
-                            final_batches[-1]['records'] += date_group['records']
-                        else:
-                            final_batches += [date_group]
-
-                # Give the name based on previously computed values
-                for batch in final_batches:
-                    for move in batch['records']:
-                        move.name = batch['format'].format(**batch['format_values'])
-                        batch['format_values']['seq'] += 1
-                    batch['records']._compute_split_sequence()
-
-                self.filtered(lambda m: not m.name).name = '/'
 
         for line in self.invoice_line_ids:
             if line.product_id:

@@ -52,6 +52,6 @@
     </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="menu_balet_action" name="Balet Location" action="action_balet_location" sequence="30"
+            <menuitem id="menu_balet_action" name="Pallet Location" action="action_balet_location" sequence="30"
         parent="stock.menu_stock_warehouse_mgmt"/>
 </odoo>

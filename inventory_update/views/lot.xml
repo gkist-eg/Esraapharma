@@ -66,7 +66,7 @@
 
 
     <record id="view_wizard_balet_stock" model="ir.ui.view">
-        <field name="name">Balet Change</field>
+        <field name="name">Pallet Change</field>
         <field name="model">balet.change</field>
         <field name="arch" type="xml">
         <form string="">
@@ -90,7 +90,7 @@
         </field>
         </record>
          <record id="view_wizard_balet_stock2s" model="ir.ui.view">
-        <field name="name">Balet Change</field>
+        <field name="name">Pallet Change</field>
         <field name="model">balet.change</field>
         <field name="arch" type="xml">
         <form string="" edit="0"  create="0">
@@ -109,7 +109,7 @@
         </field>
         </record>
  <record id="view_wizard_balet_stock_tree" model="ir.ui.view">
-        <field name="name">Inventory at Date</field>
+        <field name="name">Pallet</field>
         <field name="model">balet.change</field>
         <field name="arch" type="xml">
         <tree  edit="0" create="0">
@@ -123,14 +123,14 @@
         </record>
 
         <record id="action_wizard_balet_change" model="ir.actions.act_window">
-        <field name="name">Balet Change</field>
+        <field name="name">Pallet Change</field>
         <field name="res_model">balet.change</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_wizard_balet_stock"/>
         <field name="target">new</field>
         </record>
         <record id="action_balet_change_location" model="ir.actions.act_window">
-            <field name="name">Balet Change</field>
+            <field name="name">Pallet Change</field>
             <field name="res_model">balet.change</field>
             <field name="view_mode">tree,form</field>
             <field name="view_ids"
@@ -148,7 +148,7 @@
             </field>
         </record>
           <record model="ir.actions.act_window" id="lot_balet_change">
-            <field name="name">Balet</field>
+            <field name="name">Pallet</field>
            <field name="domain">[('lot_id' ,'in' ,[active_id])]</field>
           <field name="res_model">balet.change</field>
            <field name="view_ids"
