@@ -23,8 +23,8 @@ class ProductStockBalance(models.TransientModel):
     name = fields.Char('Batch No')
     in_qty = fields.Float(digits='Product Unit of Measure')
     out_qty = fields.Float(digits='Product Unit of Measure')
-    balance = fields.Float()
-    date = fields.Date()
+    balance = fields.Float(digits='Product Unit of Measure')
+    date = fields.Datetime()
 
 
 class ProductTemplate(models.TransientModel):
@@ -261,7 +261,7 @@ class ProductTemplate(models.TransientModel):
                             if resource.picking_id.location:
                                 location = resource.picking_id.location
                             else:
-                                location = resource.location_id
+                                location = resource.location_dest_id
 
                             if resource.lot_id.ref:
                                 batch = resource.lot_id.ref
@@ -294,7 +294,7 @@ class ProductTemplate(models.TransientModel):
                                 'out_qty': resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id),
                                 'in_qty': 0,
                                 'balance': lb,
-                                'dest_location': resource.location_id.id,
+                                'dest_location': resource.location_dest_id.id,
                                 'lot_id': resource.lot_id.id,
                                 'batch_no': resource.lot_id.ref or resource.lot_id.suplier_lot,
                                 'date': resource.date,

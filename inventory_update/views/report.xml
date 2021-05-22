@@ -96,14 +96,48 @@
                         </div>
 
             </xpath>
-        <xpath expr="//table[@name='stock_move_line_table']" position="after">
-<div t-if="o.move_line_ids" class="mt32 ml64 mr4" name="total">
+
+                 <xpath expr="//table[@name='stock_move_line_table']" position="after">
+                        <div t-if="o.move_line_ids" class="mt32 ml64 mr4" name="total">
                         <div class="offset-8">
                             <strong>Total : <span  t-esc="sum(line.qty_done for line in o.move_line_ids)"/></strong>
 
                         </div>
 
-                    </div>        </xpath>
-</template>
+                            </div>
+                 </xpath>
+                <xpath expr="//t[@t-if='o.backorder_ids and backorders']" position="replace">
+                </xpath>
+        </template>
+
+     <template id="stock_report_delivery_document_inherit_udates2" inherit_id="stock.report_picking">
+            <xpath expr="//div[@name='div_sched_date']" position="after">
+
+                <div  class="col-auto" name="total">
+                            <strong>Total:</strong>
+                                        <p><span t-options='{"widget": "float", "precision": 0}' t-esc="sum(l.qty_done for l in o.move_line_ids)"/></p>
+                        </div>
+            </xpath>
+            <xpath expr="//th[@name='th_serial_number']" position="after">
+
+               <th name="th_pallet_number" class="text-center" t-if="has_serial_number">
+                                           <strong>Pallet Location</strong>
+                                        </th>
+            </xpath> <xpath expr="//td[@t-if='has_serial_number']" position="replace">
+  <td class=" text-center h6" t-if="has_serial_number">
+ <span t-if="ml.lot_id" t-field="ml.lot_id"/>
+ <span t-if="ml.lot_name and not ml.lot_id" t-field="ml.lot_name"/>
+                                                </td>
+         <td class=" text-center h6" t-if="has_serial_number">
+
+ <span t-if="ml.lot_id.balet_ids" t-esc="', '.join(map(lambda x: (x.name), ml.lot_id.balet_ids))" />
+ <span t-if="ml.balet_ids and not ml.lot_id" t-esc="', '.join(map(lambda x: (x.name), ml.balet_ids))" />
+                                                </td>
+
+
+            </xpath>
+
+
+     </template>
 
 </odoo>
