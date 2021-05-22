@@ -381,8 +381,7 @@
         </t>
     </template>
 
-
-        <report
+          <report
             id="report_wizard_detail"
             model="detail.wizard"
             report_type="qweb-html"
@@ -423,7 +422,7 @@
                                     Invoice Number
 
                                 </th>
-<th style="border: 1px solid black;" t-if="l.move_type == 'out_invoice'">
+<th style="border: 1px solid black;" >
                                     Invoice Source
 
                                 </th>
@@ -521,13 +520,16 @@
                                 <td style="border: 1px solid black;">
                                     <span t-field="l.move_id.name" />
                                 </td>
-                                     <td style="border: 1px solid black;" t-if="l.move_type == 'out_invoice' and l.invoice_number_old">
-                                         <span t-field="l.invoice_number_old" />
+                                     <td style="border: 1px solid black;" t-if="l.move_id.move_type == 'out_refund' and l.move_id.invoice_number_old">
+                                         <span t-field="l.move_id.invoice_number_old" />
                                                                      </td>
 
-                               <td t-if="l.move_type == 'out_invoice' and l.invoice_number_old == False" style="border: 1px solid black;">
-                                    <span t-field="l.return_source" />
+                               <td t-if="l.move_id.move_type == 'out_refund' and l.move_id.invoice_number_old == False" style="border: 1px solid black;">
+                                    <span t-field="l.move_id.return_source" />
+                                </td> <td t-if="l.move_id.move_type == 'out_invoice' " style="border: 1px solid black;">
+                                   -
                                 </td>
+
                                 <td style="border: 1px solid black;">
                                     <span t-field="l.product_id.categ_id.name"/>
                                 </td>
