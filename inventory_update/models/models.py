@@ -13,6 +13,7 @@ class ProductTemplate(models.Model):
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
+    _order = 'product_id,id'
 
     @api.depends('has_tracking', 'picking_type_id.use_create_lots', 'picking_type_id.use_existing_lots', 'state')
     def _compute_display_assign_serial(self):

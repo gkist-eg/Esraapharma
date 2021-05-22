@@ -47,8 +47,10 @@ class StockInventory(models.Model):
         self._check_company()
         return True
 
+
 class StockMove(models.Model):
     _inherit = 'stock.move.line'
+    _order = 'product_id,id'
 
     @api.onchange('product_id', 'product_uom_id')
     def _onchange_product_id(self):
