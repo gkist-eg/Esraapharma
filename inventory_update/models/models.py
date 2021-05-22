@@ -271,13 +271,11 @@ class StockPicking(models.Model):
         self.keeper_id = self.env.user.id
         rec = []
         recive = self.env['res.users'].search(
-            [("groups_id", "=", self.env.ref('stock.group_stock_manager').id)])
-        for i in recive:
-            if self.location_id in self.env.user.stock_location_ids and self.location_dest_id in self.env.user.stock_location_ids:
-                rec.append(i)
+            [("groups_id", "=", self.env.ref('stock.group_stock_manager').id),("stock_location_ids", "in", self.location_id.ids),("stock_location_ids", "in", self.location_dest_id.ids),])
+
         self.env['mail.message'].send("Picking need to be Valdited", "Picking need to be Valdited", self._name,
                                       self.id,
-                                      self.name, rec)
+                                      self.name, recive)
 
     def _action_done(self):
         res = super()._action_done()
@@ -289,14 +287,11 @@ class StockPicking(models.Model):
     def action_confirm(self):
         res = super().action_confirm()
         for record in self:
-            rec = []
             recive = self.env['res.users'].search(
-                [("groups_id", "=", record.env.ref('stock.group_stock_user').id)])
-            for i in recive:
-                if record.location_id in record.env.user.stock_location_ids and record.location_dest_id in record.env.user.stock_location_ids:
-                    rec.append(i)
-            if rec:
+                [("groups_id", "=", record.env.ref('stock.group_stock_user').id),("stock_location_ids", "in", self.location_id.ids),("stock_location_ids", "in", self.location_dest_id.ids),])
+
+            if recive:
                 record.env['mail.message'].send("Picking been created", "Picking been created", record._name,
                                                 record.id,
-                                                record.name, rec)
+                                                record.name, recive)
         return res

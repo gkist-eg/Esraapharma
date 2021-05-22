@@ -4,6 +4,11 @@
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                  <attribute name="attrs">{'required': [('picking_type_code', 'in', ['incoming', 'outgoing'])]}</attribute>
+              </xpath>
+
                 <xpath expr="//page[@name='operations']//tree//field[@name='company_id']" position="before">
                      <button name="do_unreserve" help="Un reserve" icon="fa-unlink" type="object"/>
                 </xpath>
