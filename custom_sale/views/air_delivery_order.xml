@@ -16,7 +16,7 @@
            <t t-call="web.html_container">
         <t t-foreach="docs" t-as="o">
             <t t-call="web.external_layout">
-               <t t-if="o.move_type in ('out_invoice','out_refund') and o.partner_id.change_serial==False and o.partner_id.categ_id.category_type not in ('store','tender')">
+                <t t-if="o.move_type in ('out_invoice','out_refund') and o.partner_id.change_serial==False and o.partner_id.categ_id.category_type not in ('store','tender')">
                             <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
                             <div class="page">
                                 <div class="d-flex justify-content-center">
@@ -56,7 +56,7 @@
                                 <table class="table table-bordered" border="2" style="border: 1px solid black;border-collapse: collapse;" >
                                     <thead>
                                         <tr style="border: 1px solid black;">
-                                            <th width='1200px' style="border: 1px solid black;">
+                                            <th width='1000px' style="border: 1px solid black;">
                                                 Description
                                             </th>
                                             <th style="border: 1px solid black;">
@@ -97,7 +97,7 @@
                                         <tr>
 
 
-                                            <td  width='1200px' style="border: 1px solid black;">
+                                            <td  width='1000px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -245,8 +245,10 @@
                                     <h3>Customer Invoice</h3>
                                 </div>
                                 <div>
-                                    <h3>
+                                    <h3 t-if="o.move_type == 'out_invoice'">
                                         <strong>CV</strong><span t-field="o.serial_name"/>
+                                    </h3><h3 t-if="o.move_type == 'out_refund'">
+                                        <strong>EN</strong><span t-field="o.serial_name"/>
                                     </h3>
 
                                     <br></br>
@@ -276,7 +278,7 @@
 
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
-                                        <tr style="border: 1px solid black;">
+                                        <tr width='1000px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -317,7 +319,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                             <td width='1200px' style="border: 1px solid black;">
+                                             <td width='1000px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -451,8 +453,10 @@
 
 <h3>Customer Invoice</h3>                                </div>
                                 <div>
-                                    <h3>
+                                   <h3 t-if="o.move_type == 'out_invoice'">
                                         <strong>CV</strong><span t-field="o.serial_name"/>
+                                    </h3><h3 t-if="o.move_type == 'out_refund'">
+                                        <strong>EN</strong><span t-field="o.serial_name"/>
                                     </h3>
 
                                     <br></br>
@@ -483,7 +487,7 @@
                                 <table class="table table-bordered" border="2" style="border: 1px solid black;border-collapse: collapse;" >
                                     <thead>
                                         <tr style="border: 1px solid black;">
-                                            <th width='1200px' style="border: 1px solid black;">
+                                            <th width='1000px' style="border: 1px solid black;">
                                                 Description
                                             </th>
                                             <th style="border: 1px solid black;">
@@ -523,7 +527,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                           <td width='1200px' style="border: 1px solid black;">
+                                           <td width='1000px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
