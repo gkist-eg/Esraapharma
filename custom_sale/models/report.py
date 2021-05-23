@@ -61,7 +61,6 @@ class InvoiceReport(models.TransientModel):
                    invoice.append(inv.id)
                # rec.write({'invoices':[(6,0,invoice)]})
                rec.invoices = [(6, 0, invoice)]
-            print(rec.invoices)
             return self.env.ref('custom_sale.report_wizard_invoice').report_action(self)
 
 
@@ -116,10 +115,8 @@ class DetailsReport(models.TransientModel):
                     # rec.write({'invoices':[(6,0,invoice)]})
                     lines = self.env['account.move.line'].search([
                         ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
-                    print(lines.ids)
                     rec.invoices = [(6, 0, invoices.ids)]
                     rec.lines = [(6, 0, lines.ids)]
-                    print(rec.lines)
                 if self.return_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
@@ -129,10 +126,8 @@ class DetailsReport(models.TransientModel):
                     # rec.write({'invoices':[(6,0,invoice)]})
                     lines = self.env['account.move.line'].search([
                         ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
-                    print(lines.ids)
                     rec.invoices = [(6, 0, invoices.ids)]
                     rec.lines = [(6, 0, lines.ids)]
-                    print(rec.lines)
                 if self.invoice_inv and self.return_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
@@ -142,10 +137,8 @@ class DetailsReport(models.TransientModel):
                     # rec.write({'invoices':[(6,0,invoice)]})
                     lines = self.env['account.move.line'].search([
                         ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
-                    print(lines.ids)
                     rec.invoices = [(6, 0, invoices.ids)]
                     rec.lines = [(6, 0, lines.ids)]
-                    print(rec.lines)
                 return self.env.ref('custom_sale.report_wizard_detail').report_action(self)
             else:
                 if self.invoice_inv:
@@ -157,10 +150,8 @@ class DetailsReport(models.TransientModel):
                     # rec.write({'invoices':[(6,0,invoice)]})
                     lines = self.env['account.move.line'].search([
                         ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
-                    print(lines.ids)
                     rec.invoices = [(6, 0, invoices.ids)]
                     rec.lines = [(6, 0, lines.ids)]
-                    print(rec.lines)
                 if self.return_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
@@ -170,10 +161,8 @@ class DetailsReport(models.TransientModel):
                     # rec.write({'invoices':[(6,0,invoice)]})
                     lines = self.env['account.move.line'].search([
                         ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
-                    print(lines.ids)
                     rec.invoices = [(6, 0, invoices.ids)]
                     rec.lines = [(6, 0, lines.ids)]
-                    print(rec.lines)
                 if self.invoice_inv and self.return_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
@@ -183,10 +172,8 @@ class DetailsReport(models.TransientModel):
                     # rec.write({'invoices':[(6,0,invoice)]})
                     lines = self.env['account.move.line'].search([
                         ('exclude_from_invoice_tab', '=', False), ('move_id', 'in', invoices.ids)])
-                    print(lines.ids)
                     rec.invoices = [(6, 0, invoices.ids)]
                     rec.lines = [(6, 0, lines.ids)]
-                    print(rec.lines)
                 return self.env.ref('custom_sale.report_wizard_detail').report_action(self)
 
 
@@ -288,6 +275,5 @@ class ReportSaleDetails(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        print(data)
         data = dict(data or {})
         return data

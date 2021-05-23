@@ -211,7 +211,7 @@ class ORder(models.Model):
 
                 price2 = price1 * (1.0 - (line.dist_discount or 0.0) / 100.0)
                 price = price2 * (1.0 - (line.cash_discount or 0.0) / 100.0)
-                print(line.price_unit, price1, price2, price)
+                ##print(line.price_unit, price1, price2, price)
 
                 if line.sale_type == 'bouns':
 
@@ -247,7 +247,7 @@ class ORder(models.Model):
 
                 price2 = price1 * (1.0 - (line.dist_discount or 0.0) / 100.0)
                 price = price2 * (1.0 - (line.cash_discount or 0.0) / 100.0)
-                print(line.price_unit, price1, price2, price)
+                #print(line.price_unit, price1, price2, price)
 
                 if line.sale_type == 'bouns':
 
@@ -327,8 +327,8 @@ class ORder(models.Model):
 class Invoceder(models.Model):
     _name = 'account.move.line'
     _inherit = 'account.move.line'
-    cash_discount_sale = fields.Float('Cash Discount', store=True)
-    dis_discount_sale = fields.Float('Distributor Discount', store=True)
+    cash_discount_sale = fields.Float('Cash Discount', store=True,index=True)
+    dis_discount_sale = fields.Float('Distributor Discount', store=True,index=True)
     publicprice = fields.Float("Public Price", store=True, digits=('Product Price'))
 
     @api.onchange('product_id')
@@ -573,8 +573,8 @@ class Invoceder(models.Model):
             if product:
                 x=round((price_unit * (1.0 - discount / 100.0)), 3)
                 price_unit_wo_discount1 =round_half_up(x,2)
-                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
-                price_unit_wo_discount = price_unit_wo_discount2 * (1 - (partner.cash_discount or 0.0) / 100.0)
+                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount  or 0.0) / 100.0)
+                price_unit_wo_discount = price_unit_wo_discount2 * (1 - (partner.cash_discount  or 0.0) / 100.0)
             else:
                 price_unit_wo_discount = price_unit
 
@@ -589,7 +589,7 @@ class Invoceder(models.Model):
                                                           quantity=quantity, currency=currency, product=product,
                                                           partner=partner,
                                                           is_refund=move_type in ('out_refund', 'in_refund'))
-                    # print(price_unit_wo_discount, taxes_res)
+                   #print(price_unit_wo_discount, taxes_res)
                     res['price_subtotal'] = 0.00
                     res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
                 elif self.sale_type == 'sale':
@@ -638,7 +638,7 @@ class Invoceder(models.Model):
                                                           quantity=quantity, currency=currency, product=product,
                                                           partner=partner,
                                                           is_refund=move_type in ('out_refund', 'in_refund'))
-                    # print(price_unit_wo_discount, taxes_res)
+                    #print(price_unit_wo_discount, taxes_res)
                     res['price_subtotal'] = 0.00
                     res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
                 elif self.sale_type == 'sale':
@@ -794,8 +794,8 @@ class Move(models.Model):
                 m.return_source = False
 
     return_source = fields.Char('Return Source', compute='_compute_invoice_return')
-    cash_discount_sale = fields.Float('Cash Discount', store=True)
-    dis_discount_sale = fields.Float('Distributor Discount', store=True)
+    cash_discount_sale = fields.Float('Cash Discount', store=True,index=True)
+    dis_discount_sale = fields.Float('Distributor Discount', store=True,index=True)
     cust_categ_id = fields.Many2one(string="Customer Category", related="partner_id.categ_id")
 
     warehouse_id = fields.Many2one(
@@ -826,7 +826,7 @@ class Move(models.Model):
         cash_disc_amount = self.cash_discount_totals
         pharma_discount = self.pharm_discount_totals
         total = dic_disc_amount + cash_disc_amount + pharma_discount
-        print(total)
+        ##print(total)
         if total != 0 and self.move_type == 'out_invoice':
 
             # lines_list.append((0, 0, {
@@ -1079,13 +1079,13 @@ class Move(models.Model):
                 else:
                     if base_line.product_id and base_line.sale_type == 'sale':
                         discount_pharm = ((base_line.price_unit * (1.0 - (base_line.discount / 100.0))))
-                        discount_dist = discount_pharm * (1.0 - (base_line.dis_discount_sale / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.cash_discount_sale / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount  / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount  / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
                         discount_pharm = (base_line.price_unit * (1.0 - (base_line.discount / 100.0)))
-                        discount_dist = discount_pharm * (1.0 - (base_line.dis_discount_sale / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.cash_discount_sale / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount  / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_pharm
 
                     else:
@@ -1100,7 +1100,7 @@ class Move(models.Model):
                 tax_type = base_line.tax_ids[0].type_tax_use if base_line.tax_ids else None
                 is_refund = (tax_type == 'sale' and base_line.debit) or (tax_type == 'purchase' and base_line.credit)
                 price_unit_wo_discount = base_line.balance
-                print(base_line.balance, 'balance')
+                #print(base_line.balance, 'balance')
 
             balance_taxes_res = base_line.tax_ids._origin.compute_all(
                 price_unit_wo_discount,

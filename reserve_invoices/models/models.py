@@ -100,7 +100,7 @@ class ChangeInvoicesRequest(models.Model):
                             if invoice.state == 'posted':
                                 record.reserves.old_inv_number = invoice.name
                                 invoice.write({
-                                    'date': record.reserves.date,
+                                    'invoice_date': record.reserves.date,
                                     'name': record.reserves.inv_number,
                                     'invoice_origin': record.reserves.order_number})
                             else:
