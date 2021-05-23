@@ -38,8 +38,7 @@ class Move(models.Model):
 
         sale_orders = self.mapped('invoice_line_ids.sale_line_ids.order_id')
         stock_move_lines = sale_orders.mapped('picking_ids.move_lines.move_line_ids')
-        if not stock_move_lines:
-            stock_move_lines = self.mapped('picking_id.move_lines.move_line_ids')
+
 
         # Get the other customer invoices and refunds.
         ordered_invoice_ids = sale_orders.mapped('invoice_ids') \
@@ -83,8 +82,7 @@ class Move(models.Model):
 
         incoming_sml = stock_move_lines.filtered(_filter_incoming_sml)
         outgoing_sml = stock_move_lines.filtered(_filter_outgoing_sml)
-        if not ordered_invoice_ids :
-            outgoing_sml = stock_move_lines
+
         # Prepare and return lot_values
         qties_per_lot = defaultdict(lambda: 0)
         # if self.move_type == 'out_refund':
@@ -108,20 +106,45 @@ class Move(models.Model):
             else:
                 for taxs in item.move_id.sale_line_id.tax_id:
                     tax += str(taxs.amount)
-            lot_values.append({
-                'product_name': item.product_id.display_name,
-                'quantity': item.qty_done,
-                'price': item.move_id.sale_line_id.price_unit,
-                'publicprice': item.move_id.sale_line_id.publicprice,
-                'store_price': item.move_id.sale_line_id.store_price,
-                'tax': tax,
-                'uom_name': item.product_uom_id.name,
-                'lot_name': item.lot_id.name,
-                'lot_ref': item.lot_id.ref,
-                'lot_expiration_date': item.lot_id.expiration_date,
-                'sale_type': item.move_id.sale_line_id.sale_type,
-                'discount': item.move_id.sale_line_id.discount,
-            })
+                lot_values.append({
+                    'product_name': item.product_id.display_name,
+                    'quantity': item.qty_done,
+                    'price': item.move_id.sale_line_id.price_unit,
+                    'publicprice': item.move_id.sale_line_id.publicprice,
+                    'store_price': item.move_id.sale_line_id.store_price,
+                    'tax': tax,
+                    'uom_name': item.product_uom_id.name,
+                    'lot_name': item.lot_id.name,
+                    'lot_ref': item.lot_id.ref,
+                    'lot_expiration_date': item.lot_id.expiration_date,
+                    'sale_type': item.move_id.sale_line_id.sale_type,
+                    'discount': item.move_id.sale_line_id.discount,
+                })
+        if not outgoing_sml:
+            for item in self.invoice_line_ids:
+                if float_is_zero(item.quantity, precision_rounding=item.product_id.uom_id.rounding):
+                    continue
+                tax = ''
+                if len(item.tax_ids) > 1:
+                    for taxs in item.tax_ids:
+                        tax += str(taxs.amount) + ','
+                else:
+                    for taxs in item.tax_ids:
+                        tax += str(taxs.amount)
+                    lot_values.append({
+                        'product_name': item.product_id.display_name,
+                        'quantity': item.quantity,
+                        'price': item.price_unit,
+                        'publicprice': item.publicprice,
+                        'store_price': item.store_price,
+                        'tax': tax,
+                        'uom_name': item.product_uom_id.name,
+                        'lot_name': item.lot_id.name,
+                        'lot_ref': item.lot_id.ref,
+                        'lot_expiration_date': item.lot_id.expiration_date,
+                        'sale_type': item.sale_type,
+                        'discount': item.discount,
+                    })
         return lot_values
 
 

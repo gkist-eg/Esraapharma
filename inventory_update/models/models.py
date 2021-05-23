@@ -4,6 +4,7 @@ from re import findall as regex_findall
 from re import split as regex_split
 from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_compare, float_is_zero, float_repr, float_round
+from collections import defaultdict
 
 
 class ProductTemplate(models.Model):
@@ -15,6 +16,49 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
     _order = 'product_id,id'
 
+    @api.depends('move_line_ids.qty_done', 'move_line_ids.product_uom_id', 'move_line_nosuggest_ids.qty_done',
+                 'picking_type_id')
+    @api.onchange('move_line_ids.qty_done', 'move_line_ids.product_uom_id', 'move_line_nosuggest_ids.qty_done',
+                 'picking_type_id')
+    def _quantity_done_compute(self):
+        """ This field represents the sum of the move lines `qty_done`. It allows the user to know
+        if there is still work to do.
+
+        We take care of rounding this value at the general decimal precision and not the rounding
+        of the move's UOM to make sure this value is really close to the real sum, because this
+        field will be used in `_action_done` in order to know if the move will need a backorder or
+        an extra move.
+        """
+        if not any(self._ids):
+            # onchange
+            for move in self:
+                quantity_done = 0
+                for move_line in move._get_move_lines():
+                    quantity_done += move_line.product_uom_id._compute_quantity(
+                        move_line.qty_done, move.product_uom, round=False)
+                move.quantity_done = quantity_done
+        else:
+            # compute
+            move_lines = self.env['stock.move.line']
+            for move in self:
+                move_lines |= move._get_move_lines()
+
+            data = self.env['stock.move.line'].read_group(
+                [('id', 'in', move_lines.ids)],
+                ['move_id', 'product_uom_id', 'qty_done'], ['move_id', 'product_uom_id'],
+                lazy=False
+            )
+
+            rec = defaultdict(list)
+            for d in data:
+                rec[d['move_id'][0]] += [(d['product_uom_id'][0], d['qty_done'])]
+
+            for move in self:
+                uom = move.product_uom
+                move.quantity_done = sum(
+                    self.env['uom.uom'].browse(line_uom_id)._compute_quantity(qty, uom, round=False)
+                    for line_uom_id, qty in rec.get(move.ids[0] if move.ids else move.id, [])
+                )
     @api.depends('has_tracking', 'picking_type_id.use_create_lots', 'picking_type_id.use_existing_lots', 'state')
     def _compute_display_assign_serial(self):
         for move in self:
