@@ -8,6 +8,7 @@ class Quant(models.Model):
     removal_date = fields.Date(related='lot_id.removal_date', store=True, readonly=False)
     suplier_lot = fields.Char(related='lot_id.suplier_lot',string='Suplier Lot', store=True, readonly=False)
     batch = fields.Char(related='lot_id.ref', store=True, readonly=False)
+    balet_ids = fields.Many2many('balet.location', string="Pallets",related='lot_id.balet_ids')
 
     @api.model
     def action_view_quants(self):

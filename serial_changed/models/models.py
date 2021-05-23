@@ -38,6 +38,8 @@ class Move(models.Model):
 
         sale_orders = self.mapped('invoice_line_ids.sale_line_ids.order_id')
         stock_move_lines = sale_orders.mapped('picking_ids.move_lines.move_line_ids')
+        if not stock_move_lines:
+            stock_move_lines = self.mapped('picking_id.move_lines.move_line_ids')
 
         # Get the other customer invoices and refunds.
         ordered_invoice_ids = sale_orders.mapped('invoice_ids') \
@@ -81,7 +83,8 @@ class Move(models.Model):
 
         incoming_sml = stock_move_lines.filtered(_filter_incoming_sml)
         outgoing_sml = stock_move_lines.filtered(_filter_outgoing_sml)
-
+        if not ordered_invoice_ids :
+            outgoing_sml = stock_move_lines
         # Prepare and return lot_values
         qties_per_lot = defaultdict(lambda: 0)
         # if self.move_type == 'out_refund':

@@ -184,6 +184,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='lot_id']" position="after">
                 <field name="suplier_lot"/>
+                <field name="balet_ids" widget="many2many_tags"/>
+
             </xpath>
         </field>
     </record>
@@ -194,6 +196,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='lot_id']" position="after">
                 <field name="suplier_lot"/>
+                <field name="balet_ids" />
+
             </xpath>
         </field>
     </record>
@@ -204,6 +208,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='lot_id']" position="after">
                 <field name="suplier_lot"/>
+                <field name="balet_ids" widget="many2many_tags"/>
             </xpath>
         </field>
     </record>
