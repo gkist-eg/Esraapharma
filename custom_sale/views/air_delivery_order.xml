@@ -11,7 +11,6 @@
                 groups="custom_sale.group_print_invoice"
         />
 
-
       <template id="edc_invoice_template">
            <t t-call="web.html_container">
         <t t-foreach="docs" t-as="o">
@@ -19,35 +18,46 @@
                 <t t-if="o.move_type in ('out_invoice','out_refund') and o.partner_id.change_serial==False and o.partner_id.categ_id.category_type not in ('store','tender')">
                             <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
                             <div class="page">
-                                <div class="d-flex justify-content-center">
-                                    <h3>Customer Invoice : </h3>
+
+                                   <table class="table table-borderless">
+                        <thead style="font-size:20px">
+                             <tr class="no-border">
+                                <th class="text-left">
+                                 <h3>Customer Invoice  </h3>
+                                    </th>
+                                 <th class="text-center">
                                       <h3 t-if="o.move_type == 'out_invoice'">
                                         <strong>CV</strong><span t-field="o.serial_name"/>
                                     </h3><h3 t-if="o.move_type == 'out_refund'">
                                         <strong>EN</strong><span t-field="o.serial_name"/>
                                     </h3>
-                                </div>
-                                <div>
+                                </th>
 
+                             </tr>
+                        </thead>
 
-                                    <strong>Customer: </strong>
-                                    <span t-field="o.partner_id.name"/>
-                                    <strong> , Address: </strong>
-                                    <span t-esc="o.partner_id.city"/>
-                                    <span t-esc="o.partner_id.state_id.name"/>
-                                    <span t-esc="o.partner_id.zip"/>
-                                    <span t-esc="o.partner_id.country_id.name"/>
-                                            <strong> , Invoice Date: </strong>
-                                    <span t-field="o.invoice_date"/>
+                </table>
+                                <table class="table table-borderless">
+                        <thead style="font-size:10px">
+                             <tr class="no-border">
+                                <th class="text-left">
+                                                                       <strong>Customer: </strong><span t-field="o.partner_id.name"/>
 
+                                </th><th class="text-center">
+                                    <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>
 
+                                </th><th class="text-right">
+                                            <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>
 
+                                </th>
 
+                             </tr>
+                        </thead>
 
-                                </div>
+                </table>
                                 <table class="table table-bordered" border="2" style="border: 1px solid black;border-collapse: collapse;" >
                                     <thead>
-                                        <tr width='850px' style="border: 1px solid black;">
+                                        <tr width='750px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -89,7 +99,7 @@
                                         <tr>
 
 
-                                            <td  width='850px' style="border: 1px solid black;">
+                                            <td  width='750px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -235,8 +245,10 @@
                 <table class="table table-borderless">
                         <thead style="font-size:20px">
                              <tr class="no-border">
-                                <th class="text-center">
-                                 <h3>Customer Invoice : </h3>
+                                <th class="text-left">
+                                 <h3>Customer Invoice  </h3>
+                                    </th>
+                                 <th class="text-center">
                                       <h3 t-if="o.move_type == 'out_invoice'">
                                         <strong>CV</strong><span t-field="o.serial_name"/>
                                     </h3><h3 t-if="o.move_type == 'out_refund'">
@@ -246,18 +258,16 @@
 
                              </tr>
                         </thead>
-                    <tbody style="font-size:11px">
 
-                    </tbody>
                 </table>
                                 <table class="table table-borderless">
-                        <thead style="font-size:20px">
+                        <thead style="font-size:10px">
                              <tr class="no-border">
                                 <th class="text-left">
                                                                        <strong>Customer: </strong><span t-field="o.partner_id.name"/>
 
                                 </th><th class="text-center">
-                                    <strong>Address: </strong><span t-esc="o.partner_id.city"/>,<span t-esc="o.partner_id.state_id.name"/>,<span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>
+                                    <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>
 
                                 </th><th class="text-right">
                                             <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>
@@ -266,18 +276,13 @@
 
                              </tr>
                         </thead>
-                    <tbody style="font-size:11px">
 
-                    </tbody>
                 </table>
 
                             <div class="page">
-
-
-
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
-                                        <tr width='850px' style="border: 1px solid black;">
+                                        <tr width='750px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -318,7 +323,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                             <td width='850px' style="border: 1px solid black;">
+                                             <td width='750px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -448,36 +453,47 @@
                            <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
             <t t-if="lot_values">
                             <div class="page">
-                                  <div class="d-flex justify-content-center">
-                                    <h3>Customer Invoice : </h3>
+
+
+                                     <table class="table table-borderless">
+                        <thead style="font-size:20px">
+                             <tr class="no-border">
+                                <th class="text-left">
+                                 <h3>Customer Invoice  </h3>
+                                    </th>
+                                 <th class="text-center">
                                       <h3 t-if="o.move_type == 'out_invoice'">
                                         <strong>CV</strong><span t-field="o.serial_name"/>
                                     </h3><h3 t-if="o.move_type == 'out_refund'">
                                         <strong>EN</strong><span t-field="o.serial_name"/>
                                     </h3>
-                                </div>
-                                <div>
+                                </th>
 
+                             </tr>
+                        </thead>
 
-                                    <strong>Customer: </strong>
-                                    <span t-field="o.partner_id.name"/>
-                                    <strong> , Address: </strong>
-                                    <span t-esc="o.partner_id.city"/>
-                                    <span t-esc="o.partner_id.state_id.name"/>
-                                    <span t-esc="o.partner_id.zip"/>
-                                    <span t-esc="o.partner_id.country_id.name"/>
-                                            <strong> , Invoice Date: </strong>
-                                    <span t-field="o.invoice_date"/>
+                </table>
+                                <table class="table table-borderless">
+                        <thead style="font-size:10px">
+                             <tr class="no-border">
+                                <th class="text-left">
+                                                                       <strong>Customer: </strong><span t-field="o.partner_id.name"/>
 
+                                </th><th class="text-center">
+                                    <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>
 
+                                </th><th class="text-right">
+                                            <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>
 
+                                </th>
 
+                             </tr>
+                        </thead>
 
-                                </div>
-
+                </table>
                                 <table class="table table-bordered" border="2" style="border: 1px solid black;border-collapse: collapse;" >
                                     <thead>
-                                        <tr width='850px'  style="border: 1px solid black;">
+                                        <tr width='750px'  style="border: 1px solid black;">
                                             <th  style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -518,7 +534,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                           <td width='850px' style="border: 1px solid black;">
+                                           <td width='750px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
