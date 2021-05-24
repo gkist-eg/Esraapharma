@@ -47,8 +47,8 @@
                                 </div>
                                 <table class="table table-bordered" border="2" style="border: 1px solid black;border-collapse: collapse;" >
                                     <thead>
-                                        <tr style="border: 1px solid black;">
-                                            <th width='900px' style="border: 1px solid black;">
+                                        <tr width='850px' style="border: 1px solid black;">
+                                            <th style="border: 1px solid black;">
                                                 Description
                                             </th>
                                             <th style="border: 1px solid black;">
@@ -89,7 +89,7 @@
                                         <tr>
 
 
-                                            <td  width='900px' style="border: 1px solid black;">
+                                            <td  width='850px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -261,7 +261,7 @@
 
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
-                                        <tr width='900px' style="border: 1px solid black;">
+                                        <tr width='850px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -302,7 +302,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                             <td width='900px' style="border: 1px solid black;">
+                                             <td width='850px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -461,8 +461,8 @@
 
                                 <table class="table table-bordered" border="2" style="border: 1px solid black;border-collapse: collapse;" >
                                     <thead>
-                                        <tr style="border: 1px solid black;">
-                                            <th width='900px' style="border: 1px solid black;">
+                                        <tr width='850px'  style="border: 1px solid black;">
+                                            <th  style="border: 1px solid black;">
                                                 Description
                                             </th>
                                             <th style="border: 1px solid black;">
@@ -502,7 +502,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                           <td width='900px' style="border: 1px solid black;">
+                                           <td width='850px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
