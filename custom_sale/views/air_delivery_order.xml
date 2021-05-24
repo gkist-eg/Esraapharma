@@ -66,7 +66,7 @@
 
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
-                                        <tr width='600px' style="border: 1px solid black;">
+                                        <tr width='500px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -92,7 +92,7 @@
                                             <th style="border: 1px solid black;">
                                                 Amount
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th   width='200px' style="border: 1px solid black;">
                                                 Ex.Date
                                             </th>
                                             <th style="border: 1px solid black;">
@@ -107,7 +107,7 @@
                                         <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>
                                         <tr>
 
- <td width='600px' style="border: 1px solid black;">
+ <td width='500px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -136,7 +136,7 @@
                                             </td><td style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
                                            0
                                             </td>
- <td style="border: 1px solid black;">
+ <td  width='200px' style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_expiration_date']" />
                                             </td>
                                             <td style="border: 1px solid black;">
@@ -299,7 +299,7 @@
                             <div class="page">
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
-                                        <tr width='600px' style="border: 1px solid black;">
+                                        <tr width='500px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -323,8 +323,8 @@
                                             <th style="border: 1px solid black;">
                                                 Amount
                                             </th>
-                                            <th style="border: 1px solid black;">
-                                                Expiry Date
+                                            <th  width='200px' style="border: 1px solid black;">
+                                                Ex.Date
                                             </th>
                                             <th style="border: 1px solid black;">
                                                 Batch No
@@ -340,7 +340,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                             <td width='600px' style="border: 1px solid black;">
+                                             <td width='500px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -369,7 +369,7 @@
                                            0
                                             </td>
 
- <td style="border: 1px solid black;">
+ <td  width='200px' style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_expiration_date']" />
                                             </td>
                                             <td style="border: 1px solid black;">
@@ -519,7 +519,7 @@
 
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
-                                        <tr width='600px' style="border: 1px solid black;">
+                                        <tr width='500px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -543,8 +543,8 @@
                                             <th style="border: 1px solid black;">
                                                 Amount
                                             </th>
-                                            <th style="border: 1px solid black;">
-                                                Expiry Date
+                                            <th  width='200px' style="border: 1px solid black;">
+                                                Ex.Date
                                             </th>
                                             <th style="border: 1px solid black;">
                                                 Batch No
@@ -560,7 +560,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                          <td width='600px' style="border: 1px solid black;">
+                                          <td width='500px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -587,7 +587,7 @@
                                             </td><td style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
                                            0
                                             </td>
- <td style="border: 1px solid black;">
+ <td  width='2000px' style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_expiration_date']" />
                                             </td>
                                             <td style="border: 1px solid black;">
