@@ -20,7 +20,7 @@
                             <div class="page">
 
                                    <table class="table table-borderless">
-                        <thead style="font-size:20px">
+                        <thead style="font-size:15px">
                              <tr class="no-border">
                                 <th class="text-left">
                                  <h3>Customer Invoice  </h3>
@@ -35,10 +35,7 @@
 
                              </tr>
                         </thead>
-
-                </table>
-                                <table class="table table-borderless">
-                        <thead style="font-size:10px">
+                                       <thead style="font-size:15px">
                              <tr class="no-border">
                                 <th class="text-left">
                                                                        <strong>Customer: </strong><span t-field="o.partner_id.name"/>
@@ -54,10 +51,12 @@
                              </tr>
                         </thead>
 
+
                 </table>
+
                                 <table class="table table-bordered" border="2" style="border: 1px solid black;border-collapse: collapse;" >
                                     <thead>
-                                        <tr width='750px' style="border: 1px solid black;">
+                                        <tr width='700px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -98,8 +97,7 @@
                                         <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>
                                         <tr>
 
-
-                                            <td  width='750px' style="border: 1px solid black;">
+ <td width='700px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -243,7 +241,7 @@
             <t t-if="lot_values">
 
                 <table class="table table-borderless">
-                        <thead style="font-size:20px">
+                        <thead style="font-size:15px">
                              <tr class="no-border">
                                 <th class="text-left">
                                  <h3>Customer Invoice  </h3>
@@ -258,10 +256,7 @@
 
                              </tr>
                         </thead>
-
-                </table>
-                                <table class="table table-borderless">
-                        <thead style="font-size:10px">
+                                            <thead style="font-size:10px">
                              <tr class="no-border">
                                 <th class="text-left">
                                                                        <strong>Customer: </strong><span t-field="o.partner_id.name"/>
@@ -277,12 +272,14 @@
                              </tr>
                         </thead>
 
+
                 </table>
+
 
                             <div class="page">
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
-                                        <tr width='750px' style="border: 1px solid black;">
+                                        <tr width='700px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -323,7 +320,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                             <td width='750px' style="border: 1px solid black;">
+                                             <td width='700px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -456,7 +453,7 @@
 
 
                                      <table class="table table-borderless">
-                        <thead style="font-size:20px">
+                        <thead style="font-size:15px">
                              <tr class="no-border">
                                 <th class="text-left">
                                  <h3>Customer Invoice  </h3>
@@ -471,10 +468,7 @@
 
                              </tr>
                         </thead>
-
-                </table>
-                                <table class="table table-borderless">
-                        <thead style="font-size:10px">
+                                                                 <thead style="font-size:10px">
                              <tr class="no-border">
                                 <th class="text-left">
                                                                        <strong>Customer: </strong><span t-field="o.partner_id.name"/>
@@ -490,11 +484,13 @@
                              </tr>
                         </thead>
 
+
                 </table>
+
                                 <table class="table table-bordered" border="2" style="border: 1px solid black;border-collapse: collapse;" >
                                     <thead>
-                                        <tr width='750px'  style="border: 1px solid black;">
-                                            <th  style="border: 1px solid black;">
+                                        <tr width='700px' style="border: 1px solid black;">
+                                            <th style="border: 1px solid black;">
                                                 Description
                                             </th>
                                             <th style="border: 1px solid black;">
@@ -534,7 +530,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                           <td width='750px' style="border: 1px solid black;">
+                                          <td width='700px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
