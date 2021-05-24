@@ -37,16 +37,26 @@
                         </thead>
                                        <thead style="font-size:15px">
                              <tr class="no-border">
+                                            <h3>
                                 <th class="text-left">
-                                                                       <strong>Customer: </strong><span t-field="o.partner_id.name"/>
 
-                                </th><th class="text-center">
+                                      <strong>Customer: </strong><span t-field="o.partner_id.name"/>
+
+                                 </th>
+                                  </h3>
+                                           <h3>
+                                                 <th class="text-center">
                                     <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>
 
-                                </th><th class="text-right">
+                                </th>
+                                           </h3>
+                                           <h3>
+                               <th class="text-right">
                                             <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>
 
                                 </th>
+
+                                </h3>
 
                              </tr>
                         </thead>
@@ -56,7 +66,7 @@
 
                                 <table class="table table-bordered" border="2" style="border: 1px solid black;border-collapse: collapse;" >
                                     <thead>
-                                        <tr width='700px' style="border: 1px solid black;">
+                                        <tr width='650px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -97,7 +107,7 @@
                                         <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>
                                         <tr>
 
- <td width='700px' style="border: 1px solid black;">
+ <td width='650px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -240,7 +250,7 @@
                            <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
             <t t-if="lot_values">
 
-                <table class="table table-borderless">
+                                   <table class="table table-borderless">
                         <thead style="font-size:15px">
                              <tr class="no-border">
                                 <th class="text-left">
@@ -256,18 +266,28 @@
 
                              </tr>
                         </thead>
-                                            <thead style="font-size:10px">
+                                       <thead style="font-size:15px">
                              <tr class="no-border">
+                                            <h3>
                                 <th class="text-left">
-                                                                       <strong>Customer: </strong><span t-field="o.partner_id.name"/>
 
-                                </th><th class="text-center">
+                                      <strong>Customer: </strong><span t-field="o.partner_id.name"/>
+
+                                 </th>
+                                  </h3>
+                                           <h3>
+                                                 <th class="text-center">
                                     <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>
 
-                                </th><th class="text-right">
+                                </th>
+                                           </h3>
+                                           <h3>
+                               <th class="text-right">
                                             <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>
 
                                 </th>
+
+                                </h3>
 
                              </tr>
                         </thead>
@@ -279,7 +299,7 @@
                             <div class="page">
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
-                                        <tr width='700px' style="border: 1px solid black;">
+                                        <tr width='650px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -320,7 +340,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                             <td width='700px' style="border: 1px solid black;">
+                                             <td width='650px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -452,7 +472,7 @@
                             <div class="page">
 
 
-                                     <table class="table table-borderless">
+                                   <table class="table table-borderless">
                         <thead style="font-size:15px">
                              <tr class="no-border">
                                 <th class="text-left">
@@ -468,18 +488,28 @@
 
                              </tr>
                         </thead>
-                                                                 <thead style="font-size:10px">
+                                       <thead style="font-size:15px">
                              <tr class="no-border">
+                                            <h3>
                                 <th class="text-left">
-                                                                       <strong>Customer: </strong><span t-field="o.partner_id.name"/>
 
-                                </th><th class="text-center">
+                                      <strong>Customer: </strong><span t-field="o.partner_id.name"/>
+
+                                 </th>
+                                  </h3>
+                                           <h3>
+                                                 <th class="text-center">
                                     <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>
 
-                                </th><th class="text-right">
+                                </th>
+                                           </h3>
+                                           <h3>
+                               <th class="text-right">
                                             <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>
 
                                 </th>
+
+                                </h3>
 
                              </tr>
                         </thead>
@@ -489,7 +519,7 @@
 
                                 <table class="table table-bordered" border="2" style="border: 1px solid black;border-collapse: collapse;" >
                                     <thead>
-                                        <tr width='700px' style="border: 1px solid black;">
+                                        <tr width='650px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -530,7 +560,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                          <td width='700px' style="border: 1px solid black;">
+                                          <td width='650px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
