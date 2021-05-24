@@ -68,11 +68,11 @@
 
                                       <strong>Source Invoice: </strong>
                                     <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>
-                                    <span t-if="l.invoice_number_old == False" t-field="o.return_source"/>
+                                    <span t-if="o.invoice_number_old == False" t-field="o.return_source"/>
 
                                  </th>
                                   </h3>
-
+                                        
 
                              </tr>
                         </thead>
@@ -315,11 +315,11 @@
 
                                       <strong>Source Invoice: </strong>
                                     <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>
-                                    <span t-if="l.invoice_number_old == False" t-field="o.return_source"/>
+                                    <span t-if="o.invoice_number_old == False" t-field="o.return_source"/>
 
                                  </th>
                                   </h3>
-
+                                        
 
                              </tr>
                         </thead>
@@ -553,11 +553,11 @@
 
                                       <strong>Source Invoice: </strong>
                                     <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>
-                                    <span t-if="l.invoice_number_old == False" t-field="o.return_source"/>
+                                    <span t-if="o.invoice_number_old == False" t-field="o.return_source"/>
 
                                  </th>
                                   </h3>
-
+                                        
 
                              </tr>
                         </thead>
