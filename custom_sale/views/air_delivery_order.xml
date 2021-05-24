@@ -20,43 +20,35 @@
                             <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
                             <div class="page">
                                 <div class="d-flex justify-content-center">
-
-                                    <h3>Customer Invoice</h3>
-                                </div>
-                                <div>
-                                    <h3 t-if="o.move_type == 'out_invoice'">
+                                    <h3>Customer Invoice : </h3>
+                                      <h3 t-if="o.move_type == 'out_invoice'">
                                         <strong>CV</strong><span t-field="o.serial_name"/>
                                     </h3><h3 t-if="o.move_type == 'out_refund'">
                                         <strong>EN</strong><span t-field="o.serial_name"/>
                                     </h3>
+                                </div>
+                                <div>
 
-                                    <br></br>
+
                                     <strong>Customer: </strong>
                                     <span t-field="o.partner_id.name"/>
-                                    <br></br>
                                     <strong>Address: </strong>
                                     <span t-esc="o.partner_id.city"/>
                                     <span t-esc="o.partner_id.state_id.name"/>
                                     <span t-esc="o.partner_id.zip"/>
                                     <span t-esc="o.partner_id.country_id.name"/>
-                                    <br></br>
-                                    <div class="d-flex justify-content-between">
-                                        <div class="">
                                             <strong>Invoice Date: </strong>
                                     <span t-field="o.invoice_date"/>
-                                        </div>
 
 
 
-                                    </div>
 
 
                                 </div>
-                                                                                <br></br>
                                 <table class="table table-bordered" border="2" style="border: 1px solid black;border-collapse: collapse;" >
                                     <thead>
                                         <tr style="border: 1px solid black;">
-                                            <th width='1000px' style="border: 1px solid black;">
+                                            <th width='900px' style="border: 1px solid black;">
                                                 Description
                                             </th>
                                             <th style="border: 1px solid black;">
@@ -97,7 +89,7 @@
                                         <tr>
 
 
-                                            <td  width='1000px' style="border: 1px solid black;">
+                                            <td  width='900px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -240,45 +232,36 @@
                            <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
             <t t-if="lot_values">
                             <div class="page">
-                                 <div class="d-flex justify-content-center">
-
-                                    <h3>Customer Invoice</h3>
-                                </div>
-                                <div>
-                                    <h3 t-if="o.move_type == 'out_invoice'">
+                                  <div class="d-flex justify-content-center">
+                                    <h3>Customer Invoice : </h3>
+                                      <h3 t-if="o.move_type == 'out_invoice'">
                                         <strong>CV</strong><span t-field="o.serial_name"/>
                                     </h3><h3 t-if="o.move_type == 'out_refund'">
                                         <strong>EN</strong><span t-field="o.serial_name"/>
                                     </h3>
+                                </div>
+                                <div>
 
-                                    <br></br>
+
                                     <strong>Customer: </strong>
                                     <span t-field="o.partner_id.name"/>
-                                    <br></br>
-                                    <strong>Address:</strong>
+                                    <strong>Address: </strong>
                                     <span t-esc="o.partner_id.city"/>
                                     <span t-esc="o.partner_id.state_id.name"/>
                                     <span t-esc="o.partner_id.zip"/>
                                     <span t-esc="o.partner_id.country_id.name"/>
-                                    <br></br>
-                                    <div class="d-flex justify-content-between">
-                                        <div class="">
-                                            <strong>Invoice Date:</strong>
+                                            <strong>Invoice Date: </strong>
                                     <span t-field="o.invoice_date"/>
-                                        </div>
 
 
 
-                                    </div>
 
 
                                 </div>
-                                                                                <br></br>
-
 
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
-                                        <tr width='1000px' style="border: 1px solid black;">
+                                        <tr width='900px' style="border: 1px solid black;">
                                             <th style="border: 1px solid black;">
                                                 Description
                                             </th>
@@ -319,7 +302,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                             <td width='1000px' style="border: 1px solid black;">
+                                             <td width='900px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -450,44 +433,36 @@
             <t t-if="lot_values">
                             <div class="page">
                                   <div class="d-flex justify-content-center">
-
-<h3>Customer Invoice</h3>                                </div>
-                                <div>
-                                   <h3 t-if="o.move_type == 'out_invoice'">
+                                    <h3>Customer Invoice : </h3>
+                                      <h3 t-if="o.move_type == 'out_invoice'">
                                         <strong>CV</strong><span t-field="o.serial_name"/>
                                     </h3><h3 t-if="o.move_type == 'out_refund'">
                                         <strong>EN</strong><span t-field="o.serial_name"/>
                                     </h3>
+                                </div>
+                                <div>
 
-                                    <br></br>
+
                                     <strong>Customer: </strong>
                                     <span t-field="o.partner_id.name"/>
-                                    <br></br>
                                     <strong>Address: </strong>
                                     <span t-esc="o.partner_id.city"/>
                                     <span t-esc="o.partner_id.state_id.name"/>
                                     <span t-esc="o.partner_id.zip"/>
                                     <span t-esc="o.partner_id.country_id.name"/>
-                                    <br></br>
-                                    <div class="d-flex justify-content-between">
-                                        <div class="">
                                             <strong>Invoice Date: </strong>
                                     <span t-field="o.invoice_date"/>
-                                        </div>
 
 
 
-                                    </div>
 
 
                                 </div>
-                                                                                <br></br>
-
 
                                 <table class="table table-bordered" border="2" style="border: 1px solid black;border-collapse: collapse;" >
                                     <thead>
                                         <tr style="border: 1px solid black;">
-                                            <th width='1000px' style="border: 1px solid black;">
+                                            <th width='900px' style="border: 1px solid black;">
                                                 Description
                                             </th>
                                             <th style="border: 1px solid black;">
@@ -527,7 +502,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                           <td width='1000px' style="border: 1px solid black;">
+                                           <td width='900px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">

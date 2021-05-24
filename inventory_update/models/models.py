@@ -5,6 +5,7 @@ from re import split as regex_split
 from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_compare, float_is_zero, float_repr, float_round
 from collections import defaultdict
+from odoo.tools.misc import format_date, OrderedSet
 
 
 class ProductTemplate(models.Model):
@@ -15,6 +16,47 @@ class ProductTemplate(models.Model):
 class StockMove(models.Model):
     _inherit = 'stock.move'
     _order = 'product_id,id'
+
+    @api.depends('move_line_ids.product_qty')
+    @api.onchange('move_line_ids.product_qty','move_line_ids.product_uom_qty')
+    def _compute_reserved_availability(self):
+        """ Fill the `availability` field on a stock move, which is the actual reserved quantity
+        and is represented by the aggregated `product_qty` on the linked move lines. If the move
+        is force assigned, the value will be 0.
+        """
+        if not any(self._ids):
+            # onchange
+            for move in self:
+                reserved_availability = sum(move.move_line_ids.mapped('product_qty'))
+                move.reserved_availability = move.product_id.uom_id._compute_quantity(
+                    reserved_availability, move.product_uom, rounding_method='HALF-UP')
+        else:
+            # compute
+            result = {data['move_id'][0]: data['product_qty'] for data in
+                      self.env['stock.move.line'].read_group([('move_id', 'in', self.ids)], ['move_id', 'product_qty'],
+                                                             ['move_id'])}
+            for move in self:
+                move.reserved_availability = move.product_id.uom_id._compute_quantity(
+                    result.get(move.id, 0.0), move.product_uom, rounding_method='HALF-UP')
+
+    def _recompute_state(self):
+        moves_state_to_write = defaultdict(OrderedSet)
+        for move in self:
+            if move.state in ('cancel', 'done', 'draft'):
+                continue
+            elif move.reserved_availability == move.product_uom_qty:
+                moves_state_to_write['assigned'].add(move.id)
+            elif move.reserved_availability and move.reserved_availability <= move.product_uom_qty:
+                moves_state_to_write['partially_available'].add(move.id)
+            elif move.procure_method == 'make_to_order' and not move.move_orig_ids:
+                moves_state_to_write['waiting'].add(move.id)
+            elif move.move_orig_ids and any(orig.state not in ('done', 'cancel') for orig in move.move_orig_ids):
+                moves_state_to_write['waiting'].add(move.id)
+            else:
+                moves_state_to_write['confirmed'].add(move.id)
+        for state, moves_ids in moves_state_to_write.items():
+            moves = self.env['stock.move'].browse(moves_ids)
+            moves.write({'state': state})
 
     @api.depends('move_line_ids.qty_done', 'move_line_ids.product_uom_id', 'move_line_nosuggest_ids.qty_done',
                  'picking_type_id')
