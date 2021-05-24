@@ -23,7 +23,8 @@
                         <thead style="font-size:15px">
                              <tr class="no-border">
                                 <th class="text-left">
-                                 <h3>Customer Invoice  </h3>
+                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>
+                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>
                                     </th>
                                  <th class="text-center">
                                       <h3 t-if="o.move_type == 'out_invoice'">
@@ -57,6 +58,21 @@
                                 </th>
 
                                 </h3>
+
+                             </tr>
+                        </thead>
+                                       <thead  t-if="o.move_type == 'out_refund'" style="font-size:15px">
+                             <tr class="no-border">
+                                            <h3>
+                                <th class="text-left">
+
+                                      <strong>Source Invoice: </strong>
+                                    <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>
+                                    <span t-if="l.invoice_number_old == False" t-field="o.return_source"/>
+
+                                 </th>
+                                  </h3>
+
 
                              </tr>
                         </thead>
@@ -254,7 +270,8 @@
                         <thead style="font-size:15px">
                              <tr class="no-border">
                                 <th class="text-left">
-                                 <h3>Customer Invoice  </h3>
+                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>
+                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>
                                     </th>
                                  <th class="text-center">
                                       <h3 t-if="o.move_type == 'out_invoice'">
@@ -288,6 +305,21 @@
                                 </th>
 
                                 </h3>
+
+                             </tr>
+                        </thead>
+                                       <thead  t-if="o.move_type == 'out_refund'" style="font-size:15px">
+                             <tr class="no-border">
+                                            <h3>
+                                <th class="text-left">
+
+                                      <strong>Source Invoice: </strong>
+                                    <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>
+                                    <span t-if="l.invoice_number_old == False" t-field="o.return_source"/>
+
+                                 </th>
+                                  </h3>
+
 
                              </tr>
                         </thead>
@@ -476,7 +508,8 @@
                         <thead style="font-size:15px">
                              <tr class="no-border">
                                 <th class="text-left">
-                                 <h3>Customer Invoice  </h3>
+                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>
+                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>
                                     </th>
                                  <th class="text-center">
                                       <h3 t-if="o.move_type == 'out_invoice'">
@@ -510,6 +543,21 @@
                                 </th>
 
                                 </h3>
+
+                             </tr>
+                        </thead>
+                                       <thead  t-if="o.move_type == 'out_refund'" style="font-size:15px">
+                             <tr class="no-border">
+                                            <h3>
+                                <th class="text-left">
+
+                                      <strong>Source Invoice: </strong>
+                                    <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>
+                                    <span t-if="l.invoice_number_old == False" t-field="o.return_source"/>
+
+                                 </th>
+                                  </h3>
+
 
                              </tr>
                         </thead>
@@ -587,7 +635,7 @@
                                             </td><td style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
                                            0
                                             </td>
- <td  width='2000px' style="border: 1px solid black;">
+ <td  width='200px' style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_expiration_date']" />
                                             </td>
                                             <td style="border: 1px solid black;">
