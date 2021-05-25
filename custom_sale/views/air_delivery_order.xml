@@ -83,35 +83,35 @@
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
                                         <tr width='500px' style="border: 1px solid black;">
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Description
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Unit
 
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Quantity
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 C.Price
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 B.Price
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Disc.(%)
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Taxes
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Amount
                                             </th>
-                                            <th   width='200px' style="border: 1px solid black;">
+                                            <th  class="text-center" width='150px' style="border: 1px solid black;">
                                                 Ex.Date
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Batch No
                                             </th>
 
@@ -123,39 +123,39 @@
                                         <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>
                                         <tr>
 
- <td width='500px' style="border: 1px solid black;">
+ <td class="text-center" width='500px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['uom_name']" />
 
                                             </td>
-                                            <td style="border: 1px solid black;">
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span t-esc="snln_line['quantity']"  t-options='{"widget": "float", "precision": 2}'/>
 
                                             </td>
-                                            <td style="border: 1px solid black;">
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['publicprice']" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
                                             </td>
 
-<td style="border: 1px solid black;">
+<td class="text-center" style="border: 1px solid black;">
                                                 <span t-if="o.partner_id.categ_id.category_type != 'store'" t-esc="snln_line['price']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>
                                             </td>
-                                              <td style="border: 1px solid black;">
+                                              <td class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['discount']" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
                                             </td>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                       <span  t-esc="snln_line['tax']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>
                                             </td>
-                                            <td style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'sale'" >
+                                            <td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'sale'" >
                                                 <span t-esc="snln_line['price'] * snln_line['quantity']"   t-options='{"widget": "float", "precision": 2}' />
-                                            </td><td style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
+                                            </td><td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
                                            0
                                             </td>
- <td  width='200px' style="border: 1px solid black;">
+ <td class="text-center" width='150px' style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_expiration_date']" />
                                             </td>
-                                            <td style="border: 1px solid black;">
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_ref']" />
                                             </td>
 
@@ -167,62 +167,62 @@
                                 <div>
                                      <table style="width:100%;border: 1px bold;">
                                          <tr>
-                                             <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                  Total Amount
                                              </th>
-                                             <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                  Pharmacy/Deduction Dis
                                              </th>
-                                             <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                  Distributor Discount <span t-field="o.dist_discount" />%</th>
 
-                                             <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                  Total Discounts </th>
 
-                                             <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                 SubTotal
                                              </th>
-                                             <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                  Taxes
                                              </th>
                                          </tr>
                                          <tr>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                  <span t-esc="sum((line['price'] * line['quantity']) for line in o._get_invoiced_lot_values() if line['sale_type']=='sale' )" t-options='{"widget": "float", "precision": 2}'/>
 
                                              </td>
 
-                                               <td style="border: 1px solid black;">
+                                               <td class="text-center" style="border: 1px solid black;">
                                                  <span t-esc="sum((line['price'] * line['quantity']) *((line['discount'] or 0.0) / 100) for line in o._get_invoiced_lot_values() if line['sale_type']=='sale')" t-options='{"widget": "float", "precision": 2}'/>
 
                                              </td>
-                                              <td style="border: 1px solid black;">
+                                              <td class="text-center" style="border: 1px solid black;">
                                                  <span t-esc="o.dist_discount_totals" t-options='{"widget": "float", "precision": 2}'/>
-                                             </td><td style="border: 1px solid black;">
+                                             </td><td class="text-center" style="border: 1px solid black;">
                                                  <span t-esc="sum(line['price'] * line['quantity'] *((line['discount'] or 0.0) / 100) for line in o._get_invoiced_lot_values() if line['sale_type']=='sale')+o.dist_discount_totals+o.cash_discount_totals" t-options='{"widget": "float", "precision": 2}'/>
 
                                              </td>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                 <span t-field="o.amount_untaxed" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                               <span t-esc="o.amount_tax" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
                                          </tr>
                                          <br></br>
                                          <tr style="border: 1px solid black;">
-                                                 <th style="border: 1px solid black;">Total Invoice</th>
-                                                 <th style="border: 1px solid black;">Allowance Discount</th>
-                                                 <th style="border: 1px solid black;">Net After Allowance Discount</th>
+                                                 <th class="text-center" style="border: 1px solid black;">Total Invoice</th>
+                                                 <th class="text-center" style="border: 1px solid black;">Allowance Discount</th>
+                                                 <th class="text-center"style="border: 1px solid black;">Net After Allowance Discount</th>
                                          </tr>
                                          <tr style="border: 1px solid black;">
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                  <span t-field="o.amount_total" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                  <span t-field="o.discount_amt" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                  <span t-field="o.discount_net" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
                                          </tr>
@@ -332,33 +332,33 @@
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
                                         <tr width='500px' style="border: 1px solid black;">
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Description
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Unit
 
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Quantity
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 C.Price
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 B.Price
                                             </th>
 
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Taxes
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Amount
                                             </th>
-                                            <th  width='200px' style="border: 1px solid black;">
+                                            <th  class="text-center" width='150px' style="border: 1px solid black;">
                                                 Ex.Date
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Batch No
                                             </th>
 
@@ -372,39 +372,39 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                             <td width='500px' style="border: 1px solid black;">
+                                             <td class="text-center" width='500px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
-                                            <td class="text-center" style="border: 1px solid black;">
+                                            <td  class="text-center" style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['uom_name']" />
 
                                             </td>
-                                            <td style="border: 1px solid black;">
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span t-esc="snln_line['quantity']"  t-options='{"widget": "float", "precision": 2}'/>
 
                                             </td>
 
-                                            <td style="border: 1px solid black;">
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['publicprice']" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
                                             </td>
 
-                                            <td style="border: 1px solid black;">
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['store_price']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>
                                             </td>
 
-                                           <td style="border: 1px solid black;">
+                                           <td class="text-center" style="border: 1px solid black;">
                                                       <span  t-esc="snln_line['tax']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>
                                             </td>
-                                              <td style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'sale'" >
+                                              <td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'sale'" >
                                                 <span  t-esc="snln_line['store_price'] * snln_line['quantity']"  t-options='{"widget": "float", "precision": 2}' />
-                                            </td><td style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
+                                            </td><td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
                                            0
                                             </td>
 
- <td  width='200px' style="border: 1px solid black;">
+ <td  class="text-center" width='150px' style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_expiration_date']" />
                                             </td>
-                                            <td style="border: 1px solid black;">
+                                            <td sclass="text-center" tyle="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_ref']" />
                                             </td>
 
@@ -416,46 +416,46 @@
                                 <div>
                                      <table style="width:100%;border: 1px bold;">
                                          <tr>
-                                             <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                  Total Amount
                                              </th>
 
-                                             <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                 SubTotal
                                              </th>
-                                             <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                  Taxes
                                              </th>
                                          </tr>
                                          <tr>
 
-                                               <td style="border: 1px solid black;">
+                                               <td class="text-center" style="border: 1px solid black;">
                                                  <span t-esc="sum((line['store_price']  * line['quantity'] )for line in o._get_invoiced_lot_values() if line['sale_type']=='sale')" t-options='{"widget": "float", "precision": 2}'/>
 
                                              </td>
 
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                 <span t-field="o.amount_untaxed" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                               <span t-esc="o.amount_tax" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
                                          </tr>
                                 <br></br>
                                          <tr style="border: 1px solid black;">
-                                                                                         <th style="border: 1px solid black;">Total Invoice</th>
-                                             <th style="border: 1px solid black;">Allowance Discount</th>
-                                             <th style="border: 1px solid black;">Net After Allowance Discount</th>
+                                                                                         <th class="text-center" style="border: 1px solid black;">Total Invoice</th>
+                                             <th class="text-center" style="border: 1px solid black;">Allowance Discount</th>
+                                             <th class="text-center" style="border: 1px solid black;">Net After Allowance Discount</th>
                                          </tr>
                                          <tr style="border: 1px solid black;">
 
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                  <span t-field="o.amount_total" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                  <span t-field="o.discount_amt" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                  <span t-field="o.discount_net" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
                                          </tr>
@@ -568,33 +568,33 @@
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
                                         <tr width='500px' style="border: 1px solid black;">
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Description
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Unit
 
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Quantity
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 C.Price
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 B.Price
                                             </th>
 
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Taxes
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Amount
                                             </th>
-                                            <th  width='200px' style="border: 1px solid black;">
+                                            <th class="text-center" width='150px' style="border: 1px solid black;">
                                                 Ex.Date
                                             </th>
-                                            <th style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Batch No
                                             </th>
 
@@ -608,37 +608,37 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                          <td width='500px' style="border: 1px solid black;">
+                                          <td class="text-center" width='500px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['uom_name']" />
 
                                             </td>
-                                            <td style="border: 1px solid black;">
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span t-esc="snln_line['quantity']"  t-options='{"widget": "float", "precision": 2}'/>
 
                                             </td>
 
-                                            <td style="border: 1px solid black;">
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['publicprice']"  t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
                                             </td>
 
-<td style="border: 1px solid black;">
+<td class="text-center" style="border: 1px solid black;">
                                                 <span t-esc="snln_line['store_price']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>
                                             </td>
-<td style="border: 1px solid black;">
+<td class="text-center" style="border: 1px solid black;">
                                                       <span  t-esc="snln_line['tax']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>
                                             </td>
-                                              <td style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'sale'" >
+                                              <td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'sale'" >
                                                 <span  t-esc="snln_line['store_price'] * snln_line['quantity']"  t-options='{"widget": "float", "precision": 2}' />
-                                            </td><td style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
+                                            </td><td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
                                            0
                                             </td>
- <td  width='200px' style="border: 1px solid black;">
+ <td  width='150class="text-center" px' style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_expiration_date']" />
                                             </td>
-                                            <td style="border: 1px solid black;">
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_ref']" />
                                             </td>
 
@@ -652,49 +652,49 @@
                                 <div>
                                      <table style="width:100%;border: 1px bold;">
                                          <tr>
-                                             <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                  Total Amount
                                              </th>
- <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                  Distributor Discount <span t-field="o.dist_discount" />%</th>
-                                             <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                 SubTotal
                                              </th>
-                                             <th style="border: 1px solid black;">
+                                             <th class="text-center" style="border: 1px solid black;">
                                                  Taxes
                                              </th>
                                          </tr>
                                          <tr>
 
-                                               <td style="border: 1px solid black;">
+                                               <td class="text-center" style="border: 1px solid black;">
                                                  <span t-esc="sum((line['store_price']  * line['quantity'] )for line in o._get_invoiced_lot_values() if line['sale_type']=='sale')" t-options='{"widget": "float", "precision": 2}'/>
 
                                              </td>
- <td style="border: 1px solid black;">
+ <td class="text-center" style="border: 1px solid black;">
                                                  <span t-esc="o.dist_discount_totals" t-options='{"widget": "float", "precision": 2}'/>
  </td>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                 <span t-field="o.amount_untaxed" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                               <span t-esc="o.amount_tax" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
                                          </tr>
                                 <br></br>
                                          <tr style="border: 1px solid black;">
-                                                                                       <th style="border: 1px solid black;">Total Invoice</th>
-                                             <th style="border: 1px solid black;">Allowance Discount</th>
-                                             <th style="border: 1px solid black;">Net After Allowance Discount</th>
+                                             <th class="text-center" style="border: 1px solid black;">Total Invoice</th>
+                                             <th class="text-center" style="border: 1px solid black;">Allowance Discount</th>
+                                             <th class="text-center" style="border: 1px solid black;">Net After Allowance Discount</th>
                                          </tr>
                                          <tr style="border: 1px solid black;">
 
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                  <span t-field="o.amount_total" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                  <span t-field="o.discount_amt" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
-                                             <td style="border: 1px solid black;">
+                                             <td class="text-center" style="border: 1px solid black;">
                                                  <span t-field="o.discount_net" t-options='{"widget": "float", "precision": 2}'/>
                                              </td>
                                          </tr>
