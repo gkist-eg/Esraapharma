@@ -213,7 +213,7 @@
                                          <tr style="border: 1px solid black;">
                                                  <th class="text-center" style="border: 1px solid black;">Total Invoice</th>
                                                  <th class="text-center" style="border: 1px solid black;">Allowance Discount</th>
-                                                 <th class="text-center"style="border: 1px solid black;">Net After Allowance Discount</th>
+                                                 <th class="text-center" style="border: 1px solid black;">Net After Allowance Discount</th>
                                          </tr>
                                          <tr style="border: 1px solid black;">
                                              <td class="text-center" style="border: 1px solid black;">
