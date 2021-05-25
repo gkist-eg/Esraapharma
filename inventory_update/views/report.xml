@@ -70,7 +70,7 @@
         </xpath>
     </template>
 
-    <template id="stock_report_delivery_document_inherit_udates2" inherit_id="stock.report_delivery_document">
+    <template id="stock_report_delivery_document_inherit_udateses" inherit_id="stock.report_delivery_document">
             <xpath expr="//div[@name='div_sched_date']" position="after">
 
                 <div t-if="o.location_id.usage=='internal'" class="col-auto" name="from_location">
