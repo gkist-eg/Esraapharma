@@ -21,7 +21,6 @@ class PaymentRequest(models.Model):
                                    copy=False,
                                    tracking=True)
 
-
     line_ids = fields.One2many('payment.request.line', 'request_id', store=True, tracking=True,
                                copy=False)
     bill_ids = fields.Many2many('account.move', compute='_compute_accounting')
@@ -76,6 +75,13 @@ class PaymentRequest(models.Model):
                          ('location_dest_id', '=', self.env.ref("item_request.emploee_location").id),
                          ('location_id.stock_usage', '=', 'qrtin'), ('state',  '=', 'done')])
                     done += sum([quant.product_uom_id._compute_quantity(quant.qty_done , quant.product_id.uom_id) for quant in request])
+                    request_return = line.move_line_ids.search(
+                        [('lot_id', '=', move.lot_id.id),
+                         ('location_id', '=', self.env.ref("item_request.emploee_location").id),
+                         ('location_dest_id.stock_usage', '=', 'qrtin'), ('state',  '=', 'done')])
+                    done -= sum(
+                        [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant in
+                         request_return])
                     if lines:
                         price = move.move_id.purchase_line_id.price_unit
                         taxes = move.move_id.purchase_line_id.taxes_id.compute_all(price, self.currency_id, done,
