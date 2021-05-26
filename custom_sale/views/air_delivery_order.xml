@@ -21,8 +21,38 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <div class="header">
-                    <div class="row">
-			Header
+                    <div class="row"><th class="text-center">
+
+                              <img class="pos-receipt-logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 180px"/>
+                                  <br/>
+
+
+                <t>
+ <div class="col-xs-6" name="o.company_address">
+                <strong><span t-field="o.company_id.name"  /></strong><br/>
+                <span t-field='o.company_id.street'/><br/>
+                <span t-field='o.company_id.street2'/><br/>
+                <span t-field='o.company_id.city' style="border-bottom: 1px solid black; display:inline-block;"/>
+            </div>
+                    <br/>
+                    <div class="col-xs-6" name="o.cust">
+                        <th class="text-left">
+                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>
+                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>
+                                    </th>
+                         <th class="text-center">
+                                      <h3 t-if="o.move_type == 'out_invoice'">
+                                        <strong>CV</strong><span t-field="o.serial_name"/>
+                                    </h3><h3 t-if="o.move_type == 'out_refund'">
+                                        <strong>EN</strong><span t-field="o.serial_name"/>
+                                    </h3>
+                         </th>
+
+                    </div>
+                </t>
+
+                                                                                </th>
+
                     </div>
                 </div>
                 <div class="article">
@@ -31,26 +61,9 @@
   <t t-if="o.move_type in ('out_invoice','out_refund') and o.partner_id.change_serial==False and o.partner_id.categ_id.category_type not in ('store','tender')">
                             <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
 
-
                             <div class="page">
 
                                    <table class="table table-borderless">
-                        <thead style="font-size:15px">
-                             <tr class="no-border">
-                                <th class="text-left">
-                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>
-                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>
-                                    </th>
-                                 <th class="text-center">
-                                      <h3 t-if="o.move_type == 'out_invoice'">
-                                        <strong>CV</strong><span t-field="o.serial_name"/>
-                                    </h3><h3 t-if="o.move_type == 'out_refund'">
-                                        <strong>EN</strong><span t-field="o.serial_name"/>
-                                    </h3>
-                                </th>
-
-                             </tr>
-                        </thead>
                                        <thead style="font-size:15px">
                              <tr class="no-border">
                                             <h3>
@@ -282,22 +295,6 @@
             <t t-if="lot_values">
 
                                    <table class="table table-borderless">
-                        <thead style="font-size:15px">
-                             <tr class="no-border">
-                                <th class="text-left">
-                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>
-                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>
-                                    </th>
-                                 <th class="text-center">
-                                      <h3 t-if="o.move_type == 'out_invoice'">
-                                        <strong>CV</strong><span t-field="o.serial_name"/>
-                                    </h3><h3 t-if="o.move_type == 'out_refund'">
-                                        <strong>EN</strong><span t-field="o.serial_name"/>
-                                    </h3>
-                                </th>
-
-                             </tr>
-                        </thead>
                                        <thead style="font-size:15px">
                              <tr class="no-border">
                                             <h3>
@@ -520,22 +517,6 @@
 
 
                                    <table class="table table-borderless">
-                        <thead style="font-size:15px">
-                             <tr class="no-border">
-                                <th class="text-left">
-                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>
-                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>
-                                    </th>
-                                 <th class="text-center">
-                                      <h3 t-if="o.move_type == 'out_invoice'">
-                                        <strong>CV</strong><span t-field="o.serial_name"/>
-                                    </h3><h3 t-if="o.move_type == 'out_refund'">
-                                        <strong>EN</strong><span t-field="o.serial_name"/>
-                                    </h3>
-                                </th>
-
-                             </tr>
-                        </thead>
                                        <thead style="font-size:15px">
                              <tr class="no-border">
                                             <h3>
