@@ -14,7 +14,7 @@
       <template id="edc_invoice_template">
            <t t-call="web.html_container">
         <t t-foreach="docs" t-as="o">
-            <t t-call="web.external_layout">
+            <t t-call="custom_sale.invoice_external_layout">
                 <t t-if="o.move_type in ('out_invoice','out_refund') and o.partner_id.change_serial==False and o.partner_id.categ_id.category_type not in ('store','tender')">
                             <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
                             <div class="page">
@@ -72,7 +72,7 @@
 
                                  </th>
                                   </h3>
-                                        
+
 
                              </tr>
                         </thead>
@@ -153,7 +153,8 @@
                                            0
                                             </td>
  <td class="text-center" width='150px' style="border: 1px solid black;">
-                                                <span  t-esc="snln_line['lot_expiration_date']" />
+     0
+<!--                                                <span  t-esc="snln_line['lot_expiration_date']" />-->
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_ref']" />
@@ -232,12 +233,10 @@
 
                                 </div>
 
-                                <br/>
-                                <br/>
+]                                <br/>
                                 <div class="text-center">
                                     <span class="text-center" t-esc="o.narration"/>
                                 </div>
-                                <br></br>
  <div style="outline: 2px solid black;">
                                     <p style="text-align: end;padding: 10px;">
 - يستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما .
@@ -319,7 +318,7 @@
 
                                  </th>
                                   </h3>
-                                        
+
 
                              </tr>
                         </thead>
@@ -557,7 +556,7 @@
 
                                  </th>
                                   </h3>
-                                        
+
 
                              </tr>
                         </thead>
@@ -745,6 +744,53 @@
                 </t>
             </t>
         </template>
+    <template id="invoice_external_layout">
+    <!-- Multicompany -->
+    <t t-if="not o and doc">
+        <t t-set="o" t-value="doc"/>
+    </t>
+    <t t-if="o and 'company_id' in o">
+        <t t-set="company" t-value="o.company_id"></t>
+    </t>
+    <t t-if="not o or not 'company_id' in o">
+        <t t-set="company" t-value="res_company"></t>
+    </t>2
+
+    <t t-call="custom_sale.invoice_layout_header" />
+    <t t-raw="0" />
+</template>
+
+<template id="invoice_layout_header">
+    <div class="header">
+        <div class="row">
+            <div class="col-xs-3">
+                <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo" style="max-height: 45px;"/>
+            </div>
+        </div>
+        <div class="row zero_min_height">
+            <div class="col-xs-12">
+                <div style="border-bottom: 1px solid black;"></div>
+            </div>
+        </div>
+               <br/>
+        <t t-foreach="docs" t-as="o">
+            <div class="row" >
+                       <th class="text-left">
+                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>
+                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>
+                                    </th>
+                                 <th class="text-center">
+                                      <h3 t-if="o.move_type == 'out_invoice'">
+                                        <strong>CV</strong><span t-field="o.serial_name"/>
+                                    </h3><h3 t-if="o.move_type == 'out_refund'">
+                                        <strong>EN</strong><span t-field="o.serial_name"/>
+                                    </h3>
+                                </th>
+                  </div></t>
+    </div>
+</template>
+
+
 
 
     </data>
