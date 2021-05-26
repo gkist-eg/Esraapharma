@@ -21,35 +21,24 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <div class="header">
-                    <div class="row"><th class="text-center">
+                    <div class="row">
+                        <th class="text-center">
 
                               <img class="pos-receipt-logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 180px"/>
                                   <br/>
-
-
-                <t>
- <div class="col-xs-6" name="o.company_address">
-                <strong><span t-field="o.company_id.name"  /></strong><br/>
+                               <strong><span t-field="o.company_id.name"  /></strong><br/>
                 <span t-field='o.company_id.street'/><br/>
                 <span t-field='o.company_id.street2'/><br/>
-                <span t-field='o.company_id.city' style="border-bottom: 1px solid black; display:inline-block;"/>
-            </div>
-                    <br/>
-                    <div class="col-xs-6" name="o.cust">
-                        <th class="text-left">
-                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>
-                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>
-                                    </th>
-                         <th class="text-center">
-                                      <h3 t-if="o.move_type == 'out_invoice'">
-                                        <strong>CV</strong><span t-field="o.serial_name"/>
-                                    </h3><h3 t-if="o.move_type == 'out_refund'">
-                                        <strong>EN</strong><span t-field="o.serial_name"/>
-                                    </h3>
-                         </th>
+                <span t-field='o.company_id.city' style="border-bottom: 1px solid black; display:inline-block;"/><br/><br/>
+                            <th class="text-center">
+                            <h5 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h5>
+                                   <h5 t-if="o.move_type == 'out_refund'">Customer Refund  </h5>
+                            <strong>CV</strong><span t-field="o.serial_name"/>
 
-                    </div>
-                </t>
+                                        <strong>EN</strong><span t-field="o.serial_name"/>
+
+</th>
+
 
                                                                                 </th>
 
@@ -294,50 +283,6 @@
                            <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
             <t t-if="lot_values">
 
-                                   <table class="table table-borderless">
-                                       <thead style="font-size:15px">
-                             <tr class="no-border">
-                                            <h3>
-                                <th class="text-left">
-
-                                      <strong>Customer: </strong><span t-field="o.partner_id.name"/>
-
-                                 </th>
-                                  </h3>
-                                           <h3>
-                                                 <th class="text-center">
-                                    <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>
-
-                                </th>
-                                           </h3>
-                                           <h3>
-                               <th class="text-right">
-                                            <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>
-
-                                </th>
-
-                                </h3>
-
-                             </tr>
-                        </thead>
-                                       <thead  t-if="o.move_type == 'out_refund'" style="font-size:15px">
-                             <tr class="no-border">
-                                            <h3>
-                                <th class="text-left">
-
-                                      <strong>Source Invoice: </strong>
-                                    <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>
-                                    <span t-if="o.invoice_number_old == False" t-field="o.return_source"/>
-
-                                 </th>
-                                  </h3>
-
-
-                             </tr>
-                        </thead>
-
-
-                </table>
 
 
                             <div class="page">
@@ -516,50 +461,6 @@
                             <div class="page">
 
 
-                                   <table class="table table-borderless">
-                                       <thead style="font-size:15px">
-                             <tr class="no-border">
-                                            <h3>
-                                <th class="text-left">
-
-                                      <strong>Customer: </strong><span t-field="o.partner_id.name"/>
-
-                                 </th>
-                                  </h3>
-                                           <h3>
-                                                 <th class="text-center">
-                                    <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>
-
-                                </th>
-                                           </h3>
-                                           <h3>
-                               <th class="text-right">
-                                            <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>
-
-                                </th>
-
-                                </h3>
-
-                             </tr>
-                        </thead>
-                                       <thead  t-if="o.move_type == 'out_refund'" style="font-size:15px">
-                             <tr class="no-border">
-                                            <h3>
-                                <th class="text-left">
-
-                                      <strong>Source Invoice: </strong>
-                                    <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>
-                                    <span t-if="o.invoice_number_old == False" t-field="o.return_source"/>
-
-                                 </th>
-                                  </h3>
-
-
-                             </tr>
-                        </thead>
-
-
-                </table>
 
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
