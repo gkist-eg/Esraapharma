@@ -1,22 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <report
-                id="q_invoice_new"
-                model="account.move"
-                report_type="qweb-pdf"
-                string="New Invoice"
-                name="custom_sale.edc_invoice_template"
-                file="custom_sale.edc_invoice_template"
-                groups="custom_sale.group_print_invoice"
-        />
 
-      <template id="edc_invoice_template">
-           <t t-call="web.html_container">
-        <t t-foreach="docs" t-as="o">
-            <t t-call="custom_sale.invoice_external_layout">
-                <t t-if="o.move_type in ('out_invoice','out_refund') and o.partner_id.change_serial==False and o.partner_id.categ_id.category_type not in ('store','tender')">
+<record id="paperformat_invoice_sales_dot_matrix" model="report.paperformat">
+        <field name="name">Sales Invoice Dot Matrix</field>
+        <field name="default" eval="False"/>
+        <field name="format">custom</field>
+        <field name="page_width">215</field>
+        <field name="page_height">280</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">73</field>
+        <field name="margin_bottom">23</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">68</field>
+        <field name="dpi">90</field>
+    </record>
+    <template id="sales_invoice_dot_matrix_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="header">
+                    <div class="row">
+			Header
+                    </div>
+                </div>
+                <div class="article">
+                    <div class="page">
+                        <div class="row justify-content-end">
+  <t t-if="o.move_type in ('out_invoice','out_refund') and o.partner_id.change_serial==False and o.partner_id.categ_id.category_type not in ('store','tender')">
                             <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
+
+
                             <div class="page">
 
                                    <table class="table table-borderless">
@@ -83,35 +98,35 @@
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
                                         <tr width='500px' style="border: 1px solid black;">
-                                            <th class="text-center" >
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Description
                                             </th>
-                                            <th class="text-center">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Unit
 
                                             </th>
-                                            <th class="text-center">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Quantity
                                             </th>
-                                            <th class="text-center" >
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 C.Price
                                             </th>
-                                            <th class="text-center" >
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 B.Price
                                             </th>
-                                            <th class="text-center" >
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Disc.(%)
                                             </th>
-                                            <th class="text-center" >
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Taxes
                                             </th>
-                                            <th class="text-center">
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Amount
                                             </th>
-                                            <th  class="text-center" width='150px'>
+                                            <th  class="text-center" width='150px' style="border: 1px solid black;">
                                                 Ex.Date
                                             </th>
-                                            <th class="text-center" >
+                                            <th class="text-center" style="border: 1px solid black;">
                                                 Batch No
                                             </th>
 
@@ -123,39 +138,39 @@
                                         <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>
                                         <tr>
 
- <td class="text-center" width='500px' >
+ <td class="text-center" width='500px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
-                                            <td class="text-center" >
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['uom_name']" />
 
                                             </td>
-                                            <td class="text-center">
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span t-esc="snln_line['quantity']"  t-options='{"widget": "float", "precision": 2}'/>
 
                                             </td>
-                                            <td class="text-center">
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['publicprice']" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
                                             </td>
 
-<td class="text-center" >
+<td class="text-center" style="border: 1px solid black;">
                                                 <span t-if="o.partner_id.categ_id.category_type != 'store'" t-esc="snln_line['price']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>
                                             </td>
-                                              <td class="text-center" >
+                                              <td class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['discount']" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
                                             </td>
-                                             <td class="text-center" >
+                                             <td class="text-center" style="border: 1px solid black;">
                                                       <span  t-esc="snln_line['tax']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>
                                             </td>
-                                            <td class="text-center"  t-if="snln_line['sale_type'] == 'sale'" >
+                                            <td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'sale'" >
                                                 <span t-esc="snln_line['price'] * snln_line['quantity']"   t-options='{"widget": "float", "precision": 2}' />
-                                            </td><td class="text-center"  t-if="snln_line['sale_type'] == 'bouns'" >
+                                            </td><td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
                                            0
                                             </td>
- <td class="text-center" width='150px' >
+ <td class="text-center" width='150px' style="border: 1px solid black;">
 <!--                                                <span  t-esc="snln_line['lot_expiration_date']" />-->
                                             </td>
-                                            <td class="text-center" >
+                                            <td class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_ref']" />
                                             </td>
 
@@ -232,10 +247,12 @@
 
                                 </div>
 
-]                                <br/>
+                                <br/>
+                                <br/>
                                 <div class="text-center">
                                     <span class="text-center" t-esc="o.narration"/>
                                 </div>
+                                <br></br>
  <div style="outline: 2px solid black;">
                                     <p style="text-align: end;padding: 10px;">
 - يستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما .
@@ -734,68 +751,762 @@
                             </div>
             </t>
                         </t>
-
-
-
-
-                    </t>
-
-                </t>
-            </t>
-        </template>
-    <template id="invoice_external_layout">
-    <!-- Multicompany -->
-
-  <t t-if="not o" t-set="o" t-value="doc"/>
-
-        <t t-if="not company">
-            <!-- Multicompany -->
-            <t t-if="company_id">
-                <t t-set="company" t-value="company_id"/>
-            </t>
-            <t t-elif="o and 'company_id' in o">
-                <t t-set="company" t-value="o.company_id.sudo()"/>
-            </t>
-            <t t-else="else">
-                <t t-set="company" t-value="res_company"/>
+			</div>
+                    </div>
+                </div>
+                <div class="footer" style="font-size:12px;">
+                    Footer
+                </div>
             </t>
         </t>
-
-        <t t-if="company.external_report_layout_id" t-call="{{company.external_report_layout_id.key}}"><t t-raw="0"/></t>
-        <t t-else="else" t-call="web.external_layout_standard"><t t-raw="0"/></t>
-
-    <t t-call="custom_sale.invoice_layout_header" />
-    <t t-raw="0" />
-</template>
-
-<template id="invoice_layout_header">
-    <div class="header">
-
-        <div class="row zero_min_height">
-            <div class="col-xs-12">
-                <div style="border-bottom: 1px solid black;"></div>
-            </div>
-        </div>
-               <br/>
-        <t t-foreach="docs" t-as="o">
-            <div class="row" >
-                       <th class="text-left">
-                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>
-                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>
-                                    </th>
-                                 <th class="text-center">
-                                      <h3 t-if="o.move_type == 'out_invoice'">
-                                        <strong>CV</strong><span t-field="o.serial_name"/>
-                                    </h3><h3 t-if="o.move_type == 'out_refund'">
-                                        <strong>EN</strong><span t-field="o.serial_name"/>
-                                    </h3>
-                                </th>
-                  </div></t>
-    </div>
-</template>
+    </template>
+<!--      <template id="edc_invoice_template">-->
+<!--           <t t-call="web.html_container">-->
+<!--        <t t-foreach="docs" t-as="o">-->
+<!--            <t t-call="web.external_layout">-->
+<!--                <t t-if="o.move_type in ('out_invoice','out_refund') and o.partner_id.change_serial==False and o.partner_id.categ_id.category_type not in ('store','tender')">-->
+<!--                            <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>-->
 
 
+<!--                            <div class="page">-->
 
+<!--                                   <table class="table table-borderless">-->
+<!--                        <thead style="font-size:15px">-->
+<!--                             <tr class="no-border">-->
+<!--                                <th class="text-left">-->
+<!--                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>-->
+<!--                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>-->
+<!--                                    </th>-->
+<!--                                 <th class="text-center">-->
+<!--                                      <h3 t-if="o.move_type == 'out_invoice'">-->
+<!--                                        <strong>CV</strong><span t-field="o.serial_name"/>-->
+<!--                                    </h3><h3 t-if="o.move_type == 'out_refund'">-->
+<!--                                        <strong>EN</strong><span t-field="o.serial_name"/>-->
+<!--                                    </h3>-->
+<!--                                </th>-->
+
+<!--                             </tr>-->
+<!--                        </thead>-->
+<!--                                       <thead style="font-size:15px">-->
+<!--                             <tr class="no-border">-->
+<!--                                            <h3>-->
+<!--                                <th class="text-left">-->
+
+<!--                                      <strong>Customer: </strong><span t-field="o.partner_id.name"/>-->
+
+<!--                                 </th>-->
+<!--                                  </h3>-->
+<!--                                           <h3>-->
+<!--                                                 <th class="text-center">-->
+<!--                                    <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>-->
+
+<!--                                </th>-->
+<!--                                           </h3>-->
+<!--                                           <h3>-->
+<!--                               <th class="text-right">-->
+<!--                                            <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>-->
+
+<!--                                </th>-->
+
+<!--                                </h3>-->
+
+<!--                             </tr>-->
+<!--                        </thead>-->
+<!--                                       <thead  t-if="o.move_type == 'out_refund'" style="font-size:15px">-->
+<!--                             <tr class="no-border">-->
+<!--                                            <h3>-->
+<!--                                <th class="text-left">-->
+
+<!--                                      <strong>Source Invoice: </strong>-->
+<!--                                    <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>-->
+<!--                                    <span t-if="o.invoice_number_old == False" t-field="o.return_source"/>-->
+
+<!--                                 </th>-->
+<!--                                  </h3>-->
+<!--                                        -->
+
+<!--                             </tr>-->
+<!--                        </thead>-->
+
+
+<!--                </table>-->
+
+<!--                                <table style="width:100%;border: 1px bold;" >-->
+<!--                                    <thead>-->
+<!--                                        <tr width='500px' style="border: 1px solid black;">-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Description-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Unit-->
+
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Quantity-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                C.Price-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                B.Price-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Disc.(%)-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Taxes-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Amount-->
+<!--                                            </th>-->
+<!--                                            <th  class="text-center" width='150px' style="border: 1px solid black;">-->
+<!--                                                Ex.Date-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Batch No-->
+<!--                                            </th>-->
+
+<!--                                        </tr>-->
+<!--                                    </thead>-->
+
+<!--                                    <tbody class="invoice_tbody">-->
+<!--                                       <t t-foreach="lot_values" t-as="snln_line">-->
+<!--                                        <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>-->
+<!--                                        <tr>-->
+
+<!-- <td class="text-center" width='500px' style="border: 1px solid black;">-->
+<!--                                                <span style="float:left;" t-esc="snln_line['product_name']" />-->
+<!--                                            </td>-->
+<!--                                            <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span style="float:left;" t-esc="snln_line['uom_name']" />-->
+
+<!--                                            </td>-->
+<!--                                            <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span t-esc="snln_line['quantity']"  t-options='{"widget": "float", "precision": 2}'/>-->
+
+<!--                                            </td>-->
+<!--                                            <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span  t-esc="snln_line['publicprice']" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>-->
+<!--                                            </td>-->
+
+<!--<td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span t-if="o.partner_id.categ_id.category_type != 'store'" t-esc="snln_line['price']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>-->
+<!--                                            </td>-->
+<!--                                              <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span  t-esc="snln_line['discount']" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>-->
+<!--                                            </td>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                      <span  t-esc="snln_line['tax']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>-->
+<!--                                            </td>-->
+<!--                                            <td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'sale'" >-->
+<!--                                                <span t-esc="snln_line['price'] * snln_line['quantity']"   t-options='{"widget": "float", "precision": 2}' />-->
+<!--                                            </td><td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >-->
+<!--                                           0-->
+<!--                                            </td>-->
+<!-- <td class="text-center" width='150px' style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                                <span  t-esc="snln_line['lot_expiration_date']" />&ndash;&gt;-->
+<!--                                            </td>-->
+<!--                                            <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span  t-esc="snln_line['lot_ref']" />-->
+<!--                                            </td>-->
+
+<!--                                        </tr>-->
+<!--                                       </t>-->
+<!--                                    </tbody>-->
+<!--                                </table>-->
+<!--                                <h5> Total Quantity : <span t-esc="int(o.tot_qty)"/> </h5>-->
+<!--                                <div>-->
+<!--                                     <table style="width:100%;border: 1px bold;">-->
+<!--                                         <tr>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                 Total Amount-->
+<!--                                             </th>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                 Pharmacy/Deduction Dis-->
+<!--                                             </th>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                 Distributor Discount <span t-field="o.dist_discount" />%</th>-->
+
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                 Total Discounts </th>-->
+
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                SubTotal-->
+<!--                                             </th>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                 Taxes-->
+<!--                                             </th>-->
+<!--                                         </tr>-->
+<!--                                         <tr>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-esc="sum((line['price'] * line['quantity']) for line in o._get_invoiced_lot_values() if line['sale_type']=='sale' )" t-options='{"widget": "float", "precision": 2}'/>-->
+
+<!--                                             </td>-->
+
+<!--                                               <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-esc="sum((line['price'] * line['quantity']) *((line['discount'] or 0.0) / 100) for line in o._get_invoiced_lot_values() if line['sale_type']=='sale')" t-options='{"widget": "float", "precision": 2}'/>-->
+
+<!--                                             </td>-->
+<!--                                              <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-esc="o.dist_discount_totals" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td><td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-esc="sum(line['price'] * line['quantity'] *((line['discount'] or 0.0) / 100) for line in o._get_invoiced_lot_values() if line['sale_type']=='sale')+o.dist_discount_totals+o.cash_discount_totals" t-options='{"widget": "float", "precision": 2}'/>-->
+
+<!--                                             </td>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span t-field="o.amount_untaxed" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                              <span t-esc="o.amount_tax" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                         </tr>-->
+<!--                                         <br></br>-->
+<!--                                         <tr style="border: 1px solid black;">-->
+<!--                                                 <th class="text-center" style="border: 1px solid black;">Total Invoice</th>-->
+<!--                                                 <th class="text-center" style="border: 1px solid black;">Allowance Discount</th>-->
+<!--                                                 <th class="text-center" style="border: 1px solid black;">Net After Allowance Discount</th>-->
+<!--                                         </tr>-->
+<!--                                         <tr style="border: 1px solid black;">-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-field="o.amount_total" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-field="o.discount_amt" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-field="o.discount_net" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                         </tr>-->
+
+<!--                                </table>-->
+
+
+<!--                                </div>-->
+
+<!--                                <br/>-->
+<!--                                <br/>-->
+<!--                                <div class="text-center">-->
+<!--                                    <span class="text-center" t-esc="o.narration"/>-->
+<!--                                </div>-->
+<!--                                <br></br>-->
+<!-- <div style="outline: 2px solid black;">-->
+<!--                                    <p style="text-align: end;padding: 10px;">-->
+<!-- - يستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما .-->
+<!--                                                                               - الشركة تخضع لنظام الدفعات المقدمة و لا يجوز الخصم عليها من المنبع-->
+<!-- - بضاعة الثلاجة لا ترد ولا تستبدل .-->
+<!--                                        - يعتبر التوقيع أو ختم الفاتورة بمثابة ايصال استلام لمشتملات الفاتورة وتعتبر أمانة لحين سداد قيمتها بموجب .-->
+<!--                                                                   - ايصال نقدية/شيك مختوم ومعتمد من الشركة, وأقر بموافقتي علي جميع بنود الفاتورة-->
+<!--                                        - امضاء أو ختم الفاتورة يعتبر استلاما نهائيا للبضاعة والشركة غير مسئولة عن اي عجز يتم الابلاغ عنه بعد الاستلام-->
+<!--                                    </p>-->
+<!-- </div>-->
+
+<!--                                <table class="table table-borderless">-->
+<!--                        <thead style="font-size:20px">-->
+<!--                             <tr class="no-border">-->
+<!--                                <th class="text-center">توقيع</th>-->
+
+<!--                             </tr>-->
+<!--                        </thead>-->
+<!--                    <tbody style="font-size:11px">-->
+
+<!--                    </tbody>-->
+<!--                </table>-->
+<!--                            </div>-->
+<!--                        </t>-->
+<!--                <t t-if="o.move_type in ('out_invoice','out_refund') and o.partner_id.change_serial==False and o.partner_id.categ_id.category_type == 'store'">-->
+<!--                           <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>-->
+<!--            <t t-if="lot_values">-->
+
+<!--                                   <table class="table table-borderless">-->
+<!--                        <thead style="font-size:15px">-->
+<!--                             <tr class="no-border">-->
+<!--                                <th class="text-left">-->
+<!--                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>-->
+<!--                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>-->
+<!--                                    </th>-->
+<!--                                 <th class="text-center">-->
+<!--                                      <h3 t-if="o.move_type == 'out_invoice'">-->
+<!--                                        <strong>CV</strong><span t-field="o.serial_name"/>-->
+<!--                                    </h3><h3 t-if="o.move_type == 'out_refund'">-->
+<!--                                        <strong>EN</strong><span t-field="o.serial_name"/>-->
+<!--                                    </h3>-->
+<!--                                </th>-->
+
+<!--                             </tr>-->
+<!--                        </thead>-->
+<!--                                       <thead style="font-size:15px">-->
+<!--                             <tr class="no-border">-->
+<!--                                            <h3>-->
+<!--                                <th class="text-left">-->
+
+<!--                                      <strong>Customer: </strong><span t-field="o.partner_id.name"/>-->
+
+<!--                                 </th>-->
+<!--                                  </h3>-->
+<!--                                           <h3>-->
+<!--                                                 <th class="text-center">-->
+<!--                                    <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>-->
+
+<!--                                </th>-->
+<!--                                           </h3>-->
+<!--                                           <h3>-->
+<!--                               <th class="text-right">-->
+<!--                                            <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>-->
+
+<!--                                </th>-->
+
+<!--                                </h3>-->
+
+<!--                             </tr>-->
+<!--                        </thead>-->
+<!--                                       <thead  t-if="o.move_type == 'out_refund'" style="font-size:15px">-->
+<!--                             <tr class="no-border">-->
+<!--                                            <h3>-->
+<!--                                <th class="text-left">-->
+
+<!--                                      <strong>Source Invoice: </strong>-->
+<!--                                    <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>-->
+<!--                                    <span t-if="o.invoice_number_old == False" t-field="o.return_source"/>-->
+
+<!--                                 </th>-->
+<!--                                  </h3>-->
+<!--                                        -->
+
+<!--                             </tr>-->
+<!--                        </thead>-->
+
+
+<!--                </table>-->
+
+
+<!--                            <div class="page">-->
+<!--                                <table style="width:100%;border: 1px bold;" >-->
+<!--                                    <thead>-->
+<!--                                        <tr width='500px' style="border: 1px solid black;">-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Description-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Unit-->
+
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Quantity-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                C.Price-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                B.Price-->
+<!--                                            </th>-->
+
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Taxes-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Amount-->
+<!--                                            </th>-->
+<!--                                            <th  class="text-center" width='150px' style="border: 1px solid black;">-->
+<!--                                                Ex.Date-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Batch No-->
+<!--                                            </th>-->
+
+<!--                                        </tr>-->
+<!--                                    </thead>-->
+
+<!--                                    <tbody class="invoice_tbody">-->
+<!--                                        <t t-foreach="lot_values" t-as="snln_line">-->
+
+<!--                                        <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>-->
+<!--                                        <tr style="border: 1px solid black;">-->
+
+
+<!--                                             <td class="text-center" width='500px' style="border: 1px solid black;">-->
+<!--                                                <span style="float:left;" t-esc="snln_line['product_name']" />-->
+<!--                                            </td>-->
+<!--                                            <td  class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span style="float:left;" t-esc="snln_line['uom_name']" />-->
+
+<!--                                            </td>-->
+<!--                                            <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span t-esc="snln_line['quantity']"  t-options='{"widget": "float", "precision": 2}'/>-->
+
+<!--                                            </td>-->
+
+<!--                                            <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span  t-esc="snln_line['publicprice']" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>-->
+<!--                                            </td>-->
+
+<!--                                            <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span  t-esc="snln_line['store_price']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>-->
+<!--                                            </td>-->
+
+<!--                                           <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                      <span  t-esc="snln_line['tax']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>-->
+<!--                                            </td>-->
+<!--                                              <td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'sale'" >-->
+<!--                                                <span  t-esc="snln_line['store_price'] * snln_line['quantity']"  t-options='{"widget": "float", "precision": 2}' />-->
+<!--                                            </td><td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >-->
+<!--                                           0-->
+<!--                                            </td>-->
+
+<!-- <td  class="text-center" width='150px' style="border: 1px solid black;">-->
+<!--                                                <span  t-esc="snln_line['lot_expiration_date']" />-->
+<!--                                            </td>-->
+<!--                                            <td sclass="text-center" tyle="border: 1px solid black;">-->
+<!--                                                <span  t-esc="snln_line['lot_ref']" />-->
+<!--                                            </td>-->
+
+<!--                                        </tr>-->
+<!--                                                                               </t>-->
+<!--                                    </tbody>-->
+<!--                                </table>-->
+<!--                                <h5> Total Quantity : <span t-esc="int(o.tot_qty)"/> </h5>-->
+<!--                                <div>-->
+<!--                                     <table style="width:100%;border: 1px bold;">-->
+<!--                                         <tr>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                 Total Amount-->
+<!--                                             </th>-->
+
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                SubTotal-->
+<!--                                             </th>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                 Taxes-->
+<!--                                             </th>-->
+<!--                                         </tr>-->
+<!--                                         <tr>-->
+
+<!--                                               <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-esc="sum((line['store_price']  * line['quantity'] )for line in o._get_invoiced_lot_values() if line['sale_type']=='sale')" t-options='{"widget": "float", "precision": 2}'/>-->
+
+<!--                                             </td>-->
+
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span t-field="o.amount_untaxed" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                              <span t-esc="o.amount_tax" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                         </tr>-->
+<!--                                <br></br>-->
+<!--                                         <tr style="border: 1px solid black;">-->
+<!--                                                                                         <th class="text-center" style="border: 1px solid black;">Total Invoice</th>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">Allowance Discount</th>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">Net After Allowance Discount</th>-->
+<!--                                         </tr>-->
+<!--                                         <tr style="border: 1px solid black;">-->
+
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-field="o.amount_total" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-field="o.discount_amt" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-field="o.discount_net" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                         </tr>-->
+
+<!--                                </table>-->
+
+
+<!--                                </div>-->
+
+<!--                                <br/>-->
+<!--                                <br/>-->
+<!--                                <div class="text-center">-->
+<!--                                    <span class="text-center" t-esc="o.narration"/>-->
+<!--                                </div>-->
+<!--                                <br></br>-->
+<!-- <div style="outline: 2px solid black;">-->
+<!--                                    <p style="text-align: end;padding: 10px;">-->
+<!-- - يستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما .-->
+<!--                                                                               - الشركة تخضع لنظام الدفعات المقدمة و لا يجوز الخصم عليها من المنبع-->
+<!-- - بضاعة الثلاجة لا ترد ولا تستبدل .-->
+<!--                                        - يعتبر التوقيع أو ختم الفاتورة بمثابة ايصال استلام لمشتملات الفاتورة وتعتبر أمانة لحين سداد قيمتها بموجب .-->
+<!--                                                                   - ايصال نقدية/شيك مختوم ومعتمد من الشركة, وأقر بموافقتي علي جميع بنود الفاتورة-->
+<!--                                        - امضاء أو ختم الفاتورة يعتبر استلاما نهائيا للبضاعة والشركة غير مسئولة عن اي عجز يتم الابلاغ عنه بعد الاستلام-->
+<!--                                    </p>-->
+<!-- </div>-->
+
+
+
+<!--                                <table class="table table-borderless">-->
+<!--                        <thead style="font-size:20px">-->
+<!--                             <tr class="no-border">-->
+<!--                                <th class="text-center">توقيع</th>-->
+
+<!--                             </tr>-->
+<!--                        </thead>-->
+<!--                    <tbody style="font-size:11px">-->
+
+<!--                    </tbody>-->
+<!--                </table>-->
+<!--                            </div>-->
+<!--            </t>-->
+<!--                        </t>-->
+<!--                <t t-if="o.move_type in ('out_invoice','out_refund') and o.partner_id.change_serial==False and o.partner_id.categ_id.category_type == 'tender'">-->
+<!--                           <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>-->
+<!--            <t t-if="lot_values">-->
+<!--                            <div class="page">-->
+
+
+<!--                                   <table class="table table-borderless">-->
+<!--                        <thead style="font-size:15px">-->
+<!--                             <tr class="no-border">-->
+<!--                                <th class="text-left">-->
+<!--                                 <h3 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h3>-->
+<!--                                 <h3 t-if="o.move_type == 'out_refund'">Customer Refund  </h3>-->
+<!--                                    </th>-->
+<!--                                 <th class="text-center">-->
+<!--                                      <h3 t-if="o.move_type == 'out_invoice'">-->
+<!--                                        <strong>CV</strong><span t-field="o.serial_name"/>-->
+<!--                                    </h3><h3 t-if="o.move_type == 'out_refund'">-->
+<!--                                        <strong>EN</strong><span t-field="o.serial_name"/>-->
+<!--                                    </h3>-->
+<!--                                </th>-->
+
+<!--                             </tr>-->
+<!--                        </thead>-->
+<!--                                       <thead style="font-size:15px">-->
+<!--                             <tr class="no-border">-->
+<!--                                            <h3>-->
+<!--                                <th class="text-left">-->
+
+<!--                                      <strong>Customer: </strong><span t-field="o.partner_id.name"/>-->
+
+<!--                                 </th>-->
+<!--                                  </h3>-->
+<!--                                           <h3>-->
+<!--                                                 <th class="text-center">-->
+<!--                                    <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>-->
+
+<!--                                </th>-->
+<!--                                           </h3>-->
+<!--                                           <h3>-->
+<!--                               <th class="text-right">-->
+<!--                                            <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>-->
+
+<!--                                </th>-->
+
+<!--                                </h3>-->
+
+<!--                             </tr>-->
+<!--                        </thead>-->
+<!--                                       <thead  t-if="o.move_type == 'out_refund'" style="font-size:15px">-->
+<!--                             <tr class="no-border">-->
+<!--                                            <h3>-->
+<!--                                <th class="text-left">-->
+
+<!--                                      <strong>Source Invoice: </strong>-->
+<!--                                    <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>-->
+<!--                                    <span t-if="o.invoice_number_old == False" t-field="o.return_source"/>-->
+
+<!--                                 </th>-->
+<!--                                  </h3>-->
+<!--                                        -->
+
+<!--                             </tr>-->
+<!--                        </thead>-->
+
+
+<!--                </table>-->
+
+<!--                                <table style="width:100%;border: 1px bold;" >-->
+<!--                                    <thead>-->
+<!--                                        <tr width='500px' style="border: 1px solid black;">-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Description-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Unit-->
+
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Quantity-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                C.Price-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                B.Price-->
+<!--                                            </th>-->
+
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Taxes-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Amount-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" width='150px' style="border: 1px solid black;">-->
+<!--                                                Ex.Date-->
+<!--                                            </th>-->
+<!--                                            <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                Batch No-->
+<!--                                            </th>-->
+
+<!--                                        </tr>-->
+<!--                                    </thead>-->
+
+<!--                                    <tbody class="invoice_tbody">-->
+<!--                                                                               <t t-foreach="lot_values" t-as="snln_line">-->
+
+<!--                                        <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>-->
+<!--                                        <tr style="border: 1px solid black;">-->
+
+
+<!--                                          <td class="text-center" width='500px' style="border: 1px solid black;">-->
+<!--                                                <span style="float:left;" t-esc="snln_line['product_name']" />-->
+<!--                                            </td>-->
+<!--                                            <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span style="float:left;" t-esc="snln_line['uom_name']" />-->
+
+<!--                                            </td>-->
+<!--                                            <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span t-esc="snln_line['quantity']"  t-options='{"widget": "float", "precision": 2}'/>-->
+
+<!--                                            </td>-->
+
+<!--                                            <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span  t-esc="snln_line['publicprice']"  t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>-->
+<!--                                            </td>-->
+
+<!--<td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span t-esc="snln_line['store_price']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>-->
+<!--                                            </td>-->
+<!--<td class="text-center" style="border: 1px solid black;">-->
+<!--                                                      <span  t-esc="snln_line['tax']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>-->
+<!--                                            </td>-->
+<!--                                              <td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'sale'" >-->
+<!--                                                <span  t-esc="snln_line['store_price'] * snln_line['quantity']"  t-options='{"widget": "float", "precision": 2}' />-->
+<!--                                            </td><td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >-->
+<!--                                           0-->
+<!--                                            </td>-->
+<!-- <td  width='150class="text-center" px' style="border: 1px solid black;">-->
+<!--                                                <span  t-esc="snln_line['lot_expiration_date']" />-->
+<!--                                            </td>-->
+<!--                                            <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span  t-esc="snln_line['lot_ref']" />-->
+<!--                                            </td>-->
+
+
+<!--                                        </tr>-->
+<!--                                                                               </t>-->
+
+<!--                                    </tbody>-->
+<!--                                </table>-->
+<!--                                <h5> Total Quantity : <span t-esc="int(o.tot_qty)"/> </h5>-->
+<!--                                <div>-->
+<!--                                     <table style="width:100%;border: 1px bold;">-->
+<!--                                         <tr>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                 Total Amount-->
+<!--                                             </th>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                 Distributor Discount <span t-field="o.dist_discount" />%</th>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                SubTotal-->
+<!--                                             </th>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">-->
+<!--                                                 Taxes-->
+<!--                                             </th>-->
+<!--                                         </tr>-->
+<!--                                         <tr>-->
+
+<!--                                               <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-esc="sum((line['store_price']  * line['quantity'] )for line in o._get_invoiced_lot_values() if line['sale_type']=='sale')" t-options='{"widget": "float", "precision": 2}'/>-->
+
+<!--                                             </td>-->
+<!-- <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-esc="o.dist_discount_totals" t-options='{"widget": "float", "precision": 2}'/>-->
+<!-- </td>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                <span t-field="o.amount_untaxed" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                              <span t-esc="o.amount_tax" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                         </tr>-->
+<!--                                <br></br>-->
+<!--                                         <tr style="border: 1px solid black;">-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">Total Invoice</th>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">Allowance Discount</th>-->
+<!--                                             <th class="text-center" style="border: 1px solid black;">Net After Allowance Discount</th>-->
+<!--                                         </tr>-->
+<!--                                         <tr style="border: 1px solid black;">-->
+
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-field="o.amount_total" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-field="o.discount_amt" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                             <td class="text-center" style="border: 1px solid black;">-->
+<!--                                                 <span t-field="o.discount_net" t-options='{"widget": "float", "precision": 2}'/>-->
+<!--                                             </td>-->
+<!--                                         </tr>-->
+
+<!--                                </table>-->
+
+
+<!--                                </div>-->
+
+<!--                                <br/>-->
+<!--                                <br/>-->
+<!--                                <div class="text-center">-->
+<!--                                    <span class="text-center" t-esc="o.narration"/>-->
+<!--                                </div>-->
+<!--                                <br></br>-->
+<!-- <div style="outline: 2px solid black;">-->
+<!--                                    <p style="text-align: end;padding: 10px;">-->
+<!-- - يستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما .-->
+<!--                                                                               - الشركة تخضع لنظام الدفعات المقدمة و لا يجوز الخصم عليها من المنبع-->
+<!-- - بضاعة الثلاجة لا ترد ولا تستبدل .-->
+<!--                                        - يعتبر التوقيع أو ختم الفاتورة بمثابة ايصال استلام لمشتملات الفاتورة وتعتبر أمانة لحين سداد قيمتها بموجب .-->
+<!--                                                                   - ايصال نقدية/شيك مختوم ومعتمد من الشركة, وأقر بموافقتي علي جميع بنود الفاتورة-->
+<!--                                        - امضاء أو ختم الفاتورة يعتبر استلاما نهائيا للبضاعة والشركة غير مسئولة عن اي عجز يتم الابلاغ عنه بعد الاستلام-->
+<!--                                    </p>-->
+<!-- </div>-->
+
+
+<!--                                <table class="table table-borderless">-->
+<!--                        <thead style="font-size:20px">-->
+<!--                             <tr class="no-border">-->
+<!--                                <th class="text-center">توقيع</th>-->
+
+<!--                             </tr>-->
+<!--                        </thead>-->
+<!--                    <tbody style="font-size:11px">-->
+
+<!--                    </tbody>-->
+<!--                </table>-->
+<!--                            </div>-->
+<!--            </t>-->
+<!--                        </t>-->
+
+
+
+
+<!--                    </t>-->
+
+<!--                </t>-->
+<!--            </t>-->
+<!--        </template>-->
+<report
+                id="q_invoice_new"
+                model="account.move"
+                report_type="qweb-pdf"
+                string="New Invoice"
+                name="custom_sale.sales_invoice_dot_matrix_report"
+                file="custom_sale.sales_invoice_dot_matrix_report"
+                groups="custom_sale.group_print_invoice"
+                            paperformat="paperformat_invoice_sales_dot_matrix"
+
+        />
 
     </data>
 </odoo>
