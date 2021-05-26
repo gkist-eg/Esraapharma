@@ -83,35 +83,35 @@
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
                                         <tr width='500px' style="border: 1px solid black;">
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" >
                                                 Description
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center">
                                                 Unit
 
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center">
                                                 Quantity
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" >
                                                 C.Price
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" >
                                                 B.Price
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" >
                                                 Disc.(%)
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" >
                                                 Taxes
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center">
                                                 Amount
                                             </th>
-                                            <th  class="text-center" width='150px' style="border: 1px solid black;">
+                                            <th  class="text-center" width='150px'>
                                                 Ex.Date
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" >
                                                 Batch No
                                             </th>
 
@@ -123,40 +123,39 @@
                                         <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>
                                         <tr>
 
- <td class="text-center" width='500px' style="border: 1px solid black;">
+ <td class="text-center" width='500px' >
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
-                                            <td class="text-center" style="border: 1px solid black;">
+                                            <td class="text-center" >
                                                 <span style="float:left;" t-esc="snln_line['uom_name']" />
 
                                             </td>
-                                            <td class="text-center" style="border: 1px solid black;">
+                                            <td class="text-center">
                                                 <span t-esc="snln_line['quantity']"  t-options='{"widget": "float", "precision": 2}'/>
 
                                             </td>
-                                            <td class="text-center" style="border: 1px solid black;">
+                                            <td class="text-center">
                                                 <span  t-esc="snln_line['publicprice']" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
                                             </td>
 
-<td class="text-center" style="border: 1px solid black;">
+<td class="text-center" >
                                                 <span t-if="o.partner_id.categ_id.category_type != 'store'" t-esc="snln_line['price']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>
                                             </td>
-                                              <td class="text-center" style="border: 1px solid black;">
+                                              <td class="text-center" >
                                                 <span  t-esc="snln_line['discount']" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
                                             </td>
-                                             <td class="text-center" style="border: 1px solid black;">
+                                             <td class="text-center" >
                                                       <span  t-esc="snln_line['tax']" t-options="{&quot;widget&quot;: &quot;False&quot; }"/>
                                             </td>
-                                            <td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'sale'" >
+                                            <td class="text-center"  t-if="snln_line['sale_type'] == 'sale'" >
                                                 <span t-esc="snln_line['price'] * snln_line['quantity']"   t-options='{"widget": "float", "precision": 2}' />
-                                            </td><td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
+                                            </td><td class="text-center"  t-if="snln_line['sale_type'] == 'bouns'" >
                                            0
                                             </td>
- <td class="text-center" width='150px' style="border: 1px solid black;">
-     0
+ <td class="text-center" width='150px' >
 <!--                                                <span  t-esc="snln_line['lot_expiration_date']" />-->
                                             </td>
-                                            <td class="text-center" style="border: 1px solid black;">
+                                            <td class="text-center" >
                                                 <span  t-esc="snln_line['lot_ref']" />
                                             </td>
 
@@ -746,15 +745,24 @@
         </template>
     <template id="invoice_external_layout">
     <!-- Multicompany -->
-    <t t-if="not o and doc">
-        <t t-set="o" t-value="doc"/>
-    </t>
-    <t t-if="o and 'company_id' in o">
-        <t t-set="company" t-value="o.company_id"></t>
-    </t>
-    <t t-if="not o or not 'company_id' in o">
-        <t t-set="company" t-value="res_company"></t>
-    </t>2
+
+  <t t-if="not o" t-set="o" t-value="doc"/>
+
+        <t t-if="not company">
+            <!-- Multicompany -->
+            <t t-if="company_id">
+                <t t-set="company" t-value="company_id"/>
+            </t>
+            <t t-elif="o and 'company_id' in o">
+                <t t-set="company" t-value="o.company_id.sudo()"/>
+            </t>
+            <t t-else="else">
+                <t t-set="company" t-value="res_company"/>
+            </t>
+        </t>
+
+        <t t-if="company.external_report_layout_id" t-call="{{company.external_report_layout_id.key}}"><t t-raw="0"/></t>
+        <t t-else="else" t-call="web.external_layout_standard"><t t-raw="0"/></t>
 
     <t t-call="custom_sale.invoice_layout_header" />
     <t t-raw="0" />
@@ -762,11 +770,7 @@
 
 <template id="invoice_layout_header">
     <div class="header">
-        <div class="row">
-            <div class="col-xs-3">
-                <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo" style="max-height: 45px;"/>
-            </div>
-        </div>
+
         <div class="row zero_min_height">
             <div class="col-xs-12">
                 <div style="border-bottom: 1px solid black;"></div>
