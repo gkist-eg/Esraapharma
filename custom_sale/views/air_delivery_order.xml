@@ -27,17 +27,11 @@
                               <img class="pos-receipt-logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 180px"/>
                                   <br/>
                                <strong><span t-field="o.company_id.name"  /></strong><br/>
-                <span t-field='o.company_id.street'/><br/>
-                <span t-field='o.company_id.street2'/><br/>
-                <span t-field='o.company_id.city' style="border-bottom: 1px solid black; display:inline-block;"/><br/><br/>
-
-                            <h5 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h5>
-                                   <h5 t-if="o.move_type == 'out_refund'">Customer Refund  </h5>
-                            <strong t-if="o.move_type == 'out_invoice'">CV</strong><span t-field="o.serial_name"/>
-
-                                        <strong t-if="o.move_type == 'out_refund'">EN</strong><span t-field="o.serial_name"/>
-
-
+                               <span t-field='o.company_id.street'/><br/>
+                               <span t-field='o.company_id.street2'/><br/>
+                               <span t-field='o.company_id.city' style="border-bottom: 1px solid black; display:inline-block;"/><br/>
+                               <strong t-if="o.move_type == 'out_invoice'">Customer Invoice : CV<span t-field="o.serial_name"/> </strong>
+                               <strong t-if="o.move_type == 'out_refund'">Customer Refund : EN<span t-field="o.serial_name"/> </strong>
 
                                                                                 </th>
 
@@ -140,7 +134,7 @@
                                         <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>
                                         <tr>
 
- <td font-size="11.7401pxpx" class="text-center" width='500px' style="border: 1px solid black;">
+ <td font-size="11.7401px" class="text-center" width='500px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
