@@ -108,7 +108,7 @@ class MrpUpdates(models.Model):
                 for line in move.move_line_ids:
                     if line.product_id.use_expiration_date and (
                             not line.lot_id.prod_date or not line.lot_id.expiration_date):
-                        raise UserError(_('Please Sit Lot Production and expiration Date for lot %s')% (line.lot_id.display_name))
+                        raise UserError(_('Please assign Lot Production and expiration Date for lot %s')% (line.lot_id.display_name))
             moves_to_finish = moves_to_finish._action_done(cancel_backorder=cancel_backorder)
             order.action_assign()
             consume_move_lines = moves_to_do.mapped('move_line_ids')

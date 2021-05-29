@@ -48,8 +48,8 @@ class MrpWorkorder(models.Model):
         })
 
     def button_start(self):
-        move_raw_ids = self.production_id.move_raw_ids.filtered(lambda m: m.state in ('confirmed', 'draft', 'waiting'))
-        if move_raw_ids:
+        not_done = self.env['stock.picking'].search([('origin', '=', self.production_id.name), ('state', 'not in', ('done', 'cancel')), ('location_dest_id', '=', self.production_id.location_src_id.id)])
+        if not_done:
             raise UserError(_('Material is not found'))
         if self.workcenter_id and self.env.user.id not in self.workcenter_id.user_ids.ids:
             raise UserError(_('You are not allowed to access this workorder'))
@@ -58,8 +58,10 @@ class MrpWorkorder(models.Model):
 
     def open_tablet_view(self):
         self.ensure_one()
-        move_raw_ids = self.production_id.move_raw_ids.filtered(lambda m: m.state in ('confirmed', 'draft', 'waiting'))
-        if move_raw_ids:
+        not_done = self.env['stock.picking'].search(
+            [('origin', '=', self.production_id.name), ('state', 'not in', ('done', 'cancel')),
+             ('location_dest_id', '=', self.production_id.location_src_id.id)])
+        if not_done:
             raise UserError(_('Material is not found'))
         if self.workcenter_id and self.env.user.id not in self.workcenter_id.user_ids.ids:
             raise UserError(_('You are not allowed to access this workorder'))
