@@ -30,6 +30,7 @@
                                <span t-field='o.company_id.street'/><br/>
                                <span t-field='o.company_id.street2'/><br/>
                                <span t-field='o.company_id.city' style="border-bottom: 1px solid black; display:inline-block;"/><br/>
+                               <br></br>
                                <strong t-if="o.move_type == 'out_invoice'">Customer Invoice : CV<span t-field="o.serial_name"/> </strong>
                                <strong t-if="o.move_type == 'out_refund'">Customer Refund : EN<span t-field="o.serial_name"/> </strong>
 
@@ -37,8 +38,6 @@
 
                     </div>
                 </div>
-                <div class="article">
-                    <div class="page">
                         <div class="row justify-content-end">
   <t t-if="o.move_type in ('out_invoice','out_refund') and o.partner_id.change_serial==False and o.partner_id.categ_id.category_type not in ('store','tender')">
                             <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
@@ -94,35 +93,35 @@
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
                                         <tr width='500px' style="border: 1px solid black;">
-                                            <th  font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th  font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Description
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Unit
 
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Quantity
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 C.Price
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 B.Price
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Disc.(%)
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Taxes
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Amount
                                             </th>
-                                            <th  font-size="12px" class="text-center" width='125px' style="border: 1px solid black;">
+                                            <th  font-size="10px" class="text-center" width='125px' style="border: 1px solid black;">
                                                 Ex.Date
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Batch No
                                             </th>
 
@@ -134,7 +133,7 @@
                                         <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>
                                         <tr>
 
- <td font-size="11.7401px" class="text-center" width='500px' style="border: 1px solid black;">
+ <td font-size="9px" class="text-left" width='500px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -328,33 +327,33 @@
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
                                         <tr width='500px' style="border: 1px solid black;">
-                                            <th class="text-center" style="border: 1px solid black;" font-size="12px" >
+                                            <th class="text-center" style="border: 1px solid black;" font-size="10px" >
                                                 Description
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="10px">
                                                 Unit
 
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="10px">
                                                 Quantity
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="10px">
                                                 C.Price
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="10px">
                                                 B.Price
                                             </th>
 
-                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="10px">
                                                 Taxes
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="10px">
                                                 Amount
                                             </th>
-                                            <th  class="text-center" width='125px' style="border: 1px solid black;" font-size="12px">
+                                            <th  class="text-center" width='125px' style="border: 1px solid black;" font-size="10px">
                                                 Ex.Date
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="10px">
                                                 Batch No
                                             </th>
 
@@ -368,7 +367,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                             <td class="text-center" width='500px' style="border: 1px solid black;">
+                                             <td class="text-left" width='500px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td  class="text-center" style="border: 1px solid black;">
@@ -466,15 +465,14 @@
                                 <div class="text-center">
                                     <span class="text-center" t-esc="o.narration"/>
                                 </div>
-                                <br></br>
  <div style="outline: 2px solid black;">
-                                    <p style="text-align: end;padding: 10px;">
-- يستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما .
-                                                                               - الشركة تخضع لنظام الدفعات المقدمة و لا يجوز الخصم عليها من المنبع
-- بضاعة الثلاجة لا ترد ولا تستبدل .
-                                        - يعتبر التوقيع أو ختم الفاتورة بمثابة ايصال استلام لمشتملات الفاتورة وتعتبر أمانة لحين سداد قيمتها بموجب .
-                                                                   - ايصال نقدية/شيك مختوم ومعتمد من الشركة, وأقر بموافقتي علي جميع بنود الفاتورة
-                                        - امضاء أو ختم الفاتورة يعتبر استلاما نهائيا للبضاعة والشركة غير مسئولة عن اي عجز يتم الابلاغ عنه بعد الاستلام
+                                    <p font-size="10px" style="text-align: end;padding: 10px;">
+- يستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما .<br/>
+                                                                               - <br/>الشركة تخضع لنظام الدفعات المقدمة و لا يجوز الخصم عليها من المنبع
+- بضاعة الثلاجة لا ترد ولا تستبدل .<br/>
+                                        - يعتبر التوقيع أو ختم الفاتورة بمثابة ايصال استلام لمشتملات الفاتورة وتعتبر أمانة لحين سداد قيمتها بموجب .<br/>
+                                                                   - ايصال نقدية/شيك مختوم ومعتمد من الشركة, وأقر بموافقتي علي جميع بنود الفاتورة<br/>
+                                        - امضاء أو ختم الفاتورة يعتبر استلاما نهائيا للبضاعة والشركة غير مسئولة عن اي عجز يتم الابلاغ عنه بعد الاستلام<br/>
                                     </p>
  </div>
 
@@ -487,9 +485,7 @@
 
                              </tr>
                         </thead>
-                    <tbody style="font-size:11px">
 
-                    </tbody>
                 </table>
                             </div>
             </t>
@@ -548,33 +544,33 @@
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
                                         <tr width='500px' style="border: 1px solid black;">
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Description
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Unit
 
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Quantity
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 C.Price
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 B.Price
                                             </th>
 
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Taxes
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Amount
                                             </th>
-                                            <th font-size="12px" class="text-center" width='125px' style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" width='125px' style="border: 1px solid black;">
                                                 Ex.Date
                                             </th>
-                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
+                                            <th font-size="10px" class="text-center" style="border: 1px solid black;">
                                                 Batch No
                                             </th>
 
@@ -588,7 +584,7 @@
                                         <tr style="border: 1px solid black;">
 
 
-                                          <td class="text-center" width='500px' style="border: 1px solid black;">
+                                          <td class="text-left" width='500px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -689,15 +685,14 @@
                                 <div class="text-center">
                                     <span class="text-center" t-esc="o.narration"/>
                                 </div>
-                                <br></br>
  <div style="outline: 2px solid black;">
-                                    <p style="text-align: end;padding: 10px;">
-- يستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما .
-                                                                               - الشركة تخضع لنظام الدفعات المقدمة و لا يجوز الخصم عليها من المنبع
-- بضاعة الثلاجة لا ترد ولا تستبدل .
-                                        - يعتبر التوقيع أو ختم الفاتورة بمثابة ايصال استلام لمشتملات الفاتورة وتعتبر أمانة لحين سداد قيمتها بموجب .
-                                                                   - ايصال نقدية/شيك مختوم ومعتمد من الشركة, وأقر بموافقتي علي جميع بنود الفاتورة
-                                        - امضاء أو ختم الفاتورة يعتبر استلاما نهائيا للبضاعة والشركة غير مسئولة عن اي عجز يتم الابلاغ عنه بعد الاستلام
+                                    <p font-size="10px" style="text-align: end;padding: 10px;">
+- يستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما .<br/>
+                                                                               - <br/>الشركة تخضع لنظام الدفعات المقدمة و لا يجوز الخصم عليها من المنبع
+- بضاعة الثلاجة لا ترد ولا تستبدل .<br/>
+                                        - يعتبر التوقيع أو ختم الفاتورة بمثابة ايصال استلام لمشتملات الفاتورة وتعتبر أمانة لحين سداد قيمتها بموجب .<br/>
+                                                                   - ايصال نقدية/شيك مختوم ومعتمد من الشركة, وأقر بموافقتي علي جميع بنود الفاتورة<br/>
+                                        - امضاء أو ختم الفاتورة يعتبر استلاما نهائيا للبضاعة والشركة غير مسئولة عن اي عجز يتم الابلاغ عنه بعد الاستلام<br/>
                                     </p>
  </div>
 
@@ -709,19 +704,15 @@
 
                              </tr>
                         </thead>
-                    <tbody style="font-size:11px">
 
-                    </tbody>
                 </table>
                             </div>
             </t>
                         </t>
 			</div>
-                    </div>
-                </div>
-                <div class="footer" style="font-size:12px;">
-                    Footer
-                </div>
+<!--                <div class="footer" style="font-size:10px;">-->
+<!--                    Footer-->
+<!--                </div>-->
             </t>
         </t>
     </template>
