@@ -30,14 +30,13 @@
                 <span t-field='o.company_id.street'/><br/>
                 <span t-field='o.company_id.street2'/><br/>
                 <span t-field='o.company_id.city' style="border-bottom: 1px solid black; display:inline-block;"/><br/><br/>
-                            <th class="text-center">
+
                             <h5 t-if="o.move_type == 'out_invoice'">Customer Invoice  </h5>
                                    <h5 t-if="o.move_type == 'out_refund'">Customer Refund  </h5>
-                            <strong>CV</strong><span t-field="o.serial_name"/>
+                            <strong t-if="o.move_type == 'out_invoice'">CV</strong><span t-field="o.serial_name"/>
 
-                                        <strong>EN</strong><span t-field="o.serial_name"/>
+                                        <strong t-if="o.move_type == 'out_refund'">EN</strong><span t-field="o.serial_name"/>
 
-</th>
 
 
                                                                                 </th>
@@ -51,6 +50,7 @@
                             <t t-set="lot_values" t-value="o._get_invoiced_lot_values()"/>
 
                             <div class="page">
+
 
                                    <table class="table table-borderless">
                                        <thead style="font-size:15px">
@@ -100,35 +100,35 @@
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
                                         <tr width='500px' style="border: 1px solid black;">
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th  font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Description
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Unit
 
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Quantity
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 C.Price
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 B.Price
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Disc.(%)
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Taxes
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Amount
                                             </th>
-                                            <th  class="text-center" width='150px' style="border: 1px solid black;">
+                                            <th  font-size="12px" class="text-center" width='125px' style="border: 1px solid black;">
                                                 Ex.Date
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Batch No
                                             </th>
 
@@ -140,7 +140,7 @@
                                         <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda x: x.product_id)"/>
                                         <tr>
 
- <td class="text-center" width='500px' style="border: 1px solid black;">
+ <td font-size="11.7401pxpx" class="text-center" width='500px' style="border: 1px solid black;">
                                                 <span style="float:left;" t-esc="snln_line['product_name']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -169,8 +169,8 @@
                                             </td><td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
                                            0
                                             </td>
- <td class="text-center" width='150px' style="border: 1px solid black;">
-<!--                                                <span  t-esc="snln_line['lot_expiration_date']" />-->
+ <td class="text-center" width='125px' style="border: 1px solid black;">
+                                                <span  t-esc="snln_line['lot_expiration_date']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_ref']" />
@@ -286,36 +286,81 @@
 
 
                             <div class="page">
+                                                                   <table class="table table-borderless">
+                                       <thead style="font-size:15px">
+                             <tr class="no-border">
+                                            <h3>
+                                <th class="text-left">
+
+                                      <strong>Customer: </strong><span t-field="o.partner_id.name"/>
+
+                                 </th>
+                                  </h3>
+                                           <h3>
+                                                 <th class="text-center">
+                                    <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>
+
+                                </th>
+                                           </h3>
+                                           <h3>
+                               <th class="text-right">
+                                            <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>
+
+                                </th>
+
+                                </h3>
+
+                             </tr>
+                        </thead>
+                                       <thead  t-if="o.move_type == 'out_refund'" style="font-size:15px">
+                             <tr class="no-border">
+                                            <h3>
+                                <th class="text-left">
+
+                                      <strong>Source Invoice: </strong>
+                                    <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>
+                                    <span t-if="o.invoice_number_old == False" t-field="o.return_source"/>
+
+                                 </th>
+                                  </h3>
+
+
+                             </tr>
+                        </thead>
+
+
+                </table>
+
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
                                         <tr width='500px' style="border: 1px solid black;">
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="12px" >
                                                 Description
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
                                                 Unit
 
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
                                                 Quantity
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
                                                 C.Price
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
                                                 B.Price
                                             </th>
 
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
                                                 Taxes
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
                                                 Amount
                                             </th>
-                                            <th  class="text-center" width='150px' style="border: 1px solid black;">
+                                            <th  class="text-center" width='125px' style="border: 1px solid black;" font-size="12px">
                                                 Ex.Date
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th class="text-center" style="border: 1px solid black;" font-size="12px">
                                                 Batch No
                                             </th>
 
@@ -358,7 +403,7 @@
                                            0
                                             </td>
 
- <td  class="text-center" width='150px' style="border: 1px solid black;">
+ <td  class="text-center" width='125px' style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_expiration_date']" />
                                             </td>
                                             <td sclass="text-center" tyle="border: 1px solid black;">
@@ -460,38 +505,82 @@
             <t t-if="lot_values">
                             <div class="page">
 
+                                   <table class="table table-borderless">
+                                       <thead style="font-size:15px">
+                             <tr class="no-border">
+                                            <h3>
+                                <th class="text-left">
+
+                                      <strong>Customer: </strong><span t-field="o.partner_id.name"/>
+
+                                 </th>
+                                  </h3>
+                                           <h3>
+                                                 <th class="text-center">
+                                    <strong>Address: </strong><span t-esc="o.partner_id.city"/><span t-esc="o.partner_id.state_id.name"/><span t-esc="o.partner_id.zip"/>,<span t-esc="o.partner_id.country_id.name"/>
+
+                                </th>
+                                           </h3>
+                                           <h3>
+                               <th class="text-right">
+                                            <strong>Invoice Date: </strong><span t-field="o.invoice_date"/>
+
+                                </th>
+
+                                </h3>
+
+                             </tr>
+                        </thead>
+                                       <thead  t-if="o.move_type == 'out_refund'" style="font-size:15px">
+                             <tr class="no-border">
+                                            <h3>
+                                <th class="text-left">
+
+                                      <strong>Source Invoice: </strong>
+                                    <span t-if="o.invoice_number_old" t-field="o.invoice_number_old"/>
+                                    <span t-if="o.invoice_number_old == False" t-field="o.return_source"/>
+
+                                 </th>
+                                  </h3>
+
+
+                             </tr>
+                        </thead>
+
+
+                </table>
 
 
                                 <table style="width:100%;border: 1px bold;" >
                                     <thead>
                                         <tr width='500px' style="border: 1px solid black;">
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Description
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Unit
 
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Quantity
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 C.Price
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 B.Price
                                             </th>
 
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Taxes
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Amount
                                             </th>
-                                            <th class="text-center" width='150px' style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" width='125px' style="border: 1px solid black;">
                                                 Ex.Date
                                             </th>
-                                            <th class="text-center" style="border: 1px solid black;">
+                                            <th font-size="12px" class="text-center" style="border: 1px solid black;">
                                                 Batch No
                                             </th>
 
@@ -532,7 +621,7 @@
                                             </td><td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >
                                            0
                                             </td>
- <td  width='150class="text-center" px' style="border: 1px solid black;">
+ <td  width='125 px' class="text-center" style="border: 1px solid black;">
                                                 <span  t-esc="snln_line['lot_expiration_date']" />
                                             </td>
                                             <td class="text-center" style="border: 1px solid black;">
@@ -741,7 +830,7 @@
 <!--                                            <th class="text-center" style="border: 1px solid black;">-->
 <!--                                                Amount-->
 <!--                                            </th>-->
-<!--                                            <th  class="text-center" width='150px' style="border: 1px solid black;">-->
+<!--                                            <th  class="text-center" width='125px' style="border: 1px solid black;">-->
 <!--                                                Ex.Date-->
 <!--                                            </th>-->
 <!--                                            <th class="text-center" style="border: 1px solid black;">-->
@@ -785,7 +874,7 @@
 <!--                                            </td><td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >-->
 <!--                                           0-->
 <!--                                            </td>-->
-<!-- <td class="text-center" width='150px' style="border: 1px solid black;">-->
+<!-- <td class="text-center" width='125px' style="border: 1px solid black;">-->
 <!--&lt;!&ndash;                                                <span  t-esc="snln_line['lot_expiration_date']" />&ndash;&gt;-->
 <!--                                            </td>-->
 <!--                                            <td class="text-center" style="border: 1px solid black;">-->
@@ -988,7 +1077,7 @@
 <!--                                            <th class="text-center" style="border: 1px solid black;">-->
 <!--                                                Amount-->
 <!--                                            </th>-->
-<!--                                            <th  class="text-center" width='150px' style="border: 1px solid black;">-->
+<!--                                            <th  class="text-center" width='125px' style="border: 1px solid black;">-->
 <!--                                                Ex.Date-->
 <!--                                            </th>-->
 <!--                                            <th class="text-center" style="border: 1px solid black;">-->
@@ -1034,7 +1123,7 @@
 <!--                                           0-->
 <!--                                            </td>-->
 
-<!-- <td  class="text-center" width='150px' style="border: 1px solid black;">-->
+<!-- <td  class="text-center" width='125px' style="border: 1px solid black;">-->
 <!--                                                <span  t-esc="snln_line['lot_expiration_date']" />-->
 <!--                                            </td>-->
 <!--                                            <td sclass="text-center" tyle="border: 1px solid black;">-->
@@ -1224,7 +1313,7 @@
 <!--                                            <th class="text-center" style="border: 1px solid black;">-->
 <!--                                                Amount-->
 <!--                                            </th>-->
-<!--                                            <th class="text-center" width='150px' style="border: 1px solid black;">-->
+<!--                                            <th class="text-center" width='125px' style="border: 1px solid black;">-->
 <!--                                                Ex.Date-->
 <!--                                            </th>-->
 <!--                                            <th class="text-center" style="border: 1px solid black;">-->
@@ -1268,7 +1357,7 @@
 <!--                                            </td><td class="text-center" style="border: 1px solid black;" t-if="snln_line['sale_type'] == 'bouns'" >-->
 <!--                                           0-->
 <!--                                            </td>-->
-<!-- <td  width='150class="text-center" px' style="border: 1px solid black;">-->
+<!-- <td  width='125class="text-center" px' style="border: 1px solid black;">-->
 <!--                                                <span  t-esc="snln_line['lot_expiration_date']" />-->
 <!--                                            </td>-->
 <!--                                            <td class="text-center" style="border: 1px solid black;">-->
