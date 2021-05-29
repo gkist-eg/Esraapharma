@@ -119,7 +119,7 @@ class cash(models.Model):
     due_date = fields.Date('Due Date', track_visibility='onchange', store=True, )
 
     # expense
-    # catg_id.property_account_expense_categ_id.id = fields.Many2one('account.account', string='Cost Center', track_visibility='onchange',
+    # product_id.property_account_expense_id.id = fields.Many2one('account.account', string='Cost Center', track_visibility='onchange',
     #                                      domain=[('account', '=', ('c')),
     #                                              ('deprecated', '=', False)])
     employee_expense = fields.Many2one(comodel_name="hr.employee", track_visibility='onchange', )
@@ -279,7 +279,7 @@ class cash(models.Model):
                             'line_ids': [(0, 0, {
                                 'name': expense_cash.description,
                                 'debit': debit,
-                                'account_id': expense_cash.catg_id.property_account_expense_categ_id.id,
+                                'account_id': expense_cash.product_id.property_account_expense_id.id,
                                 'analytic_account_id': expense_cash.analytic_account_id.id,
                                 'employee_expense': expense_cash.employee_expense.id,
                                 'cash_id': self.id,
@@ -302,7 +302,7 @@ class cash(models.Model):
                             'line_ids': [(0, 0, {
                                 'name': '/',
                                 'debit': debit,
-                                'account_id': s_expense.catg_id.property_account_expense_categ_id.id,
+                                'account_id': s_expense.product_id.property_account_expense_id.id,
                                 'analytic_account_id': s_expense.analytic_account_id.id,
                                 'employee_expense': s_expense.employee_expense.id,
                                 'cash_id': self.id,
@@ -560,7 +560,7 @@ class cash(models.Model):
                             }), (0, 0, {
                                 'name': income.description,
                                 'credit': credit,
-                                'account_id': income.catg_id.property_account_expense_categ_id.id,
+                                'account_id': income.product_id.property_account_expense_id.id,
                                 'employee_expense': income.employee_expense.id,
                                 'analytic_account_id': income.analytic_account_id.id,
                                 'cash_id': self.id,
@@ -585,7 +585,7 @@ class cash(models.Model):
                             }), (0, 0, {
                                 'name': income.description,
                                 'credit': credit,
-                                'account_id': income.catg_id.property_account_expense_categ_id.id,
+                                'account_id': income.product_id.property_account_expense_id.id,
                                 'employee_expense': income.employee_expense.id,
                                 'cash_id': self.id,
 
