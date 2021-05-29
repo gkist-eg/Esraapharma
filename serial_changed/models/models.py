@@ -100,15 +100,19 @@ class Move(models.Model):
             if float_is_zero(item.qty_done, precision_rounding=item.product_id.uom_id.rounding):
                 continue
             tax = ''
+            item_qty = item.qty_done
+            income = incoming_sml.filtered(lambda i: i.lot_id == item.lot_id)
+            item_qty -= sum(income.mapped('qty_done'))
             if len(item.move_id.sale_line_id.tax_id) > 1:
                 for taxs in item.move_id.sale_line_id.tax_id:
                     tax += str(taxs.amount) + ','
             else:
                 for taxs in item.move_id.sale_line_id.tax_id:
                     tax += str(taxs.amount)
+            if item_qty > 0.0 :
                 lot_values.append({
                     'product_name': item.product_id.display_name,
-                    'quantity': item.qty_done,
+                    'quantity': item_qty,
                     'price': item.move_id.sale_line_id.price_unit,
                     'publicprice': item.move_id.sale_line_id.publicprice,
                     'store_price': item.move_id.sale_line_id.store_price,
