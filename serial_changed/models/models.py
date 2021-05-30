@@ -101,7 +101,7 @@ class Move(models.Model):
                 continue
             tax = ''
             item_qty = item.qty_done
-            income = incoming_sml.filtered(lambda i: i.lot_id == item.lot_id and i.origin_returned_move_id == item.move_id)
+            income = incoming_sml.filtered(lambda i: i.lot_id == item.lot_id and i.move_id.origin_returned_move_id == item.move_id)
             item_qty -= sum(income.mapped('qty_done'))
             if len(item.move_id.sale_line_id.tax_id) > 1:
                 for taxs in item.move_id.sale_line_id.tax_id:
