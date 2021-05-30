@@ -43,10 +43,12 @@
     <template id="stock_report_delivery_has_serial_move_line_inherit_product_expiry" inherit_id="product_expiry.stock_report_delivery_has_serial_move_line_inherit_product_expiry">
         <xpath expr="//t[@t-if='has_expiry_date']" position="replace">
             <t t-if="has_box_date">
-                <td><span t-field="move_line.box_no"/></td>
+                                <td><span t-field="move_line.box_qty" /></td>
+
             </t>
             <t t-if="has_box_date">
-                <td><span t-field="move_line.box_qty" /></td>
+                                <td><span t-field="move_line.box_no"/></td>
+
             </t>
              <t t-if="has_expiry_date">
                 <td><span t-if="move_line.lot_id.prod_date and not move_line.prod_date " t-field="move_line.lot_id.prod_date" t-options='{"widget": "date"}'/>
