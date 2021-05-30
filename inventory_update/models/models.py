@@ -235,6 +235,7 @@ class StockMove(models.Model):
                 vals,
                 location_id=reserved_quant.location_id.id,
                 lot_id=reserved_quant.lot_id.id or False,
+                expiration_date=reserved_quant.lot_id.expiration_date or False,
                 package_id=reserved_quant.package_id.id or False,
                 owner_id=reserved_quant.owner_id.id or False,
             )

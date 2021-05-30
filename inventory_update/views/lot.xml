@@ -17,6 +17,12 @@
             <xpath expr="//field[@name='expiration_date']" position="before">
                 <field name="prod_date" force_save="1" attrs="{'column_invisible': ['|', ('parent.use_expiration_date', '!=', True), ('parent.picking_code', '!=', 'incoming')],                     'readonly': [('picking_type_use_existing_lots', '=', True)],                 }"/>
             </xpath>
+            <xpath expr="//field[@name='expiration_date']" position="replace">
+                <field name="expiration_date" force_save="1" attrs="{
+                    'column_invisible': [('parent.use_expiration_date', '!=', True)],
+                    'readonly': [('picking_type_use_existing_lots', '=', True)],
+                }"/>
+            </xpath>
 
         </field>
     </record>

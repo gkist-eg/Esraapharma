@@ -72,7 +72,9 @@ class LotNumber(models.Model):
 
 class LotNumberLot(models.Model):
     _inherit = 'stock.move.line'
-
+    expiration_date = fields.Date(string='Expiration Date',
+                                      help='This is the date on which the goods with this Serial Number may'
+                                           ' become dangerous and must not be consumed.')
     origin_qty = fields.Float('Origin Qty', store=True)
     box_no = fields.Float('No Of Boxes', store=True)
     box_qty = fields.Float('Box weight / Qty', store=True)
