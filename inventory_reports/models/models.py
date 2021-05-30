@@ -285,7 +285,7 @@ class ProductTemplate(models.TransientModel):
 
                             }))
                         if not resource.picking_id:
-                            lb += resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id)
+                            lb -= resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id)
                             if resource.move_id.inventory_id:
                                 name += 'Inv. Adj.: ' + resource.move_id.inventory_id.name
                             line_ids.append((0, 0, {
