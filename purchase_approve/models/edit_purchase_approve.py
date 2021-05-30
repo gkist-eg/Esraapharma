@@ -157,9 +157,11 @@ class EditPurchaseOrder(models.Model):
             if record.partner_id :
                 record.receipt_reminder_email = record.partner_id.receipt_reminder_email
                 record.reminder_date_before_receipt = record.partner_id.reminder_date_before_receipt
+
+
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
-    product_id = fields.Many2one('product.product', string='Product', change_default=True, required=True)
+    product_id = fields.Many2one('product.product', string='Product', change_default=True)
 
     @api.onchange('product_id')
     def onchange_value_product(self):
