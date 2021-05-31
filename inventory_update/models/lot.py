@@ -49,7 +49,7 @@ class LotNumber(models.Model):
 
     @api.depends('expiration_date')
     def _compute_product_expiry_alert(self):
-        current_date = fields.Datetime.today()
+        current_date = fields.Date.today()
         for lot in self:
             if lot.expiration_date:
                 lot.product_expiry_alert = lot.expiration_date <= current_date
@@ -58,7 +58,7 @@ class LotNumber(models.Model):
 
     def _update_date_values(self, new_date):
         if new_date:
-            time_delta = new_date - (self.expiration_date or fields.Datetime.today())
+            time_delta = new_date - (self.expiration_date or fields.Date.today())
             vals = self._get_date_values(time_delta)
             vals['expiration_date'] = new_date
             self.write(vals)
