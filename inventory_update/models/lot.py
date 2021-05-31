@@ -63,6 +63,7 @@ class LotNumber(models.Model):
             vals['expiration_date'] = new_date
             self.write(vals)
 
+
     def _compute_history(self):
         for order in self:
             order.history_count = len(order.history_ids)
