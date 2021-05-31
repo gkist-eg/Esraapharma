@@ -47,6 +47,22 @@ class LotNumber(models.Model):
 
     history_ids = fields.One2many('balet.change', 'lot_id', string='Receptions', copy=False)
 
+    @api.depends('expiration_date')
+    def _compute_product_expiry_alert(self):
+        current_date = fields.Datetime.today()
+        for lot in self:
+            if lot.expiration_date:
+                lot.product_expiry_alert = lot.expiration_date <= current_date
+            else:
+                lot.product_expiry_alert = False
+
+    def _update_date_values(self, new_date):
+        if new_date:
+            time_delta = new_date - (self.expiration_date or fields.Datetime.today())
+            vals = self._get_date_values(time_delta)
+            vals['expiration_date'] = new_date
+            self.write(vals)
+
     def _compute_history(self):
         for order in self:
             order.history_count = len(order.history_ids)
@@ -84,21 +100,7 @@ class LotNumberLot(models.Model):
     balet_ids = fields.Many2many('balet.location', string="Pallets")
     lot_name = fields.Char('Lot/Serial Number Name', store=True)
 
-    @api.depends('expiration_date')
-    def _compute_product_expiry_alert(self):
-        current_date = fields.Datetime.today()
-        for lot in self:
-            if lot.expiration_date:
-                lot.product_expiry_alert = lot.expiration_date <= current_date
-            else:
-                lot.product_expiry_alert = False
 
-    def _update_date_values(self, new_date):
-        if new_date:
-            time_delta = new_date - (self.expiration_date or fields.Datetime.today())
-            vals = self._get_date_values(time_delta)
-            vals['expiration_date'] = new_date
-            self.write(vals)
 
     @api.onchange('box_no', 'box_qty')
     def _onchange_box_weight(self):
