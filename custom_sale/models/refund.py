@@ -51,21 +51,16 @@ class Move(models.Model):
             order.amount_totals = 0.00
             for line in order.invoice_line_ids:
                 if line:
-                    if order.partner_id.categ_id.category_type == 'store':
-                        pharmacy = 0
-                        cash = 0
-                        dist = 0
-                        total_dist = 0
 
-                    else:
-                        pharmacy = round(line.pharmacy_discount, 3)
-                        cash = round(line.cash_amount, 3)
-                        dist = round(line.dist_amount, 3)
-                        total_dist = round((line.dist_amount + line.pharmacy_discount + line.cash_amount), 3)
                     if line.sale_type=='sale':
                         amount_totals=line.price_unit*line.quantity
                     if line.sale_type=='bouns':
                         amount_totals=line.price_unit*line.quantity
+                    pharmacy = round(line.pharmacy_discount, 3)
+                    cash = round(line.cash_amount, 3)
+                    dist = round(line.dist_amount, 3)
+                    total_dist = round((line.dist_amount + line.pharmacy_discount + line.cash_amount), 3)
+
                     order.pharm_discount_totals += round(pharmacy, 3)
                     order.dist_discount_totals += round(dist, 3)
                     order.cash_discount_totals += round(cash, 3)
