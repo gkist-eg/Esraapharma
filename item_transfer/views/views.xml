@@ -107,7 +107,7 @@
                                     <field name="product_id2" invisible="1" groups="item_transfer.group_confirm_qty" attrs="{'readonly': [('parent.state','not in',('draft' ,'to_approve'))]}"  options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
                                     <field name="store_qty" groups="item_transfer.group_confirm_qty" readonly="1" />
                                     <field name="product_qty" attrs="{'readonly': [('parent.state','not in',('draft' ,'to_approve'))]}" />
-                                    <field name="qty_confirm" attrs="{'readonly': [('parent.state','in', ('draft','to_approve','source_approved','source_lapproved','date_approved','done'))]}"/>
+                                    <field name="qty_confirm" attrs="{'column_invisible': [('parent.state','in', ('draft','to_approve','source_approved','source_lapproved','date_approved','done'))]}"/>
                                     <field name="qty_in_progress" attrs="{'column_invisible': [('parent.state','not in', ('done','source_approved'))]}"/>
                                     <field name="qty_done" attrs="{'column_invisible': [('parent.state','not in', ('done','source_approved'))]}"/>
                                     <field name="qty_cancelled" attrs="{'column_invisible': [('parent.state','not in', ('done','source_approved'))]}"/>
