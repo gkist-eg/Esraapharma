@@ -574,8 +574,9 @@ class ItemTransferLine(models.Model):
 
     @api.onchange('product_qty')
     def product_ty(self):
+      for r in self:
         if self.product_qty:
-            self.qty_confirm = self.product_qty
+            self.qty_confirm = r.product_qty
 
     @api.onchange('product_id')
     def onchange_product_id(self):
@@ -690,9 +691,10 @@ class ItemTransferLine(models.Model):
 
     @api.onchange('qty_confirm')
     def _onchangeqtycon(self):
-        if self.qty_confirm:
+      for r in self:
+        if r.product_qty !=0:
 
-            if self.qty_confirm > self.product_qty:
+            if r.qty_confirm > r.product_qty:
                 self.qty_confirm = 0
                 return {
                     'warning': {'title': "Warning", 'message': "Qty Confirm must not more than Quantity"}}
