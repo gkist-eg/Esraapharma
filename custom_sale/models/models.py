@@ -975,7 +975,7 @@ class Move(models.Model):
 
                     move_id.post()
 
-    @api.depends('discount_rate', 'discount_type')
+    @api.depends('discount_rate', 'discount_type','amount_total')
     def _compute_func_net(self):
         for rec in self:
             if rec.discount_rate and not rec.discount_flag:
