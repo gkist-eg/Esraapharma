@@ -7,7 +7,7 @@ class StockMove(models.Model):
     _name = "stock.move"
 
     not_reserved = fields.Float(
-        string="Not reserved",
+        string="Available Quantity",
         compute="_compute_available_qty",
         store=True,
         readonly=True,
@@ -24,3 +24,5 @@ class StockMove(models.Model):
                     {"location": record.location_id.id}
                 ).outgoing_qty
                 record.not_reserved = actual_qty - outgoing_qty
+            else:
+                record.not_reserved = 0.0

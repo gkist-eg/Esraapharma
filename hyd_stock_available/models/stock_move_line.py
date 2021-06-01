@@ -7,7 +7,7 @@ class StockMoveLine(models.Model):
     _name = "stock.move.line"
 
     not_reserved = fields.Float(
-        string="Available quantity",
+        string="Available Quantity",
         compute="_compute_available_qty",
         store=True,
         readonly=True,
@@ -23,3 +23,6 @@ class StockMoveLine(models.Model):
                     record.not_reserved = actual_qty
                 else:
                     record.not_reserved = 0.0
+            else:
+                record.not_reserved = 0.0
+
