@@ -16,7 +16,7 @@ class StockMove(models.Model):
     @api.depends("product_id", "product_uom_qty")
     def _compute_available_qty(self):
         for record in self:
-            if record.product_id and record.state != "done":
+            if record.product_id and record.state != "done" and record.location_id.usage in ('internal', 'transit'):
                 actual_qty = record.product_id.with_context(
                     {"location": record.location_id.id}
                 ).qty_available
