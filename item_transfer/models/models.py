@@ -689,12 +689,10 @@ class ItemTransferLine(models.Model):
     store_qty = fields.Float('Store Quantity', tracking=True,
                              digits='Product Unit of Measure', compute='compute_onchange_product_store')
 
-    @api.onchange('qty_confirm')
-    def _onchangeqtycon(self):
-      for r in self:
-        if r.product_qty !=0:
-
-            if r.qty_confirm > r.product_qty:
-                self.qty_confirm = 0
-                return {
-                    'warning': {'title': "Warning", 'message': "Qty Confirm must not more than Quantity"}}
+    # @api.onchange('qty_confirm')
+    # def _onchangeqtycon(self):
+    #   for r in self:
+    #     if r.product_qty !=0:
+    #         if r.qty_confirm > r.product_qty:
+    #             return {
+    #                 'warning': {'title': "Warning", 'message': "Qty Confirm must not more than Quantity"}}
