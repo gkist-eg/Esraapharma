@@ -105,12 +105,12 @@ class StockMoveLine(models.Model):
                 actual_qty = quants + ml.product_id.uom_id._compute_quantity(ml.product_uom_qty,
                                                                              ml.product_uom_id,
                                                                              rounding_method='HALF-UP')
-                if ml.qty_done >= actual_qty:
+                if ml.qty_done > actual_qty:
                     ml.qty_done = actual_qty
                     qty = actual_qty - ml.product_uom_qty
-
                 else:
                     qty = ml.qty_done - ml.product_uom_qty
+
                 q = Quant._update_reserved_quantity(ml.product_id, ml.location_id,qty,
                                                     lot_id=ml.lot_id,
                                                     package_id=ml.package_id,
