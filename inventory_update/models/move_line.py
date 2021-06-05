@@ -97,10 +97,21 @@ class StockMoveLine(models.Model):
     @api.constrains('qty_done')
     def qty_done_reservation(self):
         for ml in self:
-            if (ml.qty_done - ml.product_uom_qty != 0.0) and ml.state == 'assigned' and ml.location_id.usage in ('internal', 'transit'):
+            if (ml.qty_done - ml.product_uom_qty != 0.0) and ml.state == 'assigned' and ml.location_id.usage in ('internal', 'transit') and ml.lot_id:
                 Quant = self.env['stock.quant']
                 moves_to_recompute_state = self.env['stock.move']
-                q = Quant._update_reserved_quantity(ml.product_id, ml.location_id, ml.qty_done - ml.product_uom_qty,
+                quants = sum(x.available_quantity for x in
+                             ml.lot_id.quant_ids.filtered(lambda quant: quant.location_id == ml.location_id))
+                actual_qty = quants + ml.product_id.uom_id._compute_quantity(ml.product_uom_qty,
+                                                                             ml.product_uom_id,
+                                                                             rounding_method='HALF-UP')
+                if ml.qty_done >= actual_qty:
+                    ml.qty_done = actual_qty
+                    qty = ml.qty_done - ml.product_uom_qty
+
+                else:
+                    qty = ml.qty_done - ml.product_uom_qty
+                q = Quant._update_reserved_quantity(ml.product_id, ml.location_id,qty,
                                                     lot_id=ml.lot_id,
                                                     package_id=ml.package_id,
                                                     owner_id=ml.owner_id, strict=True)
