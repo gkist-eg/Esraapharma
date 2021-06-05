@@ -63,57 +63,45 @@ class PaymentRequest(models.Model):
         self.line_ids = False
         for line in self.picking_ids:
             for move in line.move_line_ids:
-                    done=0
-                    if move.lot_id :
+                done = 0
+                if move.lot_id:
+                    lines = line.move_line_ids.search(
+                        [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'),
+                         ('location_id.stock_usage', '=', 'qrtin'), ('state', '=', 'done')])
+                    if not lines:
                         lines = line.move_line_ids.search(
-                            [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=','release'), ('location_id.stock_usage',  '=', 'qrtin'), ('state',  '=', 'done')])
-                        if not lines :
-                            lines = line.move_line_ids.search(
-                                [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'), ('state', '=', 'done')])
-                        done = sum([quant.product_uom_id._compute_quantity(quant.qty_done , quant.product_id.uom_id) for quant in lines])
-                        request = line.move_line_ids.search(
-                            [('lot_id', '=', move.lot_id.id),
-                             ('location_dest_id', '=', self.env.ref("item_request.emploee_location").id),
-                             ('location_id.stock_usage', '=', 'qrtin'), ('state',  '=', 'done')])
-                        done += sum([quant.product_uom_id._compute_quantity(quant.qty_done , quant.product_id.uom_id) for quant in request])
-                        request_return = line.move_line_ids.search(
-                            [('lot_id', '=', move.lot_id.id),
-                             ('location_id', '=', self.env.ref("item_request.emploee_location").id),
-                             ('location_dest_id.stock_usage', '=', 'qrtin'), ('state',  '=', 'done')])
-                        done -= sum(
-                            [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant in
-                             request_return])
-                        if lines:
-                            price = move.move_id.purchase_line_id.price_unit
-                            taxes = move.move_id.purchase_line_id.taxes_id.compute_all(price, self.currency_id, done,
-                                                                  product=move.product_id, partner=self.partner_id)
-
-                            line1 = self.line_ids.create({
-                                'product_id': move.product_id.id,
-                                'request_id': self.id,
-                                'uom_id': move.product_uom_id.id,
-                                'qty': done,
-                                'price_unit': price,
-                                'picking_id': line.id,
-                                'price_tax': taxes['total_included'] - taxes['total_excluded'],
-                                'price_total': taxes['total_included'],
-                                'taxes_id': [(6, 0, move.move_id.purchase_line_id.taxes_id.ids)],
-                                'total': taxes['total_excluded']
-
-                            })
-                            self.line_ids += line1
-                    else:
+                            [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'),
+                             ('state', '=', 'done')])
+                    done = sum(
+                        [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant in
+                         lines])
+                    request = line.move_line_ids.search(
+                        [('lot_id', '=', move.lot_id.id),
+                         ('location_dest_id', '=', self.env.ref("item_request.emploee_location").id),
+                         ('location_id.stock_usage', '=', 'qrtin'), ('state', '=', 'done')])
+                    done += sum(
+                        [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant in
+                         request])
+                    request_return = line.move_line_ids.search(
+                        [('lot_id', '=', move.lot_id.id),
+                         ('location_id', '=', self.env.ref("item_request.emploee_location").id),
+                         ('location_dest_id.stock_usage', '=', 'qrtin'), ('state', '=', 'done')])
+                    done -= sum(
+                        [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant in
+                         request_return])
+                    if lines:
                         price = move.move_id.purchase_line_id.price_unit
-                        taxes = move.move_id.purchase_line_id.taxes_id.compute_all(price, self.currency_id, move.qty_done,
+                        taxes = move.move_id.purchase_line_id.taxes_id.compute_all(price, self.currency_id, done,
                                                                                    product=move.product_id,
                                                                                    partner=self.partner_id)
+
                         line1 = self.line_ids.create({
                             'product_id': move.product_id.id,
                             'request_id': self.id,
                             'uom_id': move.product_uom_id.id,
-                            'qty': move.qty_done,
+                            'qty': done,
                             'price_unit': price,
-                            'picking_id': move.picking_id.id,
+                            'picking_id': line.id,
                             'price_tax': taxes['total_included'] - taxes['total_excluded'],
                             'price_total': taxes['total_included'],
                             'taxes_id': [(6, 0, move.move_id.purchase_line_id.taxes_id.ids)],
@@ -121,6 +109,25 @@ class PaymentRequest(models.Model):
 
                         })
                         self.line_ids += line1
+                else:
+                    price = move.move_id.purchase_line_id.price_unit
+                    taxes = move.move_id.purchase_line_id.taxes_id.compute_all(price, self.currency_id, move.qty_done,
+                                                                               product=move.product_id,
+                                                                               partner=self.partner_id)
+                    line1 = self.line_ids.create({
+                        'product_id': move.product_id.id,
+                        'request_id': self.id,
+                        'uom_id': move.product_uom_id.id,
+                        'qty': move.qty_done,
+                        'price_unit': price,
+                        'picking_id': move.picking_id.id,
+                        'price_tax': taxes['total_included'] - taxes['total_excluded'],
+                        'price_total': taxes['total_included'],
+                        'taxes_id': [(6, 0, move.move_id.purchase_line_id.taxes_id.ids)],
+                        'total': taxes['total_excluded']
+
+                    })
+                    self.line_ids += line1
     @api.constrains('line_ids')
     def change_inspections_line_ids(self):
         self.taxed_amount = 0

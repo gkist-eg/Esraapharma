@@ -107,7 +107,7 @@ class StockMoveLine(models.Model):
                                                                              rounding_method='HALF-UP')
                 if ml.qty_done >= actual_qty:
                     ml.qty_done = actual_qty
-                    qty = ml.qty_done - ml.product_uom_qty
+                    qty = actual_qty - ml.product_uom_qty
 
                 else:
                     qty = ml.qty_done - ml.product_uom_qty
