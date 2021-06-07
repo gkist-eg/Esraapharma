@@ -1,0 +1,11 @@
+<odoo>
+    <report
+            id="total_inventory_report"
+            model="total.inventory.wizard"
+            string="Total inventory"
+            menu="False"
+            report_type="qweb-pdf"
+            name="total_inventory_report.total_inventory_report_template"
+            file="total_inventory_report.total_inventory_report_template"
+    />
+</odoo>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="total_inventory_report_template">
+            <t t-call="web.html_container">
+                <t t-call="web.internal_layout">
+                    <t t-foreach="docs" t-as="o">
+                        <h4>
+                            <span>Location :</span>
+                            <span t-esc="o.stock_location.display_name"/>
+                            <div class="pull-right">
+                                <h4>
+                                    Date From :
+                                    <span t-esc="o.start_date"/>
+                                </h4>
+                                <h4>
+                                    Date To :
+                                    <span t-esc="o.end_date"/>
+                                </h4>
+                            </div>
+                        </h4>
+                        <table border="1" class="table table_bordered">
+                            <thead>
+                                <thead2>
+                                    <th style="page-break-inside: avoid;" rowspan="2">ID</th>
+                                    <th style="page-break-inside: avoid;" rowspan="2">Product
+                                    </th>
+                                    <th style="page-break-inside: avoid;" colspan="2" class="text-center">Start
+                                        Balance
+                                    </th>
+                                    <th style="page-break-inside: avoid;" colspan="2" class="text-center">InCome
+                                    </th>
+                                    <th style="page-break-inside: avoid;" colspan="2" class="text-center">OutCome
+                                    </th>
+                                    <th style="page-break-inside: avoid;" colspan="2" class="text-center">Current
+                                        Balance
+                                    </th>
+                                </thead2>
+                                <tr style="page-break-inside: avoid;">
+                                    <th style="page-break-inside: avoid;">Value</th>
+                                    <th style="page-break-inside: avoid;">Qty</th>
+                                    <th style="page-break-inside: avoid;">Value</th>
+                                    <th style="page-break-inside: avoid;">Qty</th>
+                                    <th style="page-break-inside: avoid;">Value</th>
+                                    <th style="page-break-inside: avoid;">Qty</th>
+                                    <th style="page-break-inside: avoid;">Value</th>
+                                    <th style="page-break-inside: avoid;">Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.line_ids" t-as="stock_move">
+                                    <tr style="page-break-inside: avoid;">
+                                        <td>
+                                            <span style="page-break-inside: avoid;">
+                                                <t t-esc="stock_move.product_id.default_code"/>
+                                            </span>
+                                        </td>
+                                        <td style="page-break-inside:avoid;" class="center-text">
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.product_id.name"/>
+                                        </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.product_id.standard_price * stock_move.start_balance "/>
+                                        </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.start_balance"/>
+                                        </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.product_id.standard_price * stock_move.income_quantity "/>
+                                        </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.income_quantity"/>
+                                        </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.product_id.standard_price * stock_move.outcome_quantity "/>
+                                        </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.outcome_quantity"/>
+                                        </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.product_id.standard_price * stock_move.end_balance "/>
+                                        </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.end_balance"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

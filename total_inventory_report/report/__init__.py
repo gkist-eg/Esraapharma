@@ -1,0 +1,1 @@
+from . import total_inventory_report

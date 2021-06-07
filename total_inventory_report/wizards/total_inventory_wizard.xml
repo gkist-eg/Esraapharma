@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Wizard form view -->
+    <record model="ir.ui.view" id="wizard_total_inventory_form">
+        <field name="name">Total Inventory Wizard.form</field>
+        <field name="model">total.inventory.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Total Inventory Wizard">
+                <group>
+                    <group>
+                        <field name="stock_location"/>
+                    </group>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="get_stock_quantity" string="Generate Report" type="object"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="launch_wizard" model="ir.actions.act_window">
+        <field name="name">Total Inventory Report</field>
+        <field name="res_model">total.inventory.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem name="Total Inventory Report" id="stock_wizard_report" parent="stock.menu_warehouse_report"
+              action="launch_wizard"/>
+</odoo>
