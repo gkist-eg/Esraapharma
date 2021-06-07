@@ -93,7 +93,7 @@ class cash(models.Model):
     employee_id = fields.Many2one('res.users',
                                   'Accountant',
                                   required=True,
-                                  readonly=1,
+
                                   track_visibility='onchange',
                                   default=_get_default_employee_id, copy=False)
 
@@ -127,7 +127,7 @@ class cash(models.Model):
     amount_re = fields.Float('Amount Receive', store=True, track_visibility='onchange', required=True)
     analytic_account_id = fields.Many2one('account.analytic.account', string='Cost Center', store=True,
                                           track_visibility='onchange')
-    date = fields.Date("Date", default=fields.Datetime.now, store=True, readonly=1)
+    date = fields.Date("Date", default=fields.Datetime.now, store=True)
 
     # loan
     payment_condation = fields.Integer('Payment Condition', track_visibility='onchange', )
