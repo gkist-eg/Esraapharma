@@ -291,7 +291,7 @@ class StockPicking(models.Model):
 
     approve = fields.Boolean('Confirmed', copy=False, index=True)
     show_cofirm = fields.Boolean('Show Confirm', copy=False, compute='compute_show_confirm', index=True)
-    keeper_id = fields.Many2one('Inventory Keeper', copy=False, index=True)
+    keeper_id = fields.Many2one('res.users', 'Inventory Keeper', copy=False, index=True)
 
     def keeper_approve(self):
         # Clean-up the context key at validation to avoid forcing the creation of immediate
