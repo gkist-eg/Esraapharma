@@ -115,24 +115,28 @@ class PaymentRequest(models.Model):
                             })
                             self.line_ids += line1
                 else:
-                    price = move.move_id.purchase_line_id.price_unit
-                    taxes = move.move_id.purchase_line_id.taxes_id.compute_all(price, self.currency_id, move.qty_done,
-                                                                               product=move.product_id,
-                                                                               partner=self.partner_id)
-                    line1 = self.line_ids.create({
-                        'product_id': move.product_id.id,
-                        'request_id': self.id,
-                        'uom_id': move.product_uom_id.id,
-                        'qty': move.qty_done,
-                        'price_unit': price,
-                        'picking_id': move.picking_id.id,
-                        'price_tax': taxes['total_included'] - taxes['total_excluded'],
-                        'price_total': taxes['total_included'],
-                        'taxes_id': [(6, 0, move.move_id.purchase_line_id.taxes_id.ids)],
-                        'total': taxes['total_excluded']
+                    excet = self.line_ids.search(
+                        [('product_id', '=', move.product_id.id), ('picking_id', '=', move.picking_id.id),
+                         ('request_id', '!=', self.id), ('request_id', '!=', False), ])
+                    if not excet:
+                        price = move.move_id.purchase_line_id.price_unit
+                        taxes = move.move_id.purchase_line_id.taxes_id.compute_all(price, self.currency_id, move.qty_done,
+                                                                                   product=move.product_id,
+                                                                                   partner=self.partner_id)
+                        line1 = self.line_ids.create({
+                            'product_id': move.product_id.id,
+                            'request_id': self.id,
+                            'uom_id': move.product_uom_id.id,
+                            'qty': move.qty_done,
+                            'price_unit': price,
+                            'picking_id': move.picking_id.id,
+                            'price_tax': taxes['total_included'] - taxes['total_excluded'],
+                            'price_total': taxes['total_included'],
+                            'taxes_id': [(6, 0, move.move_id.purchase_line_id.taxes_id.ids)],
+                            'total': taxes['total_excluded']
 
-                    })
-                    self.line_ids += line1
+                        })
+                        self.line_ids += line1
 
     @api.constrains('line_ids')
     def change_inspections_line_ids(self):
