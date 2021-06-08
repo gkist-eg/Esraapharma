@@ -47,9 +47,10 @@ class PaymentRequest(models.Model):
     discount = fields.Float('Discount', tracking=True, store=True)
 
     def unlink(self):
-        if self.state != 'draft':
-            raise UserError(_('you can delete only draft request '))
-        return super(PaymentRequest, self).unlink()
+        for record in self:
+            if record.state != 'draft':
+                raise UserError(_('you can delete only draft request '))
+            return super(PaymentRequest, self).unlink()
 
     @api.constrains('picking_ids')
     def change_inspections(self):
@@ -63,7 +64,7 @@ class PaymentRequest(models.Model):
                 done = 0
                 if move.lot_id:
                     excet = self.line_ids.search(
-                      [('product_id', '=', move.product_id.id), ('picking_id', '=',move.picking_id.id),])
+                        [('product_id', '=', move.product_id.id), ('picking_id', '=', move.picking_id.id), ('request_id', '!=', self.id), ('request_id', '!=', False), ])
                     if not excet:
                         lines = line.move_line_ids.search(
                             [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'),
@@ -73,21 +74,24 @@ class PaymentRequest(models.Model):
                                 [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'),
                                  ('state', '=', 'done')])
                         done = sum(
-                            [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant in
+                            [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant
+                             in
                              lines])
                         request = line.move_line_ids.search(
                             [('lot_id', '=', move.lot_id.id),
                              ('location_dest_id', '=', self.env.ref("item_request.emploee_location").id),
                              ('location_id.stock_usage', '=', 'qrtin'), ('state', '=', 'done')])
                         done += sum(
-                            [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant in
+                            [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant
+                             in
                              request])
                         request_return = line.move_line_ids.search(
                             [('lot_id', '=', move.lot_id.id),
                              ('location_id', '=', self.env.ref("item_request.emploee_location").id),
                              ('location_dest_id.stock_usage', '=', 'qrtin'), ('state', '=', 'done')])
                         done -= sum(
-                            [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant in
+                            [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant
+                             in
                              request_return])
                         if lines:
                             price = move.move_id.purchase_line_id.price_unit
@@ -99,6 +103,7 @@ class PaymentRequest(models.Model):
                                 'product_id': move.product_id.id,
                                 'request_id': self.id,
                                 'uom_id': move.product_uom_id.id,
+                                'lot_id': move.lot_id.id,
                                 'qty': done,
                                 'price_unit': price,
                                 'picking_id': line.id,
@@ -109,25 +114,25 @@ class PaymentRequest(models.Model):
 
                             })
                             self.line_ids += line1
-                        else:
-                            price = move.move_id.purchase_line_id.price_unit
-                            taxes = move.move_id.purchase_line_id.taxes_id.compute_all(price, self.currency_id, move.qty_done,
-                                                                                       product=move.product_id,
-                                                                                       partner=self.partner_id)
-                            line1 = self.line_ids.create({
-                                'product_id': move.product_id.id,
-                                'request_id': self.id,
-                                'uom_id': move.product_uom_id.id,
-                                'qty': move.qty_done,
-                                'price_unit': price,
-                                'picking_id': move.picking_id.id,
-                                'price_tax': taxes['total_included'] - taxes['total_excluded'],
-                                'price_total': taxes['total_included'],
-                                'taxes_id': [(6, 0, move.move_id.purchase_line_id.taxes_id.ids)],
-                                'total': taxes['total_excluded']
+                else:
+                    price = move.move_id.purchase_line_id.price_unit
+                    taxes = move.move_id.purchase_line_id.taxes_id.compute_all(price, self.currency_id, move.qty_done,
+                                                                               product=move.product_id,
+                                                                               partner=self.partner_id)
+                    line1 = self.line_ids.create({
+                        'product_id': move.product_id.id,
+                        'request_id': self.id,
+                        'uom_id': move.product_uom_id.id,
+                        'qty': move.qty_done,
+                        'price_unit': price,
+                        'picking_id': move.picking_id.id,
+                        'price_tax': taxes['total_included'] - taxes['total_excluded'],
+                        'price_total': taxes['total_included'],
+                        'taxes_id': [(6, 0, move.move_id.purchase_line_id.taxes_id.ids)],
+                        'total': taxes['total_excluded']
 
-                            })
-                            self.line_ids += line1
+                    })
+                    self.line_ids += line1
 
     @api.constrains('line_ids')
     def change_inspections_line_ids(self):
@@ -156,7 +161,6 @@ class PaymentRequest(models.Model):
             result['res_id'] = bills and bills[0] or False
         return result
 
-
     @api.onchange('order_id')
     def _onchange_order_id(self):
 
@@ -165,12 +169,14 @@ class PaymentRequest(models.Model):
             pickings = []
 
             result = self.env['stock.picking'].search(
-                [('origin', '=', self.order_id.name), ('state', '=', 'done'), ('picking_type_id.code',  '=', 'incoming')])
+                [('origin', '=', self.order_id.name), ('state', '=', 'done'),
+                 ('picking_type_id.code', '=', 'incoming')])
             for res in result:
                 for move in res.move_line_ids:
                     if res.id not in don_pickings:
                         lines = res.move_line_ids.search(
-                        [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'), ('location_id.stock_usage',  '=', 'qrtin'), ('state',  '=', 'done')])
+                            [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'),
+                             ('location_id.stock_usage', '=', 'qrtin'), ('state', '=', 'done')])
                         if lines:
                             pickings.append(res.id)
                         if not move.lot_id:
@@ -179,14 +185,14 @@ class PaymentRequest(models.Model):
                     for move in res.move_line_ids:
                         if res.id not in don_pickings:
                             lines = res.move_line_ids.search(
-                                [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'), ('state', '=', 'done')])
+                                [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'),
+                                 ('state', '=', 'done')])
                             if lines:
                                 pickings.append(res.id)
                             if not move.lot_id:
                                 pickings.append(res.id)
             domain = {'picking_ids': [('id', 'in', pickings)]}
             return {'domain': domain}
-
 
     def _compute_accounting(self):
         for order in self:
@@ -252,17 +258,18 @@ class PaymentRequest(models.Model):
 
 class PaymentRequestLine(models.Model):
     _name = 'payment.request.line'
-    product_id = fields.Many2one('product.product', 'Item')
-    request_id = fields.Many2one('payment.request')
-    picking_id = fields.Many2one('stock.picking', 'Picking')
-    uom_id = fields.Many2one('uom.uom', 'UOM')
-    qty = fields.Float('Released Quantity', digits=(12, 5))
-    price_unit = fields.Float('Unit Price', digits=(12, 4))
-    price_tax = fields.Float('Unit Price', digits=(12, 4))
-    price_total = fields.Float('Unit Price', digits=(12, 4))
-    total = fields.Float('SubTotal', digits=(12, 4))
+    product_id = fields.Many2one('product.product', 'Item', store=True)
+    request_id = fields.Many2one('payment.request', ondelete='cascade', store=True)
+    lot_id = fields.Many2one('stock.production.lot', 'Lot', store=True)
+    picking_id = fields.Many2one('stock.picking', 'Picking', store=True)
+    uom_id = fields.Many2one('uom.uom', 'UOM', store=True)
+    qty = fields.Float('Released Quantity', digits=(12, 5), store=True)
+    price_unit = fields.Float('Unit Price', digits=(12, 4), store=True)
+    price_tax = fields.Float('Unit Price', digits=(12, 4), store=True)
+    price_total = fields.Float('Unit Price', digits=(12, 4), store=True)
+    total = fields.Float('SubTotal', digits=(12, 4), store=True)
     taxes_id = fields.Many2many('account.tax', string='Taxes',
-                                domain=['|', ('active', '=', False), ('active', '=', True)])
+                                domain=['|', ('active', '=', False), ('active', '=', True)], store=True)
 
 
 class PurchaseOrder(models.Model):
