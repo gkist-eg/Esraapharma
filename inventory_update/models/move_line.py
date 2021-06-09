@@ -51,6 +51,7 @@ class StockInventory(models.Model):
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
     _order = 'product_id,id'
+    batch = fields.Char('Batch Number', store=True, related='lot_id.ref')
 
     @api.onchange('product_id', 'product_uom_id')
     def _onchange_product_id(self):

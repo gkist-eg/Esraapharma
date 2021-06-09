@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_inventory_reports_inventory_reports,inventory_reports.inventory_reports,model_stock_wizerd_quantity,base.group_user,1,1,1,1
 access_inventory_reports_inventory_reports_line,inventory_reports.inventory_reports,model_stock_wizerd_quantity_line,base.group_user,1,1,1,1
+access_stock_batch_details_wizard,inventory_reports.stock_batch_details_wizard,model_stock_batch_details_wizard,base.group_user,1,1,1,1

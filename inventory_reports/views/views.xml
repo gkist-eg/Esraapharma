@@ -44,5 +44,48 @@
                 sequence="1"
         />
 
+        <record id="stock_batch_details_wizard_view" model="ir.ui.view">
+            <field name="name">stock.batch.details.wizard.form</field>
+            <field name="model">stock.batch.details.wizard</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <group>
+                        <group>
+                            <field name="warehouse_id" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+
+                            <field name="file_name" invisible="1"/>
+                            <field name="mapping_report_file" readonly="1" filename="file_name"/>
+                        </group>
+                        <group>
+                             <field name="start_date" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                            <field name="end_date" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                        </group>
+
+                    </group>
+                    <footer>
+                        <button name="action_print_report"
+                                string="Print "
+                                type="object"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="stock_batch_details_wizard_view_action" model="ir.actions.act_window">
+            <field name="name">Batch Details</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.batch.details.wizard</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="stock_batch_details_wizard_view"/>
+            <field name="target">new</field>
+        </record>
+
+    <menuitem name="Batch Detailes Report" id="stock_batch_details_wizard_menu" parent="stock.menu_warehouse_report"
+              action="stock_batch_details_wizard_view_action"/>
+
+
+
     </data>
 </odoo>
