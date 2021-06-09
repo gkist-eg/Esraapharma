@@ -192,7 +192,7 @@ class TotalInventoryWizard(models.TransientModel):
                 for outcomebefore in outcome_qty_before:
                     outcomeblbefore += outcomebefore['qty_done']
                     if outcomebefore['lot_id']:
-                        lot = self.env['stock.production.lot'].search([('id', '=', outcomebefore['lot_id'])])
+                        lot = self.env['stock.production.lot'].search([('id', '=', outcomebefore['lot_id'])[0]])
                         outcomeblbefore += outcomebefore['qty_done'] * lot.cost
                     # else:
                     #     outcomeblbefore += ['qty_done'] * product.standard_price
@@ -200,7 +200,7 @@ class TotalInventoryWizard(models.TransientModel):
                 for incomebefore in income_qty_before:
                     incomeblbefore += incomebefore['qty_done']
                     if incomebefore['lot_id']:
-                        lot = self.env['stock.production.lot'].search([('id', '=', incomeblbefore['lot_id'][0])])
+                        lot = self.env['stock.production.lot'].search([('id', '=', incomebefore['lot_id'][0])])
                         incomeblbefore += incomeblbefore['qty_done'] * lot.cost
                     # else:
                     #     incomeblbefore += ['qty_done'] * product.standard_price
