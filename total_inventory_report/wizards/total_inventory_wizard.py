@@ -201,7 +201,7 @@ class TotalInventoryWizard(models.TransientModel):
                     incomeblbefore += incomebefore['qty_done']
                     if incomebefore['lot_id']:
                         lot = self.env['stock.production.lot'].search([('id', '=', incomebefore['lot_id'][0])])
-                        incomeblbefore += incomeblbefore['qty_done'] * lot.cost
+                        incomeblbefore += incomebefore['qty_done'] * lot.cost
                     # else:
                     #     incomeblbefore += ['qty_done'] * product.standard_price
             startbl = incomeblbefore - outcomeblbefore
