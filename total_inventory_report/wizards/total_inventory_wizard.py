@@ -119,17 +119,18 @@ class TotalInventoryWizard(models.TransientModel):
 
         line_ids = []
 
-        stock_moves = self.env['stock.move'].search(["|", ("location_id", "=", self.stock_location.id),
-                                                     ("location_dest_id", "=", self.stock_location.id),
-                                                     ("state", "=", "done"),
-                                                     ("date", ">=", self.start_date), ("date", "<=", self.end_date)])
+        stock_moves = self.env['stock.move.line'].search(["|", ("location_id", "=", self.stock_location.id),
+                                                          ("location_dest_id", "=", self.stock_location.id),
+                                                          ("state", "=", "done"),
+                                                          ("date", ">=", self.start_date),
+                                                          ("date", "<=", self.end_date)])
 
         stock_moves_groupedby_product = stock_moves.read_group(
             domain=["|", ("location_id", "=", self.stock_location.id),
                     ("location_dest_id", "=", self.stock_location.id),
                     ("state", "=", "done"),
                     ("date", "<=", self.end_date)],
-            fields=['product_id', 'product_uom_qty', 'location_id', 'location_dest_id'],
+            fields=['product_id', 'qty_done', 'location_id', 'location_dest_id'],
             groupby=['product_id'])
 
         for stock_move in stock_moves_groupedby_product:
@@ -139,40 +140,70 @@ class TotalInventoryWizard(models.TransientModel):
                 domain=[("location_id", "=", self.stock_location.id),
                         ("state", "=", "done"),
                         ("date", "<", self.start_date), ("product_id", "=", product_id)],
-                fields=['product_id', 'product_uom_qty'],
-                groupby=['product_id'])
+                fields=['product_id', 'qty_done', ],
+                groupby=['lot_id'])
             income_qty_before = stock_moves.read_group(
                 domain=[("location_dest_id", "=", self.stock_location.id),
                         ("state", "=", "done"),
                         ("date", "<", self.start_date), ("product_id", "=", product_id)],
-                fields=['product_id', 'product_uom_qty'],
-                groupby=['product_id'])
+                fields=['product_id', 'qty_done', 'lot_id'],
+                groupby=['lot_id'])
             income_qty = stock_moves.read_group(
                 domain=[("location_dest_id", "=", self.stock_location.id),
                         ("state", "=", "done"),
                         ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                         ("product_id", "=", product_id)],
-                fields=['product_id', 'product_uom_qty'],
-                groupby=['product_id'])
+                fields=['product_id', 'lot_id', 'qty_done'],
+                groupby=['lot_id'])
             outcome_qty = stock_moves.read_group(
                 domain=[("location_id", "=", self.stock_location.id),
                         ("state", "=", "done"),
                         ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                         ("product_id", "=", product_id)],
-                fields=['product_id', 'product_uom_qty'],
-                groupby=['product_id'])
+                fields=['lot_id', 'product_id', 'qty_done', ],
+                groupby=['lot_id'])
             in_qty = 0
             out_qty = 0
             outcomeblbefore = 0
             incomeblbefore = 0
-            if (out_qty):
-                out_qty = outcome_qty[0]['product_uom_qty']
+            start_val = 0
+            in_val = 0
+            out_val = 0
+            end_val = 0
+            if (outcome_qty):
+                for outcome in outcome_qty:
+                    out_qty += outcome['qty_done']
+                    if outcome['lot_id']:
+                        lot = self.env['stock.production.lot'].search([('id', '=', outcome['lot_id'][0])])
+                        out_val += outcome['qty_done'] * lot.cost
+                        print(len(outcome))
+                        print(outcome)
+                    # else:
+                    #     out_val += ['qty_done']
             if (income_qty):
-                in_qty = income_qty[0]['product_uom_qty']
+                for income in income_qty:
+                    in_qty += income['qty_done']
+                    if income['lot_id']:
+                        lot = self.env['stock.production.lot'].search([('id', '=', income['lot_id'][0])])
+                        in_val += income['qty_done'] * lot.cost
+                    # else:
+                    #     in_val += ['qty_done'] * product.standard_price
             if outcome_qty_before:
-                outcomeblbefore += outcome_qty_before[0]['product_uom_qty']
+                for outcomebefore in outcome_qty_before:
+                    outcomeblbefore += outcomebefore['qty_done']
+                    if outcomebefore['lot_id']:
+                        lot = self.env['stock.production.lot'].search([('id', '=', outcomebefore['lot_id'])])
+                        outcomeblbefore += outcomebefore['qty_done'] * lot.cost
+                    # else:
+                    #     outcomeblbefore += ['qty_done'] * product.standard_price
             if income_qty_before:
-                incomeblbefore += income_qty_before[0]['product_uom_qty']
+                for incomebefore in income_qty_before:
+                    incomeblbefore += incomebefore['qty_done']
+                    if incomebefore['lot_id']:
+                        lot = self.env['stock.production.lot'].search([('id', '=', incomeblbefore['lot_id'][0])])
+                        incomeblbefore += incomeblbefore['qty_done'] * lot.cost
+                    # else:
+                    #     incomeblbefore += ['qty_done'] * product.standard_price
             startbl = incomeblbefore - outcomeblbefore
             endbl = startbl + in_qty - out_qty
             line_ids.append((0, 0, {
@@ -180,7 +211,11 @@ class TotalInventoryWizard(models.TransientModel):
                 'start_balance': startbl,
                 'income_quantity': in_qty,
                 'outcome_quantity': out_qty,
-                'end_balance': endbl
+                'end_balance': endbl,
+                'start_val': start_val,
+                'in_val': in_val,
+                'out_val': out_val,
+                'end_val': end_val
             }))
         self.write({'line_ids': line_ids})
         context = {
@@ -210,6 +245,10 @@ class TotalInventoryWizardLines(models.TransientModel):
     income_quantity = fields.Float()
     outcome_quantity = fields.Float()
     end_balance = fields.Float()
+    start_val = fields.Float()
+    in_val = fields.Float()
+    out_val = fields.Float()
+    end_val = fields.Float()
 
 
 class StockProductionLotCost(models.Model):

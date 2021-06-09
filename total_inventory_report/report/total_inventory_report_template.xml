@@ -5,6 +5,9 @@
             <t t-call="web.html_container">
                 <t t-call="web.internal_layout">
                     <t t-foreach="docs" t-as="o">
+                        <h4 class="text-center" style="font-weight: bold;">
+                            Total Inventory Report
+                        </h4>
                         <h4>
                             <span>Location :</span>
                             <span t-esc="o.stock_location.display_name"/>
@@ -61,7 +64,7 @@
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
-                                               t-esc="stock_move.product_id.standard_price * stock_move.start_balance "/>
+                                               t-esc="stock_move.start_val "/>
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
@@ -69,7 +72,7 @@
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
-                                               t-esc="stock_move.product_id.standard_price * stock_move.income_quantity "/>
+                                               t-esc="stock_move.in_val "/>
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
@@ -77,7 +80,7 @@
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
-                                               t-esc="stock_move.product_id.standard_price * stock_move.outcome_quantity "/>
+                                               t-esc="stock_move.out_val "/>
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
@@ -85,7 +88,7 @@
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
-                                               t-esc="stock_move.product_id.standard_price * stock_move.end_balance "/>
+                                               t-esc="stock_move.end_val "/>
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
