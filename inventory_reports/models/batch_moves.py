@@ -213,7 +213,8 @@ class TotalInventoryWizard(models.TransientModel):
                 for returnsale in return_transfers:
                     return_transfer += returnsale['qty_done']
 
-                endbl = bl + in_qty - out - out_transfer + return_sale + return_transfer + return_adjust - outcome_adjust
+                endbl = bl + in_qty - out - out_transfer + return_sale + return_transfer
+                        # + return_adjust - outcome_adjust
 
                 worksheet.write(row, 0, product.default_code or '', cell_text_format_n)
                 worksheet.write(row, 1, product.name or '', cell_text_format_n)
