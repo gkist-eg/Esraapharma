@@ -247,7 +247,7 @@ class ORder(models.Model):
 
                 price2 = price1 * (1.0 - (line.dist_discount or 0.0) / 100.0)
                 price = price2 * (1.0 - (line.cash_discount or 0.0) / 100.0)
-                #print(line.price_unit, price1, price2, price)
+                # print(line.price_unit, price1, price2, price)
 
                 if line.sale_type == 'bouns':
 
@@ -327,8 +327,8 @@ class ORder(models.Model):
 class Invoceder(models.Model):
     _name = 'account.move.line'
     _inherit = 'account.move.line'
-    cash_discount_sale = fields.Float('Cash Discount', store=True,index=True)
-    dis_discount_sale = fields.Float('Distributor Discount', store=True,index=True)
+    cash_discount_sale = fields.Float('Cash Discount', store=True, index=True)
+    dis_discount_sale = fields.Float('Distributor Discount', store=True, index=True)
     publicprice = fields.Float("Public Price", store=True, digits=('Product Price'))
 
     @api.onchange('product_id')
@@ -360,6 +360,7 @@ class Invoceder(models.Model):
     tax_name = fields.Char('tax_name', compute='_compute_func_tax', )
     dist_amount = fields.Float(string="", compute='_compute_discount')
     cash_amount = fields.Float(string="", compute='_compute_discount')
+    pre_amount = fields.Float(string="Pre Amount", compute='_compute_discount')
     move_type = fields.Selection(string="move type", related="move_id.move_type")
     batch_no = fields.Char(string="Batch Number", required=False, )
     discount = fields.Float(string='Discount (%)', digits='Discount', default=0.0)
@@ -531,8 +532,9 @@ class Invoceder(models.Model):
         for rec in self:
             if rec.sale_type != 'bouns':
                 price = rec.price_unit
-                price1 = ((price * (1.0 - (rec.discount or 0.0) / 100.0)))
+                price1 = (price * (1.0 - (rec.discount or 0.0) / 100.0))
                 price2 = price1 * (1.0 - (rec.dist_discount or 0.0) / 100.0)
+                rec.pre_amount = price * ((rec.discount or 0.0) / 100.0) * rec.quantity
                 rec.dist_amount = price1 * ((rec.dist_discount or 0.0) / 100.0) * rec.quantity
                 rec.cash_amount = price2 * ((rec.cash_discount or 0.0) / 100.0) * rec.quantity
             else:
@@ -571,10 +573,10 @@ class Invoceder(models.Model):
         # Compute 'price_subtotal'.
         if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
             if product:
-                x=round((price_unit * (1.0 - discount / 100.0)), 3)
-                price_unit_wo_discount1 =round_half_up(x,2)
-                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount  or 0.0) / 100.0)
-                price_unit_wo_discount = price_unit_wo_discount2 * (1 - (partner.cash_discount  or 0.0) / 100.0)
+                x = round((price_unit * (1.0 - discount / 100.0)), 3)
+                price_unit_wo_discount1 = round_half_up(x, 2)
+                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
+                price_unit_wo_discount = price_unit_wo_discount2 * (1 - (partner.cash_discount or 0.0) / 100.0)
             else:
                 price_unit_wo_discount = price_unit
 
@@ -589,7 +591,7 @@ class Invoceder(models.Model):
                                                           quantity=quantity, currency=currency, product=product,
                                                           partner=partner,
                                                           is_refund=move_type in ('out_refund', 'in_refund'))
-                   #print(price_unit_wo_discount, taxes_res)
+                    # print(price_unit_wo_discount, taxes_res)
                     res['price_subtotal'] = 0.00
                     res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
                 elif self.sale_type == 'sale':
@@ -638,7 +640,7 @@ class Invoceder(models.Model):
                                                           quantity=quantity, currency=currency, product=product,
                                                           partner=partner,
                                                           is_refund=move_type in ('out_refund', 'in_refund'))
-                    #print(price_unit_wo_discount, taxes_res)
+                    # print(price_unit_wo_discount, taxes_res)
                     res['price_subtotal'] = 0.00
                     res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
                 elif self.sale_type == 'sale':
@@ -691,81 +693,82 @@ class Invoceder(models.Model):
 class Move(models.Model):
     _name = 'account.move'
     _inherit = 'account.move'
+
     @api.depends('posted_before', 'state', 'journal_id', 'date')
     def _compute_name(self):
-      for invoice in self:
+        for invoice in self:
+            if not self.name:
+                if self.move_type != 'entry' and invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == False:
+                    invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
+                elif self.move_type != 'entry' and invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == True:
+                    invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
+                elif self.move_type != 'entry' and invoice.move_type == 'out_refund':
+                    invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
+                elif self.move_type != 'entry' and invoice.move_type == 'in_refund':
+                    invoice.name = self.env['ir.sequence'].next_by_code('refund_bill')
+                elif self.move_type == 'entry':
 
-           if self.move_type != 'entry' and invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == False:
-               invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
-           elif self.move_type != 'entry' and invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == True:
-               invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
-           elif self.move_type != 'entry'and invoice.move_type == 'out_refund':
-               invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
-           elif self.move_type != 'entry' and invoice.move_type == 'in_refund':
-               invoice.name = self.env['ir.sequence'].next_by_code('refund_bill')
-           elif self.move_type == 'entry':
+                    def journal_key(move):
+                        return (move.journal_id, move.journal_id.refund_sequence and move.move_type)
 
-               def journal_key(move):
-                   return (move.journal_id, move.journal_id.refund_sequence and move.move_type)
+                    def date_key(move):
+                        return (move.date.year, move.date.month)
 
-               def date_key(move):
-                   return (move.date.year, move.date.month)
+                    grouped = defaultdict(  # key: journal_id, move_type
+                        lambda: defaultdict(  # key: first adjacent (date.year, date.month)
+                            lambda: {
+                                'records': self.env['account.move'],
+                                'format': False,
+                                'format_values': False,
+                                'reset': False
+                            }
+                        )
+                    )
+                    self = self.sorted(lambda m: (m.date, m.ref or '', m.id))
+                    highest_name = self[0]._get_last_sequence() if self else False
 
-               grouped = defaultdict(  # key: journal_id, move_type
-                   lambda: defaultdict(  # key: first adjacent (date.year, date.month)
-                       lambda: {
-                           'records': self.env['account.move'],
-                           'format': False,
-                           'format_values': False,
-                           'reset': False
-                       }
-                   )
-               )
-               self = self.sorted(lambda m: (m.date, m.ref or '', m.id))
-               highest_name = self[0]._get_last_sequence() if self else False
+                    # Group the moves by journal and month
+                    for move in self:
+                        if not highest_name and move == self[0] and not move.posted_before:
+                            # In the form view, we need to compute a default sequence so that the user can edit
+                            # it. We only check the first move as an approximation (enough for new in form view)
+                            pass
+                        elif (move.name and move.name != '/') or move.state != 'posted':
+                            # Has already a name or is not posted, we don't add to a batch
+                            continue
+                        group = grouped[journal_key(move)][date_key(move)]
+                        if not group['records']:
+                            # Compute all the values needed to sequence this whole group
+                            move._set_next_sequence()
+                            group['format'], group['format_values'] = move._get_sequence_format_param(move.name)
+                            group['reset'] = move._deduce_sequence_number_reset(move.name)
+                        group['records'] += move
 
-               # Group the moves by journal and month
-               for move in self:
-                   if not highest_name and move == self[0] and not move.posted_before:
-                       # In the form view, we need to compute a default sequence so that the user can edit
-                       # it. We only check the first move as an approximation (enough for new in form view)
-                       pass
-                   elif (move.name and move.name != '/') or move.state != 'posted':
-                       # Has already a name or is not posted, we don't add to a batch
-                       continue
-                   group = grouped[journal_key(move)][date_key(move)]
-                   if not group['records']:
-                       # Compute all the values needed to sequence this whole group
-                       move._set_next_sequence()
-                       group['format'], group['format_values'] = move._get_sequence_format_param(move.name)
-                       group['reset'] = move._deduce_sequence_number_reset(move.name)
-                   group['records'] += move
+                    # Fusion the groups depending on the sequence reset and the format used because `seq` is
+                    # the same counter for multiple groups that might be spread in multiple months.
+                    final_batches = []
+                    for journal_group in grouped.values():
+                        for date_group in journal_group.values():
+                            if not final_batches or final_batches[-1]['format'] != date_group['format']:
+                                final_batches += [date_group]
+                            elif date_group['reset'] == 'never':
+                                final_batches[-1]['records'] += date_group['records']
+                            elif (
+                                    date_group['reset'] == 'year'
+                                    and final_batches[-1]['records'][0].date.year == date_group['records'][0].date.year
+                            ):
+                                final_batches[-1]['records'] += date_group['records']
+                            else:
+                                final_batches += [date_group]
 
-               # Fusion the groups depending on the sequence reset and the format used because `seq` is
-               # the same counter for multiple groups that might be spread in multiple months.
-               final_batches = []
-               for journal_group in grouped.values():
-                   for date_group in journal_group.values():
-                       if not final_batches or final_batches[-1]['format'] != date_group['format']:
-                           final_batches += [date_group]
-                       elif date_group['reset'] == 'never':
-                           final_batches[-1]['records'] += date_group['records']
-                       elif (
-                               date_group['reset'] == 'year'
-                               and final_batches[-1]['records'][0].date.year == date_group['records'][0].date.year
-                       ):
-                           final_batches[-1]['records'] += date_group['records']
-                       else:
-                           final_batches += [date_group]
+                    # Give the name based on previously computed values
+                    for batch in final_batches:
+                        for move in batch['records']:
+                            move.name = batch['format'].format(**batch['format_values'])
+                            batch['format_values']['seq'] += 1
+                        batch['records']._compute_split_sequence()
 
-               # Give the name based on previously computed values
-               for batch in final_batches:
-                   for move in batch['records']:
-                       move.name = batch['format'].format(**batch['format_values'])
-                       batch['format_values']['seq'] += 1
-                   batch['records']._compute_split_sequence()
-
-               self.filtered(lambda m: not m.name).name = '/'
+                    self.filtered(lambda m: not m.name).name = '/'
 
     name = fields.Char(string='Number', copy=False, default=False, compute='_compute_name', store=True, index=True,
                        tracking=True)
@@ -794,8 +797,8 @@ class Move(models.Model):
                 m.return_source = False
 
     return_source = fields.Char('Return Source', compute='_compute_invoice_return')
-    cash_discount_sale = fields.Float('Cash Discount', store=True,index=True)
-    dis_discount_sale = fields.Float('Distributor Discount', store=True,index=True)
+    cash_discount_sale = fields.Float('Cash Discount', store=True, index=True)
+    dis_discount_sale = fields.Float('Distributor Discount', store=True, index=True)
     cust_categ_id = fields.Many2one(string="Customer Category", related="partner_id.categ_id")
 
     warehouse_id = fields.Many2one(
@@ -932,7 +935,7 @@ class Move(models.Model):
                 if invoice.move_type == 'out_invoice':
                     move = {
                         'journal_id': invoice.journal_id.id,
-                        'name':self.env['ir.sequence'].next_by_code('customer_invoice_dis'),
+                        'name': self.env['ir.sequence'].next_by_code('customer_invoice_dis'),
                         'date': invoice.invoice_date,
                         'ref': invoice.name,
                         'move_type': 'entry',
@@ -972,10 +975,9 @@ class Move(models.Model):
                     }
                     move_id = self.env['account.move'].create(move)
 
-
                     move_id.post()
 
-    @api.depends('discount_rate', 'discount_type','amount_total')
+    @api.depends('discount_rate', 'discount_type', 'amount_total')
     def _compute_func_net(self):
         for rec in self:
             if rec.discount_rate and not rec.discount_flag:
@@ -1079,12 +1081,12 @@ class Move(models.Model):
                 else:
                     if base_line.product_id and base_line.sale_type == 'sale':
                         discount_pharm = ((base_line.price_unit * (1.0 - (base_line.discount / 100.0))))
-                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount  / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount  / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
                         discount_pharm = (base_line.price_unit * (1.0 - (base_line.discount / 100.0)))
-                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount  / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
                         discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_pharm
 
@@ -1100,7 +1102,7 @@ class Move(models.Model):
                 tax_type = base_line.tax_ids[0].type_tax_use if base_line.tax_ids else None
                 is_refund = (tax_type == 'sale' and base_line.debit) or (tax_type == 'purchase' and base_line.credit)
                 price_unit_wo_discount = base_line.balance
-                #print(base_line.balance, 'balance')
+                # print(base_line.balance, 'balance')
 
             balance_taxes_res = base_line.tax_ids._origin.compute_all(
                 price_unit_wo_discount,
