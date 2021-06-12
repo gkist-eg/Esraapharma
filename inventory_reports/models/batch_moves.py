@@ -78,7 +78,9 @@ class TotalInventoryWizard(models.TransientModel):
             worksheet.write(1, 6, _('Out Transfer'), column_heading_style2)
             worksheet.write(1, 7, _('Sales Return'), column_heading_style2)
             worksheet.write(1, 8, _('Transfer Return'), column_heading_style2)
-            worksheet.write(1, 9, _('End Balance'), column_heading_style2)
+            worksheet.write(1, 9, _('out Adjust/Scrapp'), column_heading_style2)
+            worksheet.write(1, 10, _('In Adjust'), column_heading_style2)
+            worksheet.write(1, 11, _('End Balance'), column_heading_style2)
             stock_moves = self.env['stock.move.line']
             stock_moves_groupedby_product = stock_moves.read_group(
                 domain=["|", ("location_id.warehouse_id", "=", self.warehouse_id.id),
@@ -115,6 +117,22 @@ class TotalInventoryWizard(models.TransientModel):
                 outcome_sales = stock_moves.read_group(
                     domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_dest_id.usage", "=", 'customer'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id.ref", "=", lot_id), ("product_id", "=", product.id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['batch'])
+                outcome_adjusts = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'inventory'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id.ref", "=", lot_id), ("product_id", "=", product.id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['batch'])
+                return_adjusts = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.usage", "=", 'inventory'),
                             ("state", "=", "done"), ("product_id", "=", product.id),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id.ref", "=", lot_id), ("product_id", "=", product.id)],
@@ -162,7 +180,8 @@ class TotalInventoryWizard(models.TransientModel):
                 bl = 0
                 return_sale = 0
                 return_transfer = 0
-                production_in = 0
+                return_adjust = 0
+                outcome_adjust = 0
                 for outcome in outcome_sales:
                     out += outcome['qty_done']
 
@@ -173,6 +192,12 @@ class TotalInventoryWizard(models.TransientModel):
 
                 for income in income_qty:
                     in_qty += income['qty_done']
+
+                for out in outcome_adjusts:
+                    outcome_adjust += out['qty_done']
+
+                for r in return_adjusts:
+                    return_adjust += r['qty_done']
 
                 for outcomebefore in outcome_qty_before:
                     bl -= outcomebefore['qty_done']
@@ -186,7 +211,7 @@ class TotalInventoryWizard(models.TransientModel):
                 for returnsale in return_transfers:
                     return_transfer += returnsale['qty_done']
 
-                endbl = bl + in_qty - out -out_transfer +return_sale + return_transfer
+                endbl = bl + in_qty - out -out_transfer +return_sale + return_transfer + return_adjust - outcome_adjust
 
                 worksheet.write(row, 0, product.default_code or '', cell_text_format_n)
                 worksheet.write(row, 1, product.name or '', cell_text_format_n)
@@ -197,7 +222,9 @@ class TotalInventoryWizard(models.TransientModel):
                 worksheet.write(row, 6, out_transfer , cell_text_format)
                 worksheet.write(row, 7, return_sale , cell_text_format)
                 worksheet.write(row, 8, return_transfer , cell_text_format)
-                worksheet.write(row, 9, endbl , cell_text_format)
+                worksheet.write(row, 9, outcome_adjust , cell_text_format)
+                worksheet.write(row, 10, return_adjust , cell_text_format)
+                worksheet.write(row, 11, endbl , cell_text_format)
 
                 row += 1
         if self.type == 'purchase':
