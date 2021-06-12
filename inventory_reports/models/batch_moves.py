@@ -384,10 +384,14 @@ class TotalInventoryWizard(models.TransientModel):
             worksheet.write(1, 2, _('Lot'), column_heading_style2)
             worksheet.write(1, 3, _('Start Balance'), column_heading_style2)
             worksheet.write(1, 4, _('Receipts'), column_heading_style2)
-            worksheet.write(1, 5, _('Release'), column_heading_style2)
-            worksheet.write(1, 6, _('Production'), column_heading_style2)
-            worksheet.write(1, 7, _('Production Return'), column_heading_style2)
-            worksheet.write(1, 8, _('End Balance'), column_heading_style2)
+            worksheet.write(1, 5, _('Requests'), column_heading_style2)
+            worksheet.write(1, 6, _('Poduction'), column_heading_style2)
+            worksheet.write(1, 8, _('Production Return'), column_heading_style2)
+            worksheet.write(1, 7, _('Request Return'), column_heading_style2)
+            worksheet.write(1, 9, _('In Adjustment'), column_heading_style2)
+            worksheet.write(1, 10, _('Out Adjustment'), column_heading_style2)
+            worksheet.write(1, 11, _('Receipts Return'), column_heading_style2)
+            worksheet.write(1, 12, _('End Balance'), column_heading_style2)
             stock_moves = self.env['stock.move.line']
             stock_moves_groupedby_product = stock_moves.read_group(
                 domain=["|", ("location_id.warehouse_id", "=", self.warehouse_id.id),
@@ -419,7 +423,15 @@ class TotalInventoryWizard(models.TransientModel):
                     groupby=['lot_id'])
                 income_qty = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
-                            ("location_id.stock_usage", "in", ('vendor', 'inventory')),
+                            ("location_id.stock_usage", "=", 'vendor'),
+                            ("state", "=", "done"),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id)],
+                    fields=['lot_id', 'qty_done'],
+                    groupby=['lot_id'])
+                vendor_return_list = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.stock_usage", "=", 'vendor'),
                             ("state", "=", "done"),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id)],
@@ -436,6 +448,22 @@ class TotalInventoryWizard(models.TransientModel):
                 return_request = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_id.usage", "=", 'customer'),
+                            ("state", "=", "done"),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id), ],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                out_adjusts = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.usage", "=", 'inventory'),
+                            ("state", "=", "done"),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id), ],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                in_adjusts = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'inventory'),
                             ("state", "=", "done"),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id), ],
@@ -483,8 +511,9 @@ class TotalInventoryWizard(models.TransientModel):
                 bl = 0
                 return_sale = 0
                 return_production = 0
-                return_transfer = 0
-                production_in = 0
+                in_adjust = 0
+                out_adjust = 0
+                vendor_return = 0
                 for outcome in outcome_request:
                     out += outcome['qty_done']
 
@@ -509,7 +538,16 @@ class TotalInventoryWizard(models.TransientModel):
                 for returnsale in return_production_list:
                     return_production += returnsale['qty_done']
 
-                endbl = bl + in_qty - out - production + return_sale + return_production
+                for in_adjus in in_adjusts:
+                    in_adjust += in_adjus['qty_done']
+
+                for in_adjus in out_adjusts:
+                    out_adjust += in_adjus['qty_done']
+
+                for vendor in vendor_return_list:
+                    vendor_return += vendor['qty_done']
+
+                endbl = bl + in_qty - out - production + return_sale + return_production  + in_adjust - out_adjust - vendor_return
 
                 worksheet.write(row, 0, lot.product_id.default_code or '', cell_text_format_n)
                 worksheet.write(row, 1, lot.product_id.name or '', cell_text_format_n)
@@ -520,7 +558,10 @@ class TotalInventoryWizard(models.TransientModel):
                 worksheet.write(row, 6, production, cell_text_format)
                 worksheet.write(row, 7, return_sale, cell_text_format)
                 worksheet.write(row, 8, return_production, cell_text_format)
-                worksheet.write(row, 9, endbl, cell_text_format)
+                worksheet.write(row, 9, in_adjust, cell_text_format)
+                worksheet.write(row, 10, out_adjust, cell_text_format)
+                worksheet.write(row, 11, vendor_return, cell_text_format)
+                worksheet.write(row, 12, endbl, cell_text_format)
 
                 row += 1
         workbook.close()
