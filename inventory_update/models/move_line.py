@@ -52,6 +52,9 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
     _order = 'product_id,id'
     batch = fields.Char('Batch Number', store=True, related='lot_id.ref', index=True)
+    lot_id = fields.Many2one(
+        'stock.production.lot', 'Lot/Serial Number',
+        domain="[('product_id', '=', product_id), ('company_id', '=', company_id)]", check_company=True, index=True)
 
     @api.onchange('product_id', 'product_uom_id')
     def _onchange_product_id(self):
