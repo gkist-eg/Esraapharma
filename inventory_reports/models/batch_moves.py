@@ -195,8 +195,8 @@ class TotalInventoryWizard(models.TransientModel):
                 for income in income_qty:
                     in_qty += income['qty_done']
 
-                for out in outcome_adjusts:
-                    outcome_adjust += out['qty_done']
+                for l in outcome_adjusts:
+                    outcome_adjust += l['qty_done']
 
                 for r in return_adjusts:
                     return_adjust += r['qty_done']
@@ -213,8 +213,7 @@ class TotalInventoryWizard(models.TransientModel):
                 for returnsale in return_transfers:
                     return_transfer += returnsale['qty_done']
 
-                endbl = bl + in_qty - out - out_transfer + return_sale + return_transfer
-                        # + return_adjust - outcome_adjust
+                endbl = bl + in_qty - out - out_transfer + return_sale + return_transfer + return_adjust - outcome_adjust
 
                 worksheet.write(row, 0, product.default_code or '', cell_text_format_n)
                 worksheet.write(row, 1, product.name or '', cell_text_format_n)
