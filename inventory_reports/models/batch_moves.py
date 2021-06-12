@@ -68,7 +68,7 @@ class TotalInventoryWizard(models.TransientModel):
             self.end_date) + ' )'
         worksheet.merge_range('A1:F1', report_head, heading_format)
         row = 2
-        if self.type =='sale':
+        if self.type == 'sale':
             worksheet.write(1, 0, _('Product Code'), column_heading_style2)
             worksheet.write(1, 1, _('Product'), column_heading_style2)
             worksheet.write(1, 2, _('Batch'), column_heading_style2)
@@ -96,12 +96,14 @@ class TotalInventoryWizard(models.TransientModel):
                 product = self.env['product.product'].search([('id', '=', stock_move['product_id'][0])])
                 outcome_qty_before = stock_moves.read_group(
                     domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.warehouse_id", "!=", self.warehouse_id.id),
                             ("state", "=", "done"), ("product_id", "=", product.id),
                             ("date", "<", self.start_date), ("lot_id.ref", "=", lot_id)],
                     fields=['lot_id', 'qty_done', ],
                     groupby=['batch'])
                 income_qty_before = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.warehouse_id", "!=", self.warehouse_id.id),
                             ("state", "=", "done"), ("product_id", "=", product.id),
                             ("date", "<", self.start_date), ("lot_id.ref", "=", lot_id)],
                     fields=['lot_id', 'qty_done'],
@@ -211,7 +213,7 @@ class TotalInventoryWizard(models.TransientModel):
                 for returnsale in return_transfers:
                     return_transfer += returnsale['qty_done']
 
-                endbl = bl + in_qty - out -out_transfer +return_sale + return_transfer + return_adjust - outcome_adjust
+                endbl = bl + in_qty - out - out_transfer + return_sale + return_transfer + return_adjust - outcome_adjust
 
                 worksheet.write(row, 0, product.default_code or '', cell_text_format_n)
                 worksheet.write(row, 1, product.name or '', cell_text_format_n)
