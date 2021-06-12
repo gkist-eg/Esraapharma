@@ -86,7 +86,7 @@ class TotalInventoryWizard(models.TransientModel):
                 domain=["|", ("location_id.warehouse_id", "=", self.warehouse_id.id),
                         ("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
                         ("product_id.sale_ok", "=", True),
-                        ("state", "=", "done"), ("lot_id", "!=", False),
+                        ("state", "=", "done"), ("lot_id", "!=", False), ("batch", "!=", False),
                         ("date", "<=", self.end_date)],
                 fields=['batch', 'product_id'],
                 groupby=['batch', 'product_id'], lazy=False)
@@ -227,6 +227,154 @@ class TotalInventoryWizard(models.TransientModel):
                 worksheet.write(row, 9, outcome_adjust , cell_text_format)
                 worksheet.write(row, 10, return_adjust , cell_text_format)
                 worksheet.write(row, 11, endbl , cell_text_format)
+
+                row += 1
+            stock_moves_groupedby_product_list = stock_moves.read_group(
+                domain=["|", ("location_id.warehouse_id", "=", self.warehouse_id.id),
+                        ("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                        ("product_id.sale_ok", "=", True),
+                        ("state", "=", "done"), ("lot_id", "!=", False), ("batch", "=", False),
+                        ("date", "<=", self.end_date)],
+                fields=['lot_id', 'product_id'],
+                groupby=['lot_id', 'product_id'], lazy=False)
+
+            for stock_move in stock_moves_groupedby_product_list:
+                lot_id = stock_move['lot_id']
+                lot = self.env['stock.production.lot'].search([('id', '=', stock_move['lot_id'][0])])
+                product = self.env['product.product'].search([('id', '=', stock_move['product_id'][0])])
+                outcome_qty_before = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.warehouse_id", "!=", self.warehouse_id.id),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", "<", self.start_date), ("lot_id", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                income_qty_before = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.warehouse_id", "!=", self.warehouse_id.id),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", "<", self.start_date), ("lot_id", "=", lot_id)],
+                    fields=['lot_id', 'qty_done'],
+                    groupby=['lot_id'])
+                income_qty = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id), '|',
+                            ("location_id.stock_usage", "=", 'production'), ("location_id.usage", "=", 'production'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("product_id", "=", product.id),
+                            ("lot_id", "=", lot_id)],
+                    fields=['lot_id', 'qty_done'],
+                    groupby=['lot_id'])
+                outcome_sales = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'customer'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id), ("product_id", "=", product.id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                outcome_adjusts = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'inventory'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id), ("product_id", "=", product.id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                return_adjusts = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.usage", "=", 'inventory'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id), ("product_id", "=", product.id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                return_sales = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.usage", "=", 'customer'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id), ("product_id", "=", product.id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                outcome_transfer = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.warehouse_id", "!=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'internal'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                return_transfers = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.warehouse_id", "!=", self.warehouse_id.id), '|',
+                            ("location_dest_id.usage", "=", 'internal'),
+                            ("location_dest_id.usage", "=", 'transit'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                outcome_transfer2 = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'transit'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                in_qty = 0
+                out = 0
+                out_transfer = 0
+                bl = 0
+                return_sale = 0
+                return_transfer = 0
+                return_adjust = 0
+                outcome_adjust = 0
+                for outcome in outcome_sales:
+                    out += outcome['qty_done']
+
+                for outcome in outcome_transfer:
+                    out_transfer += outcome['qty_done']
+                for outcome in outcome_transfer2:
+                    out_transfer += outcome['qty_done']
+
+                for income in income_qty:
+                    in_qty += income['qty_done']
+
+                for l in outcome_adjusts:
+                    outcome_adjust += l['qty_done']
+
+                for r in return_adjusts:
+                    return_adjust += r['qty_done']
+
+                for outcomebefore in outcome_qty_before:
+                    bl -= outcomebefore['qty_done']
+
+                for incomebefore in income_qty_before:
+                    bl += incomebefore['qty_done']
+
+                for returnsale in return_sales:
+                    return_sale += returnsale['qty_done']
+
+                for returnsale in return_transfers:
+                    return_transfer += returnsale['qty_done']
+
+                endbl = bl + in_qty - out - out_transfer + return_sale + return_transfer + return_adjust - outcome_adjust
+
+                worksheet.write(row, 0, product.default_code or '', cell_text_format_n)
+                worksheet.write(row, 1, product.name or '', cell_text_format_n)
+                worksheet.write(row, 2, lot.name or '', cell_text_format)
+                worksheet.write(row, 3, bl, cell_text_format)
+                worksheet.write(row, 4, in_qty, cell_text_format)
+                worksheet.write(row, 5, out, cell_text_format)
+                worksheet.write(row, 6, out_transfer, cell_text_format)
+                worksheet.write(row, 7, return_sale, cell_text_format)
+                worksheet.write(row, 8, return_transfer, cell_text_format)
+                worksheet.write(row, 9, outcome_adjust, cell_text_format)
+                worksheet.write(row, 10, return_adjust, cell_text_format)
+                worksheet.write(row, 11, endbl, cell_text_format)
 
                 row += 1
         if self.type == 'purchase':
