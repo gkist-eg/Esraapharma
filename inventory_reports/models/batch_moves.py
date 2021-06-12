@@ -253,15 +253,17 @@ class TotalInventoryWizard(models.TransientModel):
                 lot_id = stock_move['lot_id'][0]
                 lot = self.env['stock.production.lot'].search([('id', '=', stock_move['lot_id'][0])])
                 outcome_qty_before = stock_moves.read_group(
-                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id), '|',
                             ("location_dest_id.warehouse_id", "!=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "in", ('customer', 'inventory')),
                             ("state", "=", "done"),
                             ("date", "<", self.start_date), ("lot_id", "=", lot_id)],
                     fields=['lot_id', 'qty_done', ],
                     groupby=['lot_id'])
                 income_qty_before = stock_moves.read_group(
-                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id), '|',
                             ("location_id.warehouse_id", "!=", self.warehouse_id.id),
+                            ("location_id.usage", "in", ('vendor', 'inventory')),
                             ("state", "=", "done"),
                             ("date", "<", self.start_date), ("lot_id.ref", "=", lot_id)],
                     fields=['lot_id', 'qty_done'],
