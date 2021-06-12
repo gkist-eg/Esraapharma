@@ -15,7 +15,7 @@ class TotalInventoryWizard(models.TransientModel):
     warehouse_id = fields.Many2one('stock.warehouse', string='Warehouse')
     start_date = fields.Datetime(string='From')
     end_date = fields.Datetime(string='To')
-    type = fields.Selection([('sale','Can Be Sold'),('purchase','Can Be Purchased')])
+    type = fields.Selection([('sale', 'Can Be Sold'), ('purchase', 'Can Be Purchased')])
 
     def action_print_report(self):
         today = datetime.today().strftime('%Y-%m-%d')
@@ -112,7 +112,8 @@ class TotalInventoryWizard(models.TransientModel):
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id), '|',
                             ("location_id.stock_usage", "=", 'production'), ("location_id.usage", "=", 'production'),
                             ("state", "=", "done"), ("product_id", "=", product.id),
-                            ("date", ">=", self.start_date), ("date", "<=", self.end_date), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("product_id", "=", product.id),
                             ("lot_id.ref", "=", lot_id)],
                     fields=['lot_id', 'qty_done'],
                     groupby=['batch'])
@@ -159,7 +160,7 @@ class TotalInventoryWizard(models.TransientModel):
                     groupby=['batch'])
                 return_transfers = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
-                            ("location_id.warehouse_id", "!=", self.warehouse_id.id),'|',
+                            ("location_id.warehouse_id", "!=", self.warehouse_id.id), '|',
                             ("location_dest_id.usage", "=", 'internal'),
                             ("location_dest_id.usage", "=", 'transit'),
                             ("location_id.usage", "=", 'internal'),
@@ -218,15 +219,15 @@ class TotalInventoryWizard(models.TransientModel):
                 worksheet.write(row, 0, product.default_code or '', cell_text_format_n)
                 worksheet.write(row, 1, product.name or '', cell_text_format_n)
                 worksheet.write(row, 2, stock_move['batch'] or '', cell_text_format)
-                worksheet.write(row, 3, bl , cell_text_format)
-                worksheet.write(row, 4, in_qty , cell_text_format)
-                worksheet.write(row, 5, out , cell_text_format)
-                worksheet.write(row, 6, out_transfer , cell_text_format)
-                worksheet.write(row, 7, return_sale , cell_text_format)
-                worksheet.write(row, 8, return_transfer , cell_text_format)
-                worksheet.write(row, 9, outcome_adjust , cell_text_format)
-                worksheet.write(row, 10, return_adjust , cell_text_format)
-                worksheet.write(row, 11, endbl , cell_text_format)
+                worksheet.write(row, 3, bl, cell_text_format)
+                worksheet.write(row, 4, in_qty, cell_text_format)
+                worksheet.write(row, 5, out, cell_text_format)
+                worksheet.write(row, 6, out_transfer, cell_text_format)
+                worksheet.write(row, 7, return_sale, cell_text_format)
+                worksheet.write(row, 8, return_transfer, cell_text_format)
+                worksheet.write(row, 9, outcome_adjust, cell_text_format)
+                worksheet.write(row, 10, return_adjust, cell_text_format)
+                worksheet.write(row, 11, endbl, cell_text_format)
 
                 row += 1
             stock_moves_groupedby_product_list = stock_moves.read_group(
@@ -418,7 +419,7 @@ class TotalInventoryWizard(models.TransientModel):
                     groupby=['lot_id'])
                 income_qty = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
-                            ("location_id.stock_usage", "in", ('vendor','inventory')),
+                            ("location_id.stock_usage", "in", ('vendor', 'inventory')),
                             ("state", "=", "done"),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id)],
@@ -429,7 +430,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("location_dest_id.usage", "=", 'customer'),
                             ("state", "=", "done"),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
-                            ("lot_id", "=", lot_id),],
+                            ("lot_id", "=", lot_id), ],
                     fields=['lot_id', 'qty_done', ],
                     groupby=['lot_id'])
                 return_request = stock_moves.read_group(
@@ -437,7 +438,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("location_id.usage", "=", 'customer'),
                             ("state", "=", "done"),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
-                            ("lot_id", "=", lot_id),],
+                            ("lot_id", "=", lot_id), ],
                     fields=['lot_id', 'qty_done', ],
                     groupby=['lot_id'])
                 outcome_production = stock_moves.read_group(
@@ -454,7 +455,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("state", "=", "done"),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id)],
-                    fields=['lot_id', 'qty_done' ],
+                    fields=['lot_id', 'qty_done'],
                     groupby=['lot_id'])
                 outcome_productions = stock_moves.read_group(
                     domain=[("location_id.warehouse_id", "=", self.warehouse_id.id), '|',
@@ -513,13 +514,13 @@ class TotalInventoryWizard(models.TransientModel):
                 worksheet.write(row, 0, lot.product_id.default_code or '', cell_text_format_n)
                 worksheet.write(row, 1, lot.product_id.name or '', cell_text_format_n)
                 worksheet.write(row, 2, lot.name or '', cell_text_format)
-                worksheet.write(row, 3, bl , cell_text_format)
-                worksheet.write(row, 4, in_qty , cell_text_format)
-                worksheet.write(row, 5, out , cell_text_format)
-                worksheet.write(row, 6, production , cell_text_format)
-                worksheet.write(row, 7, return_sale , cell_text_format)
-                worksheet.write(row, 8, return_production , cell_text_format)
-                worksheet.write(row, 9, endbl , cell_text_format)
+                worksheet.write(row, 3, bl, cell_text_format)
+                worksheet.write(row, 4, in_qty, cell_text_format)
+                worksheet.write(row, 5, out, cell_text_format)
+                worksheet.write(row, 6, production, cell_text_format)
+                worksheet.write(row, 7, return_sale, cell_text_format)
+                worksheet.write(row, 8, return_production, cell_text_format)
+                worksheet.write(row, 9, endbl, cell_text_format)
 
                 row += 1
         workbook.close()
