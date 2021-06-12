@@ -9,6 +9,7 @@ class Locations(models.Model):
         copy=True, store=True, track_visibility='onchange', default='normal', )
     stock_usage = fields.Selection([('release', 'Release Location'),
                                     ('qrtin', 'Quarantine Location'),
+                                    ('receipt', 'receipt Location'),
                                     ('reject', 'Reject Location'),
                                     ('production', 'Production Location')], store=True, string='Internal Location Type')
 

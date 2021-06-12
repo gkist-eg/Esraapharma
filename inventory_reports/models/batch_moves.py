@@ -1,12 +1,9 @@
 import base64
-import os
+
 from datetime import datetime
 from io import BytesIO
-from odoo.tools.misc import xlwt
 import xlsxwriter
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
-from xlsxwriter.utility import xl_rowcol_to_cell
 
 
 class TotalInventoryWizard(models.TransientModel):
@@ -18,6 +15,7 @@ class TotalInventoryWizard(models.TransientModel):
     warehouse_id = fields.Many2one('stock.warehouse', string='Warehouse')
     start_date = fields.Datetime(string='From')
     end_date = fields.Datetime(string='To')
+    type = fields.Selection([('sale','Can Be Sold'),('purchase','Can Be Purchased')])
 
     def action_print_report(self):
         today = datetime.today().strftime('%Y-%m-%d')
@@ -34,7 +32,7 @@ class TotalInventoryWizard(models.TransientModel):
                                                   'font_color': '#B22222',
                                                   })
         cell_text_format = workbook.add_format({'align': 'left',
-                                                 'size': 9,
+                                                'size': 9,
                                                 })
 
         cell_text_format.set_border()
@@ -70,94 +68,283 @@ class TotalInventoryWizard(models.TransientModel):
             self.end_date) + ' )'
         worksheet.merge_range('A1:F1', report_head, heading_format)
         row = 2
-        worksheet.write(1, 0, _('Product Code'), column_heading_style2)
-        worksheet.write(1, 1, _('Product'), column_heading_style2)
-        worksheet.write(1, 2, _('Batch'), column_heading_style2)
-        worksheet.write(1, 3, _('Start Balance'), column_heading_style2)
-        worksheet.write(1, 4, _('Income'), column_heading_style2)
-        worksheet.write(1, 5, _('OutSale'), column_heading_style2)
-        worksheet.write(1, 6, _('Out Transfer'), column_heading_style2)
-        worksheet.write(1, 7, _('End Balace'), column_heading_style2)
-        stock_moves = self.env['stock.move.line']
-        stock_moves_groupedby_product = stock_moves.read_group(
-            domain=["|", ("location_id.warehouse_id", "=", self.warehouse_id.id),
-                    ("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
-                    ("state", "=", "done"), ("lot_id", "!=", False),
-                    ("date", "<=", self.end_date)],
-            fields=['batch', 'product_id'],
-            groupby=['batch', 'product_id'], lazy=False)
+        if self.type =='sale':
+            worksheet.write(1, 0, _('Product Code'), column_heading_style2)
+            worksheet.write(1, 1, _('Product'), column_heading_style2)
+            worksheet.write(1, 2, _('Batch'), column_heading_style2)
+            worksheet.write(1, 3, _('Start Balance'), column_heading_style2)
+            worksheet.write(1, 4, _('Production Receipts'), column_heading_style2)
+            worksheet.write(1, 5, _('OutSale'), column_heading_style2)
+            worksheet.write(1, 6, _('Out Transfer'), column_heading_style2)
+            worksheet.write(1, 7, _('Sales Return'), column_heading_style2)
+            worksheet.write(1, 8, _('Transfer Return'), column_heading_style2)
+            worksheet.write(1, 9, _('End Balance'), column_heading_style2)
+            stock_moves = self.env['stock.move.line']
+            stock_moves_groupedby_product = stock_moves.read_group(
+                domain=["|", ("location_id.warehouse_id", "=", self.warehouse_id.id),
+                        ("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                        ("product_id.sale_ok", "=", True),
+                        ("state", "=", "done"), ("lot_id", "!=", False),
+                        ("date", "<=", self.end_date)],
+                fields=['batch', 'product_id'],
+                groupby=['batch', 'product_id'], lazy=False)
 
-        for stock_move in stock_moves_groupedby_product:
-            lot_id = stock_move['batch']
-            product = self.env['product.product'].search([('id', '=',  stock_move['product_id'][0])])
-            outcome_qty_before = stock_moves.read_group(
-                domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
-                        ("state", "=", "done"), ("product_id", "=", product.id),
-                        ("date", "<", self.start_date), ("lot_id.ref", "=", lot_id)],
-                fields=['lot_id', 'qty_done', ],
-                groupby=['batch'])
-            income_qty_before = stock_moves.read_group(
-                domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
-                        ("state", "=", "done"), ("product_id", "=", product.id),
-                        ("date", "<", self.start_date), ("lot_id.ref", "=", lot_id)],
-                fields=['lot_id', 'qty_done'],
-                groupby=['batch'])
-            income_qty = stock_moves.read_group(
-                domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
-                        ("state", "=", "done"), ("product_id", "=", product.id),
-                        ("date", ">=", self.start_date), ("date", "<=", self.end_date), ("product_id", "=", product.id),
-                        ("lot_id.ref", "=", lot_id)],
-                fields=['lot_id', 'qty_done'],
-                groupby=['batch'])
-            outcome_sales = stock_moves.read_group(
-                domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
-                        ("location_dest_id.usage", "=", 'customer'),
-                        ("state", "=", "done"), ("product_id", "=", product.id),
-                        ("date", ">=", self.start_date), ("date", "<=", self.end_date),
-                        ("lot_id.ref", "=", lot_id),("product_id", "=", product.id)],
-                fields=['lot_id', 'qty_done', ],
-                groupby=['batch'])
-            outcome_transfer = stock_moves.read_group(
-                domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
-                        ("location_dest_id.warehouse_id", "!=", self.warehouse_id.id),
-                        ("location_dest_id.usage", "=", 'internal'),
-                        ("state", "=", "done"), ("product_id", "=", product.id),
-                        ("date", ">=", self.start_date), ("date", "<=", self.end_date),
-                        ("lot_id.ref", "=", lot_id)],
-                fields=['lot_id', 'qty_done', ],
-                groupby=['batch'])
-            in_qty = 0
-            out = 0
-            out_transfer = 0
-            bl = 0
-            production_in = 0
-            for outcome in outcome_sales:
-                out += outcome['qty_done']
+            for stock_move in stock_moves_groupedby_product:
+                lot_id = stock_move['batch']
+                product = self.env['product.product'].search([('id', '=', stock_move['product_id'][0])])
+                outcome_qty_before = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", "<", self.start_date), ("lot_id.ref", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['batch'])
+                income_qty_before = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", "<", self.start_date), ("lot_id.ref", "=", lot_id)],
+                    fields=['lot_id', 'qty_done'],
+                    groupby=['batch'])
+                income_qty = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id), '|',
+                            ("location_id.stock_usage", "=", 'production'), ("location_id.usage", "=", 'production'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date), ("product_id", "=", product.id),
+                            ("lot_id.ref", "=", lot_id)],
+                    fields=['lot_id', 'qty_done'],
+                    groupby=['batch'])
+                outcome_sales = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'customer'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id.ref", "=", lot_id), ("product_id", "=", product.id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['batch'])
+                return_sales = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.usage", "=", 'customer'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id.ref", "=", lot_id), ("product_id", "=", product.id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['batch'])
+                outcome_transfer = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.warehouse_id", "!=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'internal'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id.ref", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['batch'])
+                return_transfers = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.warehouse_id", "!=", self.warehouse_id.id),'|',
+                            ("location_dest_id.usage", "=", 'internal'),
+                            ("location_dest_id.usage", "=", 'transit'),
+                            ("location_id.usage", "=", 'internal'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id.ref", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['batch'])
+                outcome_transfer2 = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'transit'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id.ref", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['batch'])
+                in_qty = 0
+                out = 0
+                out_transfer = 0
+                bl = 0
+                return_sale = 0
+                return_transfer = 0
+                production_in = 0
+                for outcome in outcome_sales:
+                    out += outcome['qty_done']
 
-            for outcome in outcome_transfer:
-                out_transfer += outcome['qty_done']
+                for outcome in outcome_transfer:
+                    out_transfer += outcome['qty_done']
+                for outcome in outcome_transfer2:
+                    out_transfer += outcome['qty_done']
 
-            for income in income_qty:
-                in_qty += income['qty_done']
+                for income in income_qty:
+                    in_qty += income['qty_done']
 
-            for outcomebefore in outcome_qty_before:
-                bl -= outcomebefore['qty_done']
+                for outcomebefore in outcome_qty_before:
+                    bl -= outcomebefore['qty_done']
 
-            for incomebefore in income_qty_before:
-                bl += incomebefore['qty_done']
+                for incomebefore in income_qty_before:
+                    bl += incomebefore['qty_done']
 
-            endbl = bl + in_qty - out
+                for returnsale in return_sales:
+                    return_sale += returnsale['qty_done']
 
-            worksheet.write(row, 0, product.default_code or '', cell_text_format_n)
-            worksheet.write(row, 1, product.name or '', cell_text_format_n)
-            worksheet.write(row, 2, stock_move['batch'] or '', cell_text_format)
-            worksheet.write(row, 3, bl or '', cell_text_format)
-            worksheet.write(row, 4, in_qty or '', cell_text_format)
-            worksheet.write(row, 5, out or '', cell_text_format)
-            worksheet.write(row, 6, out_transfer or '', cell_text_format)
-            worksheet.write(row, 7, endbl or '', cell_text_format)
-            row += 1
+                for returnsale in return_transfers:
+                    return_transfer += returnsale['qty_done']
 
+                endbl = bl + in_qty - out -out_transfer +return_sale + return_transfer
+
+                worksheet.write(row, 0, product.default_code or '', cell_text_format_n)
+                worksheet.write(row, 1, product.name or '', cell_text_format_n)
+                worksheet.write(row, 2, stock_move['batch'] or '', cell_text_format)
+                worksheet.write(row, 3, bl or '', cell_text_format)
+                worksheet.write(row, 4, in_qty or '', cell_text_format)
+                worksheet.write(row, 5, out or '', cell_text_format)
+                worksheet.write(row, 6, out_transfer or '', cell_text_format)
+                worksheet.write(row, 7, return_sale or '', cell_text_format)
+                worksheet.write(row, 8, return_transfer or '', cell_text_format)
+                worksheet.write(row, 9, endbl or '', cell_text_format)
+
+                row += 1
+        if self.type == 'purchase':
+            worksheet.write(1, 0, _('Product Code'), column_heading_style2)
+            worksheet.write(1, 1, _('Product'), column_heading_style2)
+            worksheet.write(1, 2, _('Lot'), column_heading_style2)
+            worksheet.write(1, 3, _('Start Balance'), column_heading_style2)
+            worksheet.write(1, 4, _('Receipts'), column_heading_style2)
+            worksheet.write(1, 5, _('Release'), column_heading_style2)
+            worksheet.write(1, 6, _('Production'), column_heading_style2)
+            worksheet.write(1, 7, _('Production Return'), column_heading_style2)
+            worksheet.write(1, 8, _('End Balance'), column_heading_style2)
+            stock_moves = self.env['stock.move.line']
+            stock_moves_groupedby_product = stock_moves.read_group(
+                domain=["|", ("location_id.warehouse_id", "=", self.warehouse_id.id),
+                        ("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                        ("product_id.purchase_ok", "=", True),
+                        ("state", "=", "done"), ("lot_id", "!=", False),
+                        ("date", "<=", self.end_date)],
+                fields=['lot_id', 'product_id'],
+                groupby=['lot_id', 'product_id'], lazy=False)
+
+            for stock_move in stock_moves_groupedby_product:
+                lot_id = stock_move['lot_id'][0]
+                product = self.env['product.product'].search([('id', '=', stock_move['product_id'][0])])
+                lot = self.env['stock.production.lot'].search([('id', '=', stock_move['lot_id'][0])])
+                outcome_qty_before = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.warehouse_id", "!=", self.warehouse_id.id),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", "<", self.start_date), ("lot_id", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                income_qty_before = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.warehouse_id", "!=", self.warehouse_id.id),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", "<", self.start_date), ("lot_id.ref", "=", lot_id)],
+                    fields=['lot_id', 'qty_done'],
+                    groupby=['lot_id'])
+                income_qty = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id), '|',
+                            ("location_id.stock_usage", "=", 'vendor'), ("location_id.usage", "=", 'receipt'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("product_id", "=", product.id),
+                            ("lot_id.ref", "=", lot_id)],
+                    fields=['lot_id', 'qty_done'],
+                    groupby=['lot_id'])
+                outcome_request = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'customer'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id), ("product_id", "=", product.id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                return_request = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.usage", "=", 'customer'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id), ("product_id", "=", product.id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                outcome_production = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'production'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                return_production_list = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.usage", "=", 'production'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id)],
+                    fields=['lot_id', 'qty_done' ],
+                    groupby=['lot_id'])
+                outcome_productions = stock_moves.read_group(
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id), '|',
+                            ("location_dest_id.usage", "=", 'internal'),
+                            ("location_dest_id.stock_usage", "=", 'production'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+                return_productions = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id), '|',
+                            ("location_id.usage", "=", 'internal'),
+                            ("location_id.stock_usage", "=", 'production'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['lot_id'])
+
+                in_qty = 0
+                out = 0
+                receipt = 0
+                production = 0
+                bl = 0
+                return_sale = 0
+                return_production = 0
+                return_transfer = 0
+                production_in = 0
+                for outcome in outcome_request:
+                    out += outcome['qty_done']
+
+                for outcome in outcome_production:
+                    production += outcome['qty_done']
+                for outcome in outcome_productions:
+                    production += outcome['qty_done']
+
+                for income in income_qty:
+                    in_qty += income['qty_done']
+
+                for outcomebefore in outcome_qty_before:
+                    bl -= outcomebefore['qty_done']
+
+                for incomebefore in income_qty_before:
+                    bl += incomebefore['qty_done']
+
+                for returnsale in return_request:
+                    return_sale += returnsale['qty_done']
+                for returnsale in return_productions:
+                    return_production += returnsale['qty_done']
+                for returnsale in return_production_list:
+                    return_production += returnsale['qty_done']
+
+                endbl = bl + in_qty - out - production + return_sale + return_production
+
+                worksheet.write(row, 0, product.default_code or '', cell_text_format_n)
+                worksheet.write(row, 1, product.name or '', cell_text_format_n)
+                worksheet.write(row, 2, lot.name or '', cell_text_format)
+                worksheet.write(row, 3, bl or '', cell_text_format)
+                worksheet.write(row, 4, in_qty or '', cell_text_format)
+                worksheet.write(row, 5, out or '', cell_text_format)
+                worksheet.write(row, 6, production or '', cell_text_format)
+                worksheet.write(row, 7, return_sale or '', cell_text_format)
+                worksheet.write(row, 8, return_production or '', cell_text_format)
+                worksheet.write(row, 9, endbl or '', cell_text_format)
+
+                row += 1
         workbook.close()
         file_download = base64.b64encode(fp.getvalue())
 
