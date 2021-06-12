@@ -240,7 +240,7 @@ class TotalInventoryWizard(models.TransientModel):
                 groupby=['lot_id', 'product_id'], lazy=False)
 
             for stock_move in stock_moves_groupedby_product_list:
-                lot_id = stock_move['lot_id']
+                lot_id = stock_move['lot_id'][0]
                 lot = self.env['stock.production.lot'].search([('id', '=', stock_move['lot_id'][0])])
                 product = self.env['product.product'].search([('id', '=', stock_move['product_id'][0])])
                 outcome_qty_before = stock_moves.read_group(
