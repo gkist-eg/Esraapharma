@@ -540,6 +540,8 @@ class Invoceder(models.Model):
             else:
                 rec.dist_amount = 0.0
                 rec.cash_amount = 0.0
+                rec.pre_amount = 0.0
+
 
     @api.depends('tax_ids')
     def _compute_func_tax(self):
