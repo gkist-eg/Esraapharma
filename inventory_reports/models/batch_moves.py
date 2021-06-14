@@ -12,10 +12,10 @@ class TotalInventoryWizard(models.TransientModel):
 
     file_name = fields.Char('File Name')
     mapping_report_file = fields.Binary('Mapping Report')
-    warehouse_id = fields.Many2one('stock.warehouse', string='Warehouse')
-    start_date = fields.Datetime(string='From')
-    end_date = fields.Datetime(string='To')
-    type = fields.Selection([('sale', 'Can Be Sold'), ('purchase', 'Can Be Purchased')])
+    warehouse_id = fields.Many2one('stock.warehouse', string='Warehouse', required=1)
+    start_date = fields.Datetime(string='From', required=1)
+    end_date = fields.Datetime(string='To', required=1)
+    type = fields.Selection([('sale', 'Can Be Sold'), ('purchase', 'Can Be Purchased')], required=1)
 
     def action_print_report(self):
         today = datetime.today().strftime('%Y-%m-%d')
