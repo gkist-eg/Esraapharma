@@ -77,7 +77,7 @@ class TotalInventoryWizard(models.TransientModel):
             worksheet.write(1, 5, _('OutSale'), column_heading_style2)
             worksheet.write(1, 6, _('Out Transfer'), column_heading_style2)
             worksheet.write(1, 7, _('Sales Return'), column_heading_style2)
-            worksheet.write(1, 8, _('Transfer Return'), column_heading_style2)
+            worksheet.write(1, 8, _('Transfer Return/In'), column_heading_style2)
             worksheet.write(1, 9, _('out Adjust/Scrapp'), column_heading_style2)
             worksheet.write(1, 10, _('In Adjust'), column_heading_style2)
             worksheet.write(1, 11, _('End Balance'), column_heading_style2)
@@ -160,8 +160,16 @@ class TotalInventoryWizard(models.TransientModel):
                     groupby=['batch'])
                 return_transfers = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'transit'),
+                            ("state", "=", "done"), ("product_id", "=", product.id),
+                            ("date", ">=", self.start_date), ("date", "<=", self.end_date),
+                            ("lot_id.ref", "=", lot_id)],
+                    fields=['lot_id', 'qty_done', ],
+                    groupby=['batch'])
+                return_transfers2 = stock_moves.read_group(
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_id.warehouse_id", "!=", self.warehouse_id.id),
-                            ("location_dest_id.usage", "in", ('internal','transit')),
+                            ("location_dest_id.usage", "=", 'internal'),
                             ("state", "=", "done"), ("product_id", "=", product.id),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id.ref", "=", lot_id)],
@@ -183,11 +191,11 @@ class TotalInventoryWizard(models.TransientModel):
                 return_transfer = 0
                 return_adjust = 0
                 outcome_adjust = 0
-                for outcome in outcome_sales:
-                    out += outcome['qty_done']
+                for outcome2 in outcome_sales:
+                    out += outcome2['qty_done']
 
-                for outcome in outcome_transfer:
-                    out_transfer += outcome['qty_done']
+                for outcome1 in outcome_transfer:
+                    out_transfer += outcome1['qty_done']
                 for outcome in outcome_transfer2:
                     out_transfer += outcome['qty_done']
 
@@ -206,11 +214,13 @@ class TotalInventoryWizard(models.TransientModel):
                 for incomebefore in income_qty_before:
                     bl += incomebefore['qty_done']
 
-                for returnsale in return_sales:
-                    return_sale += returnsale['qty_done']
+                for returnsale1 in return_sales:
+                    return_sale += returnsale1['qty_done']
 
-                for returnsale in return_transfers:
-                    return_transfer += returnsale['qty_done']
+                for returnsale2 in return_transfers:
+                    return_transfer += returnsale2['qty_done']
+                for return1 in return_transfers2:
+                    return_transfer += return1['qty_done']
 
                 endbl = bl + in_qty - out - out_transfer + return_sale + return_transfer + return_adjust - outcome_adjust
 
@@ -354,8 +364,8 @@ class TotalInventoryWizard(models.TransientModel):
                 for incomebefore in income_qty_before:
                     bl += incomebefore['qty_done']
 
-                for returnsale in return_sales:
-                    return_sale += returnsale['qty_done']
+                for returnsale1 in return_sales:
+                    return_sale += returnsale1['qty_done']
 
                 for returnsale in return_transfers:
                     return_transfer += returnsale['qty_done']
@@ -453,16 +463,16 @@ class TotalInventoryWizard(models.TransientModel):
                     fields=['lot_id', 'qty_done', ],
                     groupby=['product_uom_id'])
                 out_adjusts = stock_moves.read_group(
-                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
-                            ("location_id.usage", "=", 'inventory'),
+                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_dest_id.usage", "=", 'inventory'),
                             ("state", "=", "done"),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id), ],
                     fields=['lot_id', 'qty_done', ],
                     groupby=['product_uom_id'])
                 in_adjusts = stock_moves.read_group(
-                    domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
-                            ("location_dest_id.usage", "=", 'inventory'),
+                    domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
+                            ("location_id.usage", "=", 'inventory'),
                             ("state", "=", "done"),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id), ],
@@ -514,51 +524,51 @@ class TotalInventoryWizard(models.TransientModel):
                 vendor_return = 0
                 for outcome in outcome_request:
                     uom_id = self.env['uom.uom'].search([('id', '=', outcome['product_uom_id'][0])])
-                    out += uom_id._compute_quantity(outcome['qty_done'], product.uom_id)
+                    out += round(uom_id._compute_quantity(outcome['qty_done'], product.uom_id),5)
 
                 for outcome in outcome_production:
                     uom_id = self.env['uom.uom'].search([('id', '=', outcome['product_uom_id'][0])])
-                    production += uom_id._compute_quantity(outcome['qty_done'], product.uom_id)
+                    production += round(uom_id._compute_quantity(outcome['qty_done'], product.uom_id),5)
 
                 for outcome in outcome_productions:
                     uom_id = self.env['uom.uom'].search([('id', '=', outcome['product_uom_id'][0])])
-                    production += uom_id._compute_quantity(outcome['qty_done'], product.uom_id)
+                    production += round(uom_id._compute_quantity(outcome['qty_done'], product.uom_id),5)
 
                 for income in income_qty:
                     uom_id = self.env['uom.uom'].search([('id', '=', income['product_uom_id'][0])])
-                    in_qty += uom_id._compute_quantity(income['qty_done'], product.uom_id)
+                    in_qty += round(uom_id._compute_quantity(income['qty_done'], product.uom_id),5)
 
                 for outcomebefore in outcome_qty_before:
                     uom_id = self.env['uom.uom'].search([('id', '=', outcomebefore['product_uom_id'][0])])
-                    bl -= uom_id._compute_quantity(outcomebefore['qty_done'], product.uom_id)
+                    bl -= round(uom_id._compute_quantity(outcomebefore['qty_done'], product.uom_id),5)
 
                 for incomebefore in income_qty_before:
                     uom_id = self.env['uom.uom'].search([('id', '=', incomebefore['product_uom_id'][0])])
-                    bl += uom_id._compute_quantity(incomebefore['qty_done'], product.uom_id)
+                    bl += round(uom_id._compute_quantity(incomebefore['qty_done'], product.uom_id),5)
 
                 for returnsale in return_request:
                     uom_id = self.env['uom.uom'].search([('id', '=', returnsale['product_uom_id'][0])])
-                    return_sale += uom_id._compute_quantity(returnsale['qty_done'], product.uom_id)
+                    return_sale += round(uom_id._compute_quantity(returnsale['qty_done'], product.uom_id),5)
 
                 for returnsale in return_productions:
                     uom_id = self.env['uom.uom'].search([('id', '=', returnsale['product_uom_id'][0])])
-                    return_production += uom_id._compute_quantity(returnsale['qty_done'], product.uom_id)
+                    return_production += round(uom_id._compute_quantity(returnsale['qty_done'], product.uom_id),5)
 
                 for returnsale in return_production_list:
                     uom_id = self.env['uom.uom'].search([('id', '=', returnsale['product_uom_id'][0])])
-                    return_production += uom_id._compute_quantity(returnsale['qty_done'], product.uom_id)
+                    return_production += round(uom_id._compute_quantity(returnsale['qty_done'], product.uom_id),5)
 
                 for in_adjus in in_adjusts:
                     uom_id = self.env['uom.uom'].search([('id', '=', in_adjus['product_uom_id'][0])])
-                    in_adjust += uom_id._compute_quantity(in_adjus['qty_done'], product.uom_id)
+                    in_adjust += round(uom_id._compute_quantity(in_adjus['qty_done'], product.uom_id),5)
 
                 for in_adjus in out_adjusts:
                     uom_id = self.env['uom.uom'].search([('id', '=', in_adjus['product_uom_id'][0])])
-                    out_adjust += uom_id._compute_quantity(in_adjus['qty_done'], product.uom_id)
+                    out_adjust += round(uom_id._compute_quantity(in_adjus['qty_done'], product.uom_id),5)
 
                 for vendor in vendor_return_list:
                     uom_id = self.env['uom.uom'].search([('id', '=', vendor['product_uom_id'][0])])
-                    vendor_return += uom_id._compute_quantity(vendor['qty_done'], product.uom_id)
+                    vendor_return += round(uom_id._compute_quantity(vendor['qty_done'], product.uom_id),5)
 
                 endbl = bl + in_qty - out - production + return_sale + return_production  + in_adjust - out_adjust - vendor_return
 
