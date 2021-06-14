@@ -415,14 +415,14 @@ class TotalInventoryWizard(models.TransientModel):
                 income_qty_before = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id), '|',
                             ("location_id.warehouse_id", "!=", self.warehouse_id.id),
-                            ("location_id.usage", "in", ('vendor', 'inventory')),
+                            ("location_id.usage", "in", ('supplier', 'inventory')),
                             ("state", "=", "done"),
                             ("date", "<", self.start_date), ("lot_id", "=", lot_id)],
                     fields=['lot_id', 'qty_done'],
                     groupby=['product_uom_id'][0])
                 income_qty = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
-                            ("location_id.usage", "=", 'vendor'),
+                            ("location_id.usage", "=", 'supplier'),
                             ("state", "=", "done"),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id)],
@@ -430,7 +430,7 @@ class TotalInventoryWizard(models.TransientModel):
                     groupby=['product_uom_id'])
                 vendor_return_list = stock_moves.read_group(
                     domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
-                            ("location_dest_id.usage", "=", 'vendor'),
+                            ("location_dest_id.usage", "=", 'supplier'),
                             ("state", "=", "done"),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id)],
