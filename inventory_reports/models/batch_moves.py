@@ -169,7 +169,7 @@ class TotalInventoryWizard(models.TransientModel):
                 return_transfers2 = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_id.warehouse_id", "!=", self.warehouse_id.id),
-                            ("location_dest_id.usage", "=", 'internal'),
+                            ("location_id.usage", "=", 'internal'),
                             ("state", "=", "done"), ("product_id", "=", product.id),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id.ref", "=", lot_id)],
@@ -524,53 +524,53 @@ class TotalInventoryWizard(models.TransientModel):
                 vendor_return = 0
                 for outcome in outcome_request:
                     uom_id = self.env['uom.uom'].search([('id', '=', outcome['product_uom_id'][0])])
-                    out += round(uom_id._compute_quantity(outcome['qty_done'], product.uom_id),5)
+                    out += round(uom_id._compute_quantity(outcome['qty_done'], product.uom_id), 5)
 
-                for outcome in outcome_production:
-                    uom_id = self.env['uom.uom'].search([('id', '=', outcome['product_uom_id'][0])])
-                    production += round(uom_id._compute_quantity(outcome['qty_done'], product.uom_id),5)
+                for outcome1 in outcome_production:
+                    uom_id = self.env['uom.uom'].search([('id', '=', outcome1['product_uom_id'][0])])
+                    production += round(uom_id._compute_quantity(outcome1['qty_done'], product.uom_id), 5)
 
-                for outcome in outcome_productions:
-                    uom_id = self.env['uom.uom'].search([('id', '=', outcome['product_uom_id'][0])])
-                    production += round(uom_id._compute_quantity(outcome['qty_done'], product.uom_id),5)
+                for outcome2 in outcome_productions:
+                    uom_id = self.env['uom.uom'].search([('id', '=', outcome2['product_uom_id'][0])])
+                    production += round(uom_id._compute_quantity(outcome2['qty_done'], product.uom_id), 5)
 
                 for income in income_qty:
                     uom_id = self.env['uom.uom'].search([('id', '=', income['product_uom_id'][0])])
-                    in_qty += round(uom_id._compute_quantity(income['qty_done'], product.uom_id),5)
+                    in_qty += round(uom_id._compute_quantity(income['qty_done'], product.uom_id), 5)
 
                 for outcomebefore in outcome_qty_before:
                     uom_id = self.env['uom.uom'].search([('id', '=', outcomebefore['product_uom_id'][0])])
-                    bl -= round(uom_id._compute_quantity(outcomebefore['qty_done'], product.uom_id),5)
+                    bl -= round(uom_id._compute_quantity(outcomebefore['qty_done'], product.uom_id), 5)
 
                 for incomebefore in income_qty_before:
                     uom_id = self.env['uom.uom'].search([('id', '=', incomebefore['product_uom_id'][0])])
-                    bl += round(uom_id._compute_quantity(incomebefore['qty_done'], product.uom_id),5)
+                    bl += round(uom_id._compute_quantity(incomebefore['qty_done'], product.uom_id), 5)
 
-                for returnsale in return_request:
-                    uom_id = self.env['uom.uom'].search([('id', '=', returnsale['product_uom_id'][0])])
-                    return_sale += round(uom_id._compute_quantity(returnsale['qty_done'], product.uom_id),5)
+                for return1 in return_request:
+                    uom_id = self.env['uom.uom'].search([('id', '=', return1['product_uom_id'][0])])
+                    return_sale += round(uom_id._compute_quantity(return1['qty_done'], product.uom_id), 5)
 
-                for returnsale in return_productions:
-                    uom_id = self.env['uom.uom'].search([('id', '=', returnsale['product_uom_id'][0])])
-                    return_production += round(uom_id._compute_quantity(returnsale['qty_done'], product.uom_id),5)
+                for return2 in return_productions:
+                    uom_id = self.env['uom.uom'].search([('id', '=', return2['product_uom_id'][0])])
+                    return_production += round(uom_id._compute_quantity(return2['qty_done'], product.uom_id), 5)
 
-                for returnsale in return_production_list:
-                    uom_id = self.env['uom.uom'].search([('id', '=', returnsale['product_uom_id'][0])])
-                    return_production += round(uom_id._compute_quantity(returnsale['qty_done'], product.uom_id),5)
+                for return3 in return_production_list:
+                    uom_id = self.env['uom.uom'].search([('id', '=', return3['product_uom_id'][0])])
+                    return_production += round(uom_id._compute_quantity(return3['qty_done'], product.uom_id), 5)
 
                 for in_adjus in in_adjusts:
                     uom_id = self.env['uom.uom'].search([('id', '=', in_adjus['product_uom_id'][0])])
-                    in_adjust += round(uom_id._compute_quantity(in_adjus['qty_done'], product.uom_id),5)
+                    in_adjust += round(uom_id._compute_quantity(in_adjus['qty_done'], product.uom_id), 5)
 
-                for in_adjus in out_adjusts:
-                    uom_id = self.env['uom.uom'].search([('id', '=', in_adjus['product_uom_id'][0])])
-                    out_adjust += round(uom_id._compute_quantity(in_adjus['qty_done'], product.uom_id),5)
+                for ot_adjus in out_adjusts:
+                    uom_id = self.env['uom.uom'].search([('id', '=', ot_adjus['product_uom_id'][0])])
+                    out_adjust += round(uom_id._compute_quantity(ot_adjus['qty_done'], product.uom_id), 5)
 
                 for vendor in vendor_return_list:
                     uom_id = self.env['uom.uom'].search([('id', '=', vendor['product_uom_id'][0])])
-                    vendor_return += round(uom_id._compute_quantity(vendor['qty_done'], product.uom_id),5)
+                    vendor_return += round(uom_id._compute_quantity(vendor['qty_done'], product.uom_id), 5)
 
-                endbl = bl + in_qty - out - production + return_sale + return_production  + in_adjust - out_adjust - vendor_return
+                endbl = bl + in_qty - out - production + return_sale + return_production + in_adjust - out_adjust - vendor_return
 
                 worksheet.write(row, 0, lot.product_id.default_code or '', cell_text_format_n)
                 worksheet.write(row, 1, lot.product_id.name or '', cell_text_format_n)
