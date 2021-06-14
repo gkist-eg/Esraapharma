@@ -160,7 +160,7 @@ class TotalInventoryWizard(models.TransientModel):
                     groupby=['batch'])
                 return_transfers = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
-                            ("location_dest_id.usage", "=", 'transit'),
+                            ("location_id.usage", "=", 'transit'),
                             ("state", "=", "done"), ("product_id", "=", product.id),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id.ref", "=", lot_id)],
@@ -169,6 +169,7 @@ class TotalInventoryWizard(models.TransientModel):
                 return_transfers2 = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_id.warehouse_id", "!=", self.warehouse_id.id),
+                            ("location_id.warehouse_id", "!=", False),
                             ("location_id.usage", "=", 'internal'),
                             ("state", "=", "done"), ("product_id", "=", product.id),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
@@ -318,8 +319,8 @@ class TotalInventoryWizard(models.TransientModel):
                 return_transfers = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_id.warehouse_id", "!=", self.warehouse_id.id), '|',
-                            ("location_dest_id.usage", "=", 'internal'),
-                            ("location_dest_id.usage", "=", 'transit'),
+                            ("location_id.usage", "=", 'internal'),
+                            ("location_id.usage", "=", 'transit'),
                             ("state", "=", "done"), ("product_id", "=", product.id),
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id)],
