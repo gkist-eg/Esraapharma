@@ -411,7 +411,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("state", "=", "done"),
                             ("date", "<", self.start_date), ("lot_id", "=", lot_id)],
                     fields=['lot_id', 'qty_done', ],
-                    groupby=['product_uom_id'])
+                    groupby=['product_uom_id'][0])
                 income_qty_before = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id), '|',
                             ("location_id.warehouse_id", "!=", self.warehouse_id.id),
@@ -419,7 +419,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("state", "=", "done"),
                             ("date", "<", self.start_date), ("lot_id", "=", lot_id)],
                     fields=['lot_id', 'qty_done'],
-                    groupby=['product_uom_id'])
+                    groupby=['product_uom_id'][0])
                 income_qty = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_id.stock_usage", "=", 'vendor'),
@@ -427,7 +427,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id)],
                     fields=['lot_id', 'qty_done'],
-                    groupby=['product_uom_id'])
+                    groupby=['product_uom_id'][0])
                 vendor_return_list = stock_moves.read_group(
                     domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_dest_id.stock_usage", "=", 'vendor'),
@@ -435,7 +435,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id)],
                     fields=['lot_id', 'qty_done'],
-                    groupby=['product_uom_id'])
+                    groupby=['product_uom_id'][0])
                 outcome_request = stock_moves.read_group(
                     domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_dest_id.usage", "=", 'customer'),
@@ -443,7 +443,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id), ],
                     fields=['lot_id', 'qty_done', ],
-                    groupby=['product_uom_id'])
+                    groupby=['product_uom_id'][0])
                 return_request = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_id.usage", "=", 'customer'),
@@ -451,7 +451,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id), ],
                     fields=['lot_id', 'qty_done', ],
-                    groupby=['product_uom_id'])
+                    groupby=['product_uom_id'][0])
                 out_adjusts = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_id.usage", "=", 'inventory'),
@@ -459,7 +459,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id), ],
                     fields=['lot_id', 'qty_done', ],
-                    groupby=['product_uom_id'])
+                    groupby=['product_uom_id'][0])
                 in_adjusts = stock_moves.read_group(
                     domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_dest_id.usage", "=", 'inventory'),
@@ -467,7 +467,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id), ],
                     fields=['lot_id', 'qty_done', ],
-                    groupby=['product_uom_id'])
+                    groupby=['product_uom_id'][0])
                 outcome_production = stock_moves.read_group(
                     domain=[("location_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_dest_id.usage", "=", 'production'),
@@ -475,7 +475,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id)],
                     fields=['lot_id', 'qty_done', ],
-                    groupby=['product_uom_id'])
+                    groupby=['product_uom_id'][0])
                 return_production_list = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id),
                             ("location_id.usage", "=", 'production'),
@@ -483,7 +483,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id)],
                     fields=['lot_id', 'qty_done'],
-                    groupby=['product_uom_id'])
+                    groupby=['product_uom_id'][0])
                 outcome_productions = stock_moves.read_group(
                     domain=[("location_id.warehouse_id", "=", self.warehouse_id.id), '|',
                             ("location_dest_id.usage", "=", 'internal'),
@@ -492,7 +492,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id)],
                     fields=['lot_id', 'qty_done', ],
-                    groupby=['product_uom_id'])
+                    groupby=['product_uom_id'][0])
                 return_productions = stock_moves.read_group(
                     domain=[("location_dest_id.warehouse_id", "=", self.warehouse_id.id), '|',
                             ("location_id.usage", "=", 'internal'),
@@ -501,7 +501,7 @@ class TotalInventoryWizard(models.TransientModel):
                             ("date", ">=", self.start_date), ("date", "<=", self.end_date),
                             ("lot_id", "=", lot_id)],
                     fields=['lot_id', 'qty_done', ],
-                    groupby=['product_uom_id'])
+                    groupby=['product_uom_id'][0])
 
                 in_qty = 0
                 out = 0
@@ -513,51 +513,51 @@ class TotalInventoryWizard(models.TransientModel):
                 out_adjust = 0
                 vendor_return = 0
                 for outcome in outcome_request:
-                    uom_id = self.env['uom.uom'].search([('id', '=', outcome['product_uom_id'])])
+                    uom_id = self.env['uom.uom'].search([('id', '=', outcome['product_uom_id'][0])])
                     out += uom_id._compute_quantity(outcome['qty_done'], product.uom_id)
 
                 for outcome in outcome_production:
-                    uom_id = self.env['uom.uom'].search([('id', '=', outcome['product_uom_id'])])
+                    uom_id = self.env['uom.uom'].search([('id', '=', outcome['product_uom_id'][0])])
                     production += uom_id._compute_quantity(outcome['qty_done'], product.uom_id)
 
                 for outcome in outcome_productions:
-                    uom_id = self.env['uom.uom'].search([('id', '=', outcome['product_uom_id'])])
+                    uom_id = self.env['uom.uom'].search([('id', '=', outcome['product_uom_id'][0])])
                     production += uom_id._compute_quantity(outcome['qty_done'], product.uom_id)
 
                 for income in income_qty:
-                    uom_id = self.env['uom.uom'].search([('id', '=', income['product_uom_id'])])
+                    uom_id = self.env['uom.uom'].search([('id', '=', income['product_uom_id'][0])])
                     in_qty += uom_id._compute_quantity(income['qty_done'], product.uom_id)
 
                 for outcomebefore in outcome_qty_before:
-                    uom_id = self.env['uom.uom'].search([('id', '=', outcomebefore['product_uom_id'])])
+                    uom_id = self.env['uom.uom'].search([('id', '=', outcomebefore['product_uom_id'][0])])
                     bl -= uom_id._compute_quantity(outcomebefore['qty_done'], product.uom_id)
 
                 for incomebefore in income_qty_before:
-                    uom_id = self.env['uom.uom'].search([('id', '=', incomebefore['product_uom_id'])])
+                    uom_id = self.env['uom.uom'].search([('id', '=', incomebefore['product_uom_id'][0])])
                     bl += uom_id._compute_quantity(incomebefore['qty_done'], product.uom_id)
 
                 for returnsale in return_request:
-                    uom_id = self.env['uom.uom'].search([('id', '=', returnsale['product_uom_id'])])
+                    uom_id = self.env['uom.uom'].search([('id', '=', returnsale['product_uom_id'][0])])
                     return_sale += uom_id._compute_quantity(returnsale['qty_done'], product.uom_id)
 
                 for returnsale in return_productions:
-                    uom_id = self.env['uom.uom'].search([('id', '=', returnsale['product_uom_id'])])
+                    uom_id = self.env['uom.uom'].search([('id', '=', returnsale['product_uom_id'][0])])
                     return_production += uom_id._compute_quantity(returnsale['qty_done'], product.uom_id)
 
                 for returnsale in return_production_list:
-                    uom_id = self.env['uom.uom'].search([('id', '=', returnsale['product_uom_id'])])
+                    uom_id = self.env['uom.uom'].search([('id', '=', returnsale['product_uom_id'][0])])
                     return_production += uom_id._compute_quantity(returnsale['qty_done'], product.uom_id)
 
                 for in_adjus in in_adjusts:
-                    uom_id = self.env['uom.uom'].search([('id', '=', in_adjus['product_uom_id'])])
+                    uom_id = self.env['uom.uom'].search([('id', '=', in_adjus['product_uom_id'][0])])
                     in_adjust += uom_id._compute_quantity(in_adjus['qty_done'], product.uom_id)
 
                 for in_adjus in out_adjusts:
-                    uom_id = self.env['uom.uom'].search([('id', '=', in_adjus['product_uom_id'])])
+                    uom_id = self.env['uom.uom'].search([('id', '=', in_adjus['product_uom_id'][0])])
                     out_adjust += uom_id._compute_quantity(in_adjus['qty_done'], product.uom_id)
 
                 for vendor in vendor_return_list:
-                    uom_id = self.env['uom.uom'].search([('id', '=', vendor['product_uom_id'])])
+                    uom_id = self.env['uom.uom'].search([('id', '=', vendor['product_uom_id'][0])])
                     vendor_return += uom_id._compute_quantity(vendor['qty_done'], product.uom_id)
 
                 endbl = bl + in_qty - out - production + return_sale + return_production  + in_adjust - out_adjust - vendor_return
