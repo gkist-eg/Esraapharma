@@ -134,6 +134,8 @@ class MrpUpdates(models.Model):
                             move.product_uom_qty = move.quantity_done
                             picking.do_unreserve()
                             picking.action_assign()
+                    if not move.quantity_done:
+                        moves |= move
                 if moves:
                     new_picking = picking.copy({'move_lines':[]})
                     moves.picking_id = new_picking
