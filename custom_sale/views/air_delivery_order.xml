@@ -243,6 +243,10 @@
                                                         style="border: 1px solid black;font-size: 12.5px">
                                                         Distributor Discount<span t-field="o.dist_discount"/>%
                                                     </th>
+                                                    <th class="text-center"
+                                                        style="border: 1px solid black;font-size: 12.5px">
+                                                         Cash Discount<span t-field="o.cash_discount"/>%
+                                                    </th>
 
                                                     <th class="text-center"
                                                         style="border: 1px solid black;font-size: 12.5px">
@@ -275,6 +279,11 @@
                                                     <td class="text-center"
                                                         style="border: 1px solid black;font-size: 13px">
                                                         <span t-esc="o.dist_discount_totals"
+                                                              t-options='{"widget": "float", "precision": 2}'/>
+                                                    </td>
+                                                    <td class="text-center"
+                                                        style="border: 1px solid black;font-size: 13px">
+                                                        <span t-esc="o.compute_cash()"
                                                               t-options='{"widget": "float", "precision": 2}'/>
                                                     </td>
                                                     <td class="text-center"

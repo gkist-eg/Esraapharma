@@ -207,7 +207,7 @@ class Move(models.Model):
                         i.update({
                             # 'move_id': record.id,
                             'product_id': i.product_id.id,
-                            # 'pricelist': pricelist.id,
+                            'pricelist': pricelist.id,
                             'price_unit': i.price_unit,
                             'name': i.name,
                             'discount': i.discount,

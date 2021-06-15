@@ -17,6 +17,19 @@ class Partner(models.Model):
 
     limit_credit = fields.Float(string='Limit Of Credit', store=True)
 
+class MOvex(models.Model):
+    _inherit = 'account.move'
+
+    def compute_cash(self):
+        cash = 0
+
+        order = self.env['sale.order'].search([('name', '=', self.invoice_origin)])
+        if order:
+            for x in order:
+                cash = x.cash_discount_sale
+
+        return cash
+
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'

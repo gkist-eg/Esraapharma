@@ -598,7 +598,7 @@
                            attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
                     <field name="cash_amount" optional="show"
                            attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
-<field name="pre_amount" optional="show"
+                    <field name="pre_amount" optional="show"
                            attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
 
                     <!-- Add your fields or attributes here -->
