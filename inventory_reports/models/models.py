@@ -160,12 +160,12 @@ class ProductTemplate(models.TransientModel):
                     [('location_dest_id', '=', self.location_id.id),
                      ('product_id', '=', self.product_id.id), ('state', '=', 'done'),
                      ('date', '<', date_from)]):
-                qty += resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id)
+                qty += round(resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id), 5)
             for resource in self.env['stock.move.line'].search(
                     [('location_id', '=', self.location_id.id), ('state', '=', 'done'),
                      ('product_id', '=', self.product_id.id),
                      ('date', '<', date_from)]):
-                qty -= resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id)
+                qty -= round(resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id), 5)
 
             self.qty = qty
             lb = self.qty
@@ -180,7 +180,7 @@ class ProductTemplate(models.TransientModel):
                      ('date', '<', date_to)], order="date"):
                 if resource.state == 'done' and resource.location_dest_id == self.location_id:
                     if resource.picking_id:
-                        lb += resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id)
+                        lb += round(resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id), 5)
                         if resource.picking_id.location:
                             location = resource.picking_id.location
                         else:
@@ -196,8 +196,7 @@ class ProductTemplate(models.TransientModel):
                             line_ids.append((0, 0, {
                                 'picking_id': resource.picking_id.id,
                                 'name': resource.picking_id.name,
-                                'in_qty': resource.product_uom_id._compute_quantity(resource.qty_done,
-                                                                                    resource.product_id.uom_id),
+                                'in_qty': round(resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id), 5),
                                 'out_qty': 0,
                                 'balance': lb,
                                 'dest_location': location.id,
@@ -238,8 +237,7 @@ class ProductTemplate(models.TransientModel):
                             line_ids.append((0, 0, {
                                 # 'picking_id': resource.picking_id.id,
                                 'name': name,
-                                'in_qty': resource.product_uom_id._compute_quantity(resource.qty_done,
-                                                                                    resource.product_id.uom_id),
+                                'in_qty': round (resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id),5),
                                 'out_qty': 0,
                                 'balance': lb,
                                 'dest_location': resource.location_id.id,
@@ -379,8 +377,7 @@ class ProductTemplate(models.TransientModel):
                             line_ids.append((0, 0, {
                                 'picking_id': resource.picking_id.id,
                                 'name': resource.picking_id.name,
-                                'in_qty': resource.product_uom_id._compute_quantity(resource.qty_done,
-                                                                                    resource.product_id.uom_id),
+                                'in_qty': round (resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id),5),
                                 'out_qty': 0,
                                 'balance': lb,
                                 'dest_location': location.id,
@@ -421,8 +418,7 @@ class ProductTemplate(models.TransientModel):
                             line_ids.append((0, 0, {
                                 # 'picking_id': resource.picking_id.id,
                                 'name': name,
-                                'in_qty': resource.product_uom_id._compute_quantity(resource.qty_done,
-                                                                                    resource.product_id.uom_id),
+                                'in_qty': round(resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id), 5),
                                 'out_qty': 0,
                                 'balance': lb,
                                 'dest_location': resource.location_id.id,
