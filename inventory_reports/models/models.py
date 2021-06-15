@@ -350,6 +350,22 @@ class ProductTemplate(models.TransientModel):
 
         if self.lot_id:
             for resource in self.env['stock.move.line'].search(
+                    [('location_dest_id', '=', self.location_id.id), ('lot_id', 'in', self.lot_id.ids),
+                     ('product_id', '=', self.product_id.id), ('state', '=', 'done'),
+                     ('date', '<', date_from)]):
+                qty += round(resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id), 5)
+            for resource in self.env['stock.move.line'].search(
+                    [('location_id', '=', self.location_id.id), ('state', '=', 'done'),
+                     ('product_id', '=', self.product_id.id), ('lot_id', 'in', self.lot_id.ids),
+                     ('date', '<', date_from)]):
+                qty -= round(resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id), 5)
+
+            self.qty = qty
+            lb = self.qty
+            if is_excel:
+                worksheet.write(2, 5, 'Start Balance', cell_text_format_n)
+                worksheet.write(2, 6, lb, cell_text_format_n)
+            for resource in self.env['stock.move.line'].search(
                     ['|', ('location_id', '=', self.location_id.id), ('location_dest_id', '=', self.location_id.id),
                      ('state', '=', 'done'), ('lot_id', 'in', self.lot_id.ids),
                      ('product_id', '=', self.product_id.id),
