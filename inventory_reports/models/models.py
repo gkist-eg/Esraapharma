@@ -334,18 +334,17 @@ class ProductTemplate(models.TransientModel):
 
                             }))
                         else:
-                            worksheet.write(row, 0, namename, cell_text_format_n)
+                            worksheet.write(row, 0, name, cell_text_format_n)
                             worksheet.write(row, 1, resource.date, fmt)
                             worksheet.write(row, 2, resource.lot_id.name, cell_text_format_n)
                             worksheet.write(row, 3, resource.lot_id.ref, cell_text_format_n)
-                            worksheet.write(row, 4, 0,
-                                            cell_text_format_n)
+                            worksheet.write(row, 4, 0, cell_text_format_n)
                             worksheet.write(row, 5, round(resource.product_uom_id._compute_quantity(resource.qty_done,
                                                                                                     resource.product_id.uom_id),
                                                           5),
                                             cell_text_format_n)
                             worksheet.write(row, 6, lb, cell_text_format_n)
-                            worksheet.write(row, 7, resource.location_id.display_name, cell_text_format_n)
+                            worksheet.write(row, 7, resource.location_dest_id.display_name, cell_text_format_n)
                             worksheet.write(row, 8, resource.picking_id.picking_type_id.name, cell_text_format_n)
                             row += 1
 
@@ -524,7 +523,7 @@ class ProductTemplate(models.TransientModel):
                                                           5),
                                             cell_text_format_n)
                             worksheet.write(row, 6, lb, cell_text_format_n)
-                            worksheet.write(row, 7, resource.location_id.display_name, cell_text_format_n)
+                            worksheet.write(row, 7, resource.location_dest_id.display_name, cell_text_format_n)
                             worksheet.write(row, 8, resource.picking_id.picking_type_id.name,
                                             cell_text_format_n)
                             row += 1
