@@ -3,7 +3,6 @@ from odoo import api, models, _
 from odoo import fields
 
 
-
 class ResUser(models.Model):
     _inherit = 'res.users'
 
@@ -17,6 +16,7 @@ class Partner(models.Model):
 
     limit_credit = fields.Float(string='Limit Of Credit', store=True)
 
+
 class MOvex(models.Model):
     _inherit = 'account.move'
 
@@ -29,6 +29,16 @@ class MOvex(models.Model):
                 cash = x.cash_discount_sale
 
         return cash
+
+    def compute_dist(self):
+        dist = 0
+
+        order = self.env['sale.order'].search([('name', '=', self.invoice_origin)])
+        if order:
+            for x in order:
+                dist = x.dis_discount_sale
+
+        return dist
 
 
 class SaleOrder(models.Model):

@@ -241,11 +241,11 @@
                                                     </th>
                                                     <th class="text-center"
                                                         style="border: 1px solid black;font-size: 12.5px">
-                                                        Distributor Discount<span t-field="o.dist_discount"/>%
+                                                        Distributor Discount<span  t-esc="o.compute_dist()"/>%
                                                     </th>
                                                     <th class="text-center"
                                                         style="border: 1px solid black;font-size: 12.5px">
-                                                         Cash Discount<span t-field="o.cash_discount"/>%
+                                                         Cash Discount<span t-esc="o.compute_cash()"/>%
                                                     </th>
 
                                                     <th class="text-center"
@@ -283,7 +283,7 @@
                                                     </td>
                                                     <td class="text-center"
                                                         style="border: 1px solid black;font-size: 13px">
-                                                        <span t-esc="o.compute_cash()"
+                                                        <span t-esc="o.cash_discount_totals"
                                                               t-options='{"widget": "float", "precision": 2}'/>
                                                     </td>
                                                     <td class="text-center"
