@@ -17,9 +17,13 @@
                                 <field name="date_from" attrs="{'invisible': [('mapping_report_file', '!=', False)]}"/>
                                 <field name="date_to" attrs="{'invisible': [('mapping_report_file', '!=', False)]}"/>
                         </group>
-                     <field name="file_name" invisible="1"  attrs="{'invisible': [('mapping_report_file', '=', False)]}"/>
-                            <field name="mapping_report_file" readonly="1" filename="file_name"  attrs="{'invisible': [('mapping_report_file', '=', False)]}"/>
+
                 </group>
+            <group>
+                        <field name="file_name" invisible="1"  attrs="{'invisible': [('mapping_report_file', '=', False)]}"/>
+                            <field name="mapping_report_file" readonly="1" filename="file_name"  attrs="{'invisible': [('mapping_report_file', '=', False)]}"/>
+                    </group>
+
                 <footer>
                         <button name="print_pdf_stock"
                                 string="Print PDF"

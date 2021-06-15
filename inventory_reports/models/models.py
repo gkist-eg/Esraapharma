@@ -352,12 +352,12 @@ class ProductTemplate(models.TransientModel):
             for resource in self.env['stock.move.line'].search(
                     [('location_dest_id', '=', self.location_id.id), ('lot_id', 'in', self.lot_id.ids),
                      ('product_id', '=', self.product_id.id), ('state', '=', 'done'),
-                     ('date', '<', date_from)]):
+                     ('date', '<=', date_from)]):
                 qty += round(resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id), 5)
             for resource in self.env['stock.move.line'].search(
                     [('location_id', '=', self.location_id.id), ('state', '=', 'done'),
                      ('product_id', '=', self.product_id.id), ('lot_id', 'in', self.lot_id.ids),
-                     ('date', '<', date_from)]):
+                     ('date', '<=', date_from)]):
                 qty -= round(resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id), 5)
 
             self.qty = qty
