@@ -196,7 +196,7 @@ class ItemTransfer(models.Model):
     @api.depends('state')
     def _compute_can_done(self):
         x = self.env['stock.picking'].search([
-            ('origin', 'in', ((self.name + '-01'), (self.name), (self.name + '-02'))), ('state', '=', 'done'),
+            ('origin', 'in', ((self.name + '-01'), self.name, (self.name + '-02'))), ('state', '=', 'done'),
             ('location_id', '=', self.location_id.id)
         ])
         if x:
@@ -318,7 +318,7 @@ class ItemTransfer(models.Model):
 
                          }
                          ))
-                if line.product_qty > line.qty_confirm:
+                elif line.product_qty > line.qty_confirm > 0:
                     order_lines.append(
                         (0, 0,
                          {
@@ -345,7 +345,20 @@ class ItemTransfer(models.Model):
 
                          }
                          ))
+                else :
+                    order_lines_dif.append(
+                        (0, 0,
+                         {
+                             'name': line.product_id.name,
+                             'product_id': line.product_id.id,
+                             'product_uom': line.product_id.uom_id.id,
+                             'location_id': self.location_id.id,
+                             'location_dest_id': self.location_dest_id.id,
+                             'product_uom_qty': line.product_qty - line.qty_confirm,
+                             'origin': self.name,
 
+                         }
+                         ))
             if not record.warehouse_dest_id.sale_store:
                 if order_lines:
                     copy_record.create({
