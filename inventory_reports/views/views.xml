@@ -10,20 +10,27 @@
                 </p>
                 <group>
                         <group>
-                                <field name="product_id"/>
-                                <field name="location_id"/>
-                                <field name="lot_id" widget="many2many_tags"/>
+                                <field name="product_id" attrs="{'invisible': [('mapping_report_file', '!=', False)]}"/>
+                                <field name="location_id" attrs="{'invisible': [('mapping_report_file', '!=', False)]}"/>
+                                <field name="lot_id" widget="many2many_tags" attrs="{'invisible': [('mapping_report_file', '!=', False)]}"/>
                         </group> <group>
-                                <field name="date_from"/>
-                                <field name="date_to"/>
+                                <field name="date_from" attrs="{'invisible': [('mapping_report_file', '!=', False)]}"/>
+                                <field name="date_to" attrs="{'invisible': [('mapping_report_file', '!=', False)]}"/>
                         </group>
+                     <field name="file_name" invisible="1"  attrs="{'invisible': [('mapping_report_file', '=', False)]}"/>
+                            <field name="mapping_report_file" readonly="1" filename="file_name"  attrs="{'invisible': [('mapping_report_file', '=', False)]}"/>
                 </group>
                 <footer>
                         <button name="print_pdf_stock"
-                                string="Print "
+                                string="Print PDF"
                                 type="object"
                                 class="btn-primary"
-                                context="{'location_id': location_id}"/>
+                                context="{'is_excel': False}" attrs="{'invisible': [('mapping_report_file', '!=', False)]}"/>
+                    <button name="print_pdf_stock"
+                                string="Print Excel"
+                                type="object"
+                                class="btn-primary"
+                                context="{'is_excel': True}" attrs="{'invisible': [('mapping_report_file', '!=', False)]}"/>
                         <button string="Cancel" class="btn-default" special="cancel" />
                 </footer>
         </form>
@@ -67,6 +74,7 @@
                         <button name="action_print_report"
                                 string="Print "
                                 type="object"
+
                                 class="btn-primary" attrs="{'invisible': [('mapping_report_file', '!=', False)]}" />
                         <button string="Cancel" class="btn-default" special="cancel" />
                     </footer>
