@@ -171,7 +171,7 @@ class ProductTemplate(models.TransientModel):
             lb = self.qty
             if is_excel:
                 worksheet.write(2, 5, 'Start Balance', cell_text_format_n)
-                worksheet.write(2, 6, lb, cell_text_format_n)
+                worksheet.write(2, 6, round(lb, 5), cell_text_format_n)
             for resource in self.env['stock.move.line'].search(
                     ['|', ('location_id', '=', self.location_id.id), ('location_dest_id', '=', self.location_id.id),
                      ('state', '=', 'done'),
@@ -218,7 +218,7 @@ class ProductTemplate(models.TransientModel):
                                                           5),
                                             cell_text_format_n)
                             worksheet.write(row, 5, 0, cell_text_format_n)
-                            worksheet.write(row, 6, lb, cell_text_format_n)
+                            worksheet.write(row, 6, round(lb, 5), cell_text_format_n)
                             if resource.picking_id.partner_id:
                                 worksheet.write(row, 7, resource.picking_id.partner_id.name, cell_text_format_n)
                             else:
@@ -256,7 +256,7 @@ class ProductTemplate(models.TransientModel):
                                                           5),
                                             cell_text_format_n)
                             worksheet.write(row, 5, 0, cell_text_format_n)
-                            worksheet.write(row, 6, lb, cell_text_format_n)
+                            worksheet.write(row, 6, round(lb, 5), cell_text_format_n)
                             worksheet.write(row, 7, resource.location_id.display_name, cell_text_format_n)
                             worksheet.write(row, 8, resource.picking_id.picking_type_id.name, cell_text_format_n)
                             row += 1
@@ -303,7 +303,7 @@ class ProductTemplate(models.TransientModel):
                                                                                                     resource.product_id.uom_id),
                                                           5),
                                             cell_text_format_n)
-                            worksheet.write(row, 6, lb, cell_text_format_n)
+                            worksheet.write(row, 6, round(lb, 5), cell_text_format_n)
                             if resource.picking_id.partner_id:
                                 worksheet.write(row, 7, resource.picking_id.partner_id.name, cell_text_format_n)
                             else:
@@ -343,7 +343,7 @@ class ProductTemplate(models.TransientModel):
                                                                                                     resource.product_id.uom_id),
                                                           5),
                                             cell_text_format_n)
-                            worksheet.write(row, 6, lb, cell_text_format_n)
+                            worksheet.write(row, 6, round(lb, 5), cell_text_format_n)
                             worksheet.write(row, 7, resource.location_dest_id.display_name, cell_text_format_n)
                             worksheet.write(row, 8, resource.picking_id.picking_type_id.name, cell_text_format_n)
                             row += 1
@@ -361,10 +361,10 @@ class ProductTemplate(models.TransientModel):
                 qty -= round(resource.product_uom_id._compute_quantity(resource.qty_done, resource.product_id.uom_id), 5)
 
             self.qty = qty
-            lb = self.qty
+            lb = round(self.qty, 5)
             if is_excel:
                 worksheet.write(2, 5, 'Start Balance', cell_text_format_n)
-                worksheet.write(2, 6, lb, cell_text_format_n)
+                worksheet.write(2, 6, round(lb, 5), cell_text_format_n)
             for resource in self.env['stock.move.line'].search(
                     ['|', ('location_id', '=', self.location_id.id), ('location_dest_id', '=', self.location_id.id),
                      ('state', '=', 'done'), ('lot_id', 'in', self.lot_id.ids),
@@ -414,7 +414,7 @@ class ProductTemplate(models.TransientModel):
                                                           5),
                                             cell_text_format_n)
                             worksheet.write(row, 5, 0, cell_text_format_n)
-                            worksheet.write(row, 6, lb, cell_text_format_n)
+                            worksheet.write(row, 6, round(lb, 5), cell_text_format_n)
                             if resource.picking_id.partner_id:
                                 worksheet.write(row, 7, resource.picking_id.partner_id.name, cell_text_format_n)
                             else:
@@ -452,7 +452,7 @@ class ProductTemplate(models.TransientModel):
                                                           5),
                                             cell_text_format_n)
                             worksheet.write(row, 5, 0, cell_text_format_n)
-                            worksheet.write(row, 6, lb, cell_text_format_n)
+                            worksheet.write(row, 6, round(lb, 5), cell_text_format_n)
                             worksheet.write(row, 7, resource.location_id.display_name, cell_text_format_n)
                             worksheet.write(row, 8, resource.picking_id.picking_type_id.name, cell_text_format_n)
                             row += 1
@@ -499,7 +499,7 @@ class ProductTemplate(models.TransientModel):
                                                                                                     resource.product_id.uom_id),
                                                           5),
                                             cell_text_format_n)
-                            worksheet.write(row, 6, lb, cell_text_format_n)
+                            worksheet.write(row, 6, round(lb, 5), cell_text_format_n)
                             if resource.picking_id.partner_id:
                                 worksheet.write(row, 7, resource.picking_id.partner_id.name, cell_text_format_n)
                             else:
@@ -538,7 +538,7 @@ class ProductTemplate(models.TransientModel):
                                                                                                     resource.product_id.uom_id),
                                                           5),
                                             cell_text_format_n)
-                            worksheet.write(row, 6, lb, cell_text_format_n)
+                            worksheet.write(row, 6, round(lb, 5), cell_text_format_n)
                             worksheet.write(row, 7, resource.location_dest_id.display_name, cell_text_format_n)
                             worksheet.write(row, 8, resource.picking_id.picking_type_id.name,
                                             cell_text_format_n)
@@ -563,7 +563,7 @@ class ProductTemplate(models.TransientModel):
             }
         else:
             worksheet.write(row, 5, 'End Balance', cell_text_format_n)
-            worksheet.write(row, 6, lb, cell_text_format_n)
+            worksheet.write(row, 6, round(lb, 5), cell_text_format_n)
 
             workbook.close()
             file_download = base64.b64encode(fp.getvalue())
