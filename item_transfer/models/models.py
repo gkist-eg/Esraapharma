@@ -194,19 +194,12 @@ class ItemTransfer(models.Model):
     can_reject = fields.Boolean(string='Can reject', compute='_compute_can_reject')
 
     def _compute_can_done(self):
-        x = self.env['stock.picking'].search([
+        pickings = self.env['stock.picking'].search([
             ('origin', 'in', ((self.name + '-01'), self.name, (self.name + '-02'))), ('state', '=', 'done'),
             ('location_id', '=', self.location_id.id)
         ])
-        if x:
-            for line in x:
-                if line not in self.picking_done_ids:
-                    if self.location_dest_id.id in self.env.user.stock_location_ids.ids:
-                        self.can_done = True
-                    else:
-                        self.can_done = False
-                else:
-                    self.can_done = False
+        if pickings.filtered( lambda x: x.id not in self.picking_done_ids.ids) and self.location_dest_id.id in self.env.user.stock_location_ids.ids:
+            self.can_done = True
         else:
             self.can_done = False
 
