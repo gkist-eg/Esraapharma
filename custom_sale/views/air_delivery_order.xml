@@ -335,18 +335,14 @@
                                                 </tr>
 
                                             </table>
-
-
                                         </div>
 
                                         <br/>
                                         <br/>
-                                        <div class="text-center">
-                                            <span class="text-center" t-esc="o.narration"/>
-                                        </div>
+
                                         <div style="outline: 2px solid black;">
                                             <p style="text-align: end;padding: 5px;">
-                                                ستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما
+                                                يستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما
                                                 <br/>
                                                 الشركة تخضع لنظام الدفعات المقدمة و لا يجوز الخصم عليها من المنبع
                                                 <br/>
@@ -368,12 +364,8 @@
                                             <thead style="font-size:20px">
                                                 <tr class="no-border">
                                                     <th class="text-center">توقيع</th>
-
                                                 </tr>
                                             </thead>
-                                            <tbody style="font-size:11px">
-
-                                            </tbody>
                                         </table>
                                     </div>
                                 </t>
@@ -626,7 +618,7 @@
                                             </div>
                                             <div style="outline: 2px solid black;">
                                                 <p style="text-align: end;padding: 5px;">
-                                                    ستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما
+                                                    يستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما
                                                     <br/>
                                                     الشركة تخضع لنظام الدفعات المقدمة و لا يجوز الخصم عليها من المنبع
                                                     <br/>
@@ -905,9 +897,7 @@
 
                                             <br/>
                                             <br/>
-                                            <div class="text-center">
-                                                <span class="text-center" t-esc="o.narration"/>
-                                            </div>
+
                                             <div style="outline: 2px solid black;">
                                                 <p style="text-align: end;padding: 5px;">
                                                     يستخرج الشيك باسم الاسراء فارما سيوتيكال اوبتيما

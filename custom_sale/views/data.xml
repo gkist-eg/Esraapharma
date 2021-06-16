@@ -17,6 +17,12 @@
             <field name="prefix">CV</field>
             <field name="padding">8</field>
       </record>
+      <record id="sequence_Bill_seq" model="ir.sequence">
+            <field name="name">Vendor Bill</field>
+            <field name="code">in_invoice</field>
+            <field name="prefix">BILL</field>
+            <field name="padding">8</field>
+      </record>
       <record id="sequence_distributor_seq" model="ir.sequence">
             <field name="name">Customer Invoice Distributor</field>
             <field name="code">customer_invoice_distributor</field>

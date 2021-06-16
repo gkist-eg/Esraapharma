@@ -708,6 +708,9 @@ class Move(models.Model):
                     invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
                 elif self.move_type != 'entry' and invoice.move_type == 'in_refund':
                     invoice.name = self.env['ir.sequence'].next_by_code('refund_bill')
+                elif self.move_type != 'entry' and invoice.move_type == 'in_invoice':
+                    invoice.name = self.env['ir.sequence'].next_by_code('in_invoice')
+
                 elif self.move_type == 'entry':
 
                     def journal_key(move):
