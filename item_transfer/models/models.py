@@ -201,8 +201,8 @@ class ItemTransfer(models.Model):
         ])
         if x:
             for line in x:
-                if line not in self.picking_done_ids:
-                    if self.location_dest_id in self.env.user.stock_location_ids:
+                if line.id not in self.picking_done_ids.ids:
+                    if self.location_dest_id.id in self.env.user.stock_location_ids.ids:
                         self.can_done = True
                     else:
                         self.can_done = False
