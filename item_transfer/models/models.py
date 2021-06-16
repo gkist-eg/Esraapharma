@@ -200,7 +200,6 @@ class ItemTransfer(models.Model):
             ('location_id', '=', self.location_id.id)
         ])
         if x:
-            raise UserError(_(x))
             for line in x:
                 if line.id not in self.picking_done_ids.ids:
                     if self.location_dest_id.id in self.env.user.stock_location_ids.ids:
