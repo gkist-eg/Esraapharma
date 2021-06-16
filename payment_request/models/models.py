@@ -149,7 +149,7 @@ class PaymentRequest(models.Model):
             self.total_amount += line.price_total
 
     def action_view_picking(self):
-        action = self.env.ref('account.action_invoice_tree2')
+        action = self.env.ref('account.action_move_in_invoice_type')
         result = action.read()[0]
 
         # override the context to get rid of the default filtering on picking type
@@ -160,7 +160,7 @@ class PaymentRequest(models.Model):
         if len(bills) > 1:
             result['domain'] = "[('id','in',[" + ','.join(map(str, bills)) + "])]"
         elif len(bills) == 1:
-            res = self.env.ref('account.invoice_supplier_form', False)
+            res = self.env.ref('account.view_move_form', False)
             result['views'] = [(res and res.id or False, 'form')]
             result['res_id'] = bills and bills[0] or False
         return result
