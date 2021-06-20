@@ -2,7 +2,7 @@
 
 
 {
-    'name': 'Purchase Requset',
+    'name': 'Purchase Request',
     'version': '1.0',
     'category': 'Accounting/Accounting',
     'depends': ['base', "purchase", "hr", "account", 'purchase_stock', ],
