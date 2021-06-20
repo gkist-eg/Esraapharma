@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="product_quantity_report_template">
+            <t t-call="web.html_container">
+                <t t-call="web.internal_layout">
+                    <t t-foreach="docs" t-as="o">
+                        <h4 class="text-center" style="font-weight: bold;">
+                            Product Quantity Report
+                        </h4>
+                        <div>
+                            <!--                                    <span>Warehouse :</span>-->
+                            <!--                                    <span t-esc="o.stock_warehouse.display_name"/>-->
+                            <div class="pull-right">
+                                <h4>
+                                    <span>Date From :</span>
+                                    <span t-esc="o.start_date"/>
+                                </h4>
+                                <h4>
+                                    <span>Date To :</span>
+                                    <span t-esc="o.end_date"/>
+                                </h4>
+                            </div>
+                            <div>
+                                <h4>
+                                    <span>Location :</span>
+                                    <span t-esc="o.stock_location.display_name"/>
+                                </h4>
+                            </div>
+                        </div>
+                        <table border="1" class="table table_bordered">
+                            <thead>
+                                <thead2>
+                                    <th style="page-break-inside: avoid;">ID</th>
+                                    <th style="page-break-inside: avoid;">Product
+                                    </th>
+                                    <th style="page-break-inside: avoid;">Start
+                                        Balance
+                                    </th>
+                                    <th style="page-break-inside: avoid;">InCome
+                                    </th>
+                                    <th style="page-break-inside: avoid;">OutCome
+                                    </th>
+                                    <th style="page-break-inside: avoid;">Current
+                                        Balance
+                                    </th>
+                                </thead2>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.line_ids" t-as="stock_move">
+                                    <tr style="page-break-inside: avoid;">
+                                        <td style="page-break-inside: avoid;">
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.product_id.default_code"/>
+                                        </td>
+                                        <td style="page-break-inside:avoid;">
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.product_id.name"/>
+                                        </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.start_balance"/>
+                                        </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.income_quantity"/>
+                                        </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.outcome_quantity"/>
+                                        </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.end_balance"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr style="font-weight: bold;">
+                                    <td style="page-break-inside: avoid;">
+                                        <t style="page-break-inside: avoid;">Total</t>
+                                    </td>
+                                    <td>
+                                        <t style="page-break-inside: avoid;"/>
+                                    </td>
+                                    <td style="page-break-inside: avoid;">
+                                        <t t-esc="o.total_start"/>
+                                    </td>
+                                    <td style="page-break-inside: avoid;">
+                                        <t t-esc="o.total_in"/>
+                                    </td>
+                                    <td style="page-break-inside: avoid;">
+                                        <t t-esc="o.total_out"/>
+                                    </td>
+                                    <td style="page-break-inside: avoid;">
+                                        <t t-esc="o.total_end"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

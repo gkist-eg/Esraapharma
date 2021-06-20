@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Wizard form view -->
+    <record model="ir.ui.view" id="wizard_product_quantity_form">
+        <field name="name">Product Quantity Wizard</field>
+        <field name="model">product.quantity.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Product Quantity Wizard">
+                <group>
+                    <group>
+                        <!--                        <field name="stock_warehouse"/>-->
+                        <field name="stock_location"/>
+                    </group>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="get_stock_quantity" string="Generate Report" type="object"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="launch_product_quantity_wizard" model="ir.actions.act_window">
+        <field name="name">Product Quantity Report</field>
+        <field name="res_model">product.quantity.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem name="Product Quantity Report" id="product_quantity_wizard_report" parent="stock.menu_warehouse_report"
+              action="launch_product_quantity_wizard"/>
+</odoo>

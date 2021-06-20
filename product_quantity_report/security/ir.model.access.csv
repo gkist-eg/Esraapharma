@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_quantity_report,access_product_quantity_report,model_product_quantity_wizard,base.group_user,1,1,1,1
+access_product_quantity_report_lines,access_product_quantity_report_lines,model_product_quantity_wizard_lines,base.group_user,1,1,1,1

@@ -1,0 +1,11 @@
+<odoo>
+    <report
+            id="product_quantity_report"
+            model="product.quantity.wizard"
+            string="Product Quantity"
+            menu="False"
+            report_type="qweb-pdf"
+            name="product_quantity_report.product_quantity_report_template"
+            file="product_quantity_report.product_quantity_report_template"
+    />
+</odoo>
