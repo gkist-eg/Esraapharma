@@ -7,5 +7,25 @@
             <field name="prefix">RFQ</field>
             <field name="padding">5</field>
         </record>
+            <record id="filter_user_group_purcahse_user" model="ir.rule">
+            <field name="name">Filter purchase User State</field>
+            <field name="model_id" search="[('model','=','purchase.requests')]" model="ir.model"/>
+            <field name="groups" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+            <field name="domain_force">[('state','in',('request_approved','fully_quotationed'))]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="filter_user_group_purcahse_manager" model="ir.rule">
+            <field name="name">Filter purchase manager State</field>
+            <field name="model_id" search="[('model','=','purchase.requests')]" model="ir.model"/>
+            <field name="groups" eval="[(4, ref('purchase.group_purchase_manager'))]"/>
+            <field name="domain_force">[('state','not in',('draft','to_be_approved'))]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
     </data>
 </odoo>
