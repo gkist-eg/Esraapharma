@@ -267,7 +267,7 @@ class ProductTemplate(models.TransientModel):
                         if resource.picking_id.location:
                             location = resource.picking_id.location
                         else:
-                            location = resource.location_id
+                            location = resource.location_dest_id
 
                         if resource.lot_id.ref:
                             batch = resource.lot_id.ref
