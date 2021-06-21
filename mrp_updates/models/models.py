@@ -65,8 +65,7 @@ class MrpUpdates(models.Model):
     def post_inventory(self):
         for production in self:
             if any(production.workorder_ids.filtered(lambda mo: mo.state not in ('done', 'cancel'))):
-                raise UserError (_('There is unfinished work orders please finish it first'))
-
+                raise UserError(_('There is unfinished work orders please finish it first'))
 
             production._post_inventory()
         return True
@@ -102,20 +101,23 @@ class MrpUpdates(models.Model):
                 finish_moves.move_line_ids.lot_id = order.lot_producing_id
             order._cal_price(moves_to_do)
 
-            moves_to_finish = order.move_finished_ids.filtered(lambda x: x.state not in ('done', 'cancel') and x.quantity_done >0.0)
+            moves_to_finish = order.move_finished_ids.filtered(
+                lambda x: x.state not in ('done', 'cancel') and x.quantity_done > 0.0)
 
             for move in moves_to_finish:
                 for line in move.move_line_ids:
                     if line.product_id.use_expiration_date and (
                             not line.lot_id.prod_date or not line.lot_id.expiration_date):
-                        raise UserError(_('Please assign Lot Production and expiration Date for lot %s')% (line.lot_id.display_name))
+                        raise UserError(_('Please assign Lot Production and expiration Date for lot %s') % (
+                            line.lot_id.display_name))
             moves_to_finish = moves_to_finish._action_done(cancel_backorder=cancel_backorder)
             order.action_assign()
             consume_move_lines = moves_to_do.mapped('move_line_ids')
             order.move_finished_ids.move_line_ids.consume_line_ids = [(6, 0, consume_move_lines.ids)]
             new_pickings = self.env['stock.picking']
-            for picking in self.env['stock.picking'].sudo().search([('origin', '=', self.name), ('state', '=', 'assigned'),
-                                                             ('location_id', '=', self.location_dest_id.id)]):
+            for picking in self.env['stock.picking'].sudo().search(
+                    [('origin', '=', self.name), ('state', '=', 'assigned'),
+                     ('location_id', '=', self.location_dest_id.id)]):
                 moves = self.env['stock.move']
                 for move in picking.move_lines:
                     if move.quantity_done > 0 and move.state not in ('done', 'cancel'):
@@ -137,7 +139,7 @@ class MrpUpdates(models.Model):
                     if not move.quantity_done:
                         moves |= move
                 if moves:
-                    new_picking = picking.copy({'move_lines':[]})
+                    new_picking = picking.copy({'move_lines': []})
                     moves.picking_id = new_picking
                     new_pickings |= new_picking
                     picking.do_unreserve()
@@ -147,7 +149,7 @@ class MrpUpdates(models.Model):
 
         return True
 
-    @api.depends('move_finished_ids.quantity_done','qty_producing')
+    @api.depends('move_finished_ids.quantity_done', 'qty_producing')
     def _compute_post_visible(self):
         for order in self:
             post = any(order.move_finished_ids.filtered(
@@ -461,7 +463,7 @@ class MrpUpdates(models.Model):
                 if production.bom_id and bulk and production.product_id.mfg and byproduct.product_id.mfg:
                     qty = round(
                         (bulk.product_qty - (
-                                    production.product_qty * production.product_id.mfg)) / byproduct.product_id.mfg)
+                                production.product_qty * production.product_id.mfg)) / byproduct.product_id.mfg)
                 bom = self.env['mrp.bom']._bom_find(product=byproduct.product_id,
                                                     company_id=byproduct.product_id.company_id.id,
                                                     bom_type='normal')
@@ -495,7 +497,7 @@ class MrpUpdates(models.Model):
             bulk = self.env['mrp.bom']
             if bulks:
                 bulk = bulks[0].child_bom_id
-            if production.bom_id and bulk and production.product_id.mfg:
+            if production.bom_id and bulk and production.product_id.mfg and production.bom_id.type != 'subcontract':
                 if round(production.product_qty * production.product_id.mfg) > round(bulk.product_qty):
                     production.product_qty = production.bom_id.product_qty
             if production.product_id in production.bom_id.byproduct_ids.mapped('product_id'):
@@ -509,7 +511,7 @@ class MrpUpdates(models.Model):
                 qty = byproduct.product_qty * (product_uom_factor / production.bom_id.product_qty)
                 if production.bom_id and bulk and production.product_id.mfg and byproduct.product_id.mfg:
                     qty = (bulk.product_qty - (
-                                production.product_qty * production.product_id.mfg)) / byproduct.product_id.mfg
+                            production.product_qty * production.product_id.mfg)) / byproduct.product_id.mfg
                 moves.append(production._get_move_finished_values(
                     byproduct.product_id.id, qty, byproduct.product_uom_id.id,
                     byproduct.operation_id.id, byproduct.id))
@@ -532,6 +534,7 @@ class MrpUpdates(models.Model):
             else:
                 self.bom_id = False
                 self.product_uom_id = self.product_id.uom_id.id
+
     def _get_quantity_to_backorder(self):
         self.ensure_one()
         return max(self.product_qty - self.qty_producing, 1)
