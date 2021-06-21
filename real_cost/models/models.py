@@ -244,13 +244,14 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     def _create_and_assign_production_lot(self):
-        """ Creates and assign new production lots for move lines."""
-        lot_vals = [{
-            'company_id': ml.move_id.company_id.id,
-            'name': ml.lot_name,
-            'product_id': ml.product_id.id,
-            'cost': ml.move_id._get_price_unit(),
-        } for ml in self]
-        lots = self.env['stock.production.lot'].create(lot_vals)
-        for ml, lot in zip(self, lots):
-            ml._assign_production_lot(lot)
+        if not self.lot_id:
+            """ Creates and assign new production lots for move lines."""
+            lot_vals = [{
+                'company_id': ml.move_id.company_id.id,
+                'name': ml.lot_name,
+                'product_id': ml.product_id.id,
+                'cost': ml.move_id._get_price_unit(),
+            } for ml in self]
+            lots = self.env['stock.production.lot'].create(lot_vals)
+            for ml, lot in zip(self, lots):
+                ml._assign_production_lot(lot)
