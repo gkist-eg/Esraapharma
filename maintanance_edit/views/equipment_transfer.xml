@@ -1,0 +1,77 @@
+<odoo>
+  <data>
+
+    <record model="ir.ui.view" id="equipment_transfer_form">
+      <field name="name">equipment.transfer</field>
+      <field name="model">equipment.transfer</field>
+      <field name="arch" type="xml">
+        <form>
+             <header>
+                           <field name="state" widget="statusbar"
+                           statusbar_visible="draft,send,receive"
+                           statusbar_colors='{"approved":"blue"}'/>
+                  <button name="button_send"
+                            string="Send"
+                            type="object"
+                            class="oe_highlight"
+                             attrs="{'invisible': [('state', '!=', 'draft')]}"
+                         />
+                 <button name="button_receive"
+                            string="Receive"
+                            type="object"
+                            class="oe_highlight"
+                             attrs="{'invisible': [('state', '!=', 'send')]}"
+                         />
+                </header>
+            <sheet>
+
+                <group>
+                    <group>
+                         <field name="equipment" attrs="{'readonly':[('state','=','send')]}"/>
+          <field name="from_user" attrs="{'readonly':[('state','=','send')]}"/>
+          <field name="to_user" attrs="{'readonly':[('state','=','send')]}"/>
+          <field name="date" attrs="{'readonly':[('state','=','send')]}"/>
+                    </group>
+                    <group>
+
+                       <field name="brand"/>
+                       <field name="model"/>
+                       <field name="serial_no"/>
+                       <field name="note"/>
+                    </group>
+
+                </group>
+            </sheet>
+
+
+        </form>
+      </field>
+    </record>
+
+      <record id="equipment_transfer_tree" model="ir.ui.view">
+        <field name="model">equipment.transfer</field>
+        <field name="arch" type="xml">
+            <tree string="Equipment Transfer">
+                        <field name="equipment"/>
+                        <field name="from_user"/>
+                        <field name="to_user"/>
+                        <field name="date"/>
+            </tree>
+        </field>
+    </record>
+
+
+ <record id="equipment_transfer_action" model="ir.actions.act_window">
+        <field name="name">Equipment Transfer</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">equipment.transfer</field>
+        <field name="view_mode">tree,form</field>
+
+    </record>
+
+
+    <menuitem name="Equipment Transfer" id="equipment_transfer_action_menu" parent="maintenance.menu_maintenance_configuration"
+              action="equipment_transfer_action"/>
+
+  </data>
+</odoo>
