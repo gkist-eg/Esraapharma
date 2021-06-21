@@ -28,7 +28,7 @@ class EditPurchaseOrder(models.Model):
     def _onchange_order_lines(self):
         if self.order_line:
             for j in self.order_line:
-                if j.product_id.man_for:
+                if j.product_id.man_for or j.product_id.bom_ids.type == 'subcontract':
                     self.mfo = True
 
     @api.onchange('mfo')

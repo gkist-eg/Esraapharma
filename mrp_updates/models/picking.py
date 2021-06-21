@@ -17,16 +17,16 @@ class PickingBatch(models.Model):
 
     batch = fields.Char('Batch Number', index=True, copy=True, tracking=True, readonly=True, states={'draft': [('readonly', False)]})
 
-    def keeper_approve(self):
-        for move in self.move_lines:
-            production = move.move_orig_ids.production_id.filtered(lambda p: p.state not in ('done', 'cancel'))[-1:]
-            if production:
-                for move_line in move.move_line_ids:
-                    if not move_line.lot_id:
-                        move_line._create_and_assign_production_lot()
-                        production.lot_producing_id = move_line.lot_id
-                        production.lot_producing_id.ref = move_line.suplier_lot
-        return super(PickingBatch, self).keeper_approve()
+    # def keeper_approve(self):
+    #     for move in self.move_lines:
+    #         production = move.move_orig_ids.production_id.filtered(lambda p: p.state not in ('done', 'cancel'))[-1:]
+    #         if production:
+    #             for move_line in move.move_line_ids:
+    #                 if not move_line.lot_id:
+    #                     move_line._create_and_assign_production_lot()
+    #                     production.lot_producing_id = move_line.lot_id
+    #                     production.lot_producing_id.ref = move_line.suplier_lot
+    #     return super(PickingBatch, self).keeper_approve()
 
 
 class StockMove(models.Model):

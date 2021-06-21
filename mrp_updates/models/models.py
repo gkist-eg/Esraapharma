@@ -76,6 +76,26 @@ class MrpUpdates(models.Model):
         return mos.filtered(lambda pro: all(
             line.lot_id for line in pro.move_raw_ids.filtered(lambda sm: sm.has_tracking != 'none').move_line_ids))
 
+    def _pre_button_mark_done(self):
+        productions_to_immediate = self._check_immediate()
+        if productions_to_immediate:
+            return productions_to_immediate._action_generate_immediate_wizard()
+
+        for production in self:
+            if float_is_zero(production.qty_producing, precision_rounding=production.product_uom_id.rounding):
+                raise UserError(_('The quantity to produce must be positive'))
+            if not any(production.move_raw_ids.mapped('quantity_done')):
+                raise UserError(_("You must indicate a non-zero amount consumed for at least one of your components"))
+
+        consumption_issues = self._get_consumption_issues()
+        if consumption_issues:
+            return self._action_generate_consumption_wizard(consumption_issues)
+
+        quantity_issues = self._get_quantity_produced_issues()
+        if quantity_issues:
+            return self._action_generate_backorder_wizard(quantity_issues)
+        return True
+
     def _post_inventory(self, cancel_backorder=False):
         for order in self:
             moves_not_to_do = order.move_raw_ids.filtered(lambda x: x.state == 'done')
