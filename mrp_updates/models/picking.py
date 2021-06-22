@@ -1,4 +1,4 @@
-from odoo import models, fields, _,api
+from odoo import models, fields, _, api
 from odoo.osv import expression
 from odoo.exceptions import UserError
 import json
@@ -13,12 +13,14 @@ import re
 class PickingBatch(models.Model):
     _inherit = 'stock.picking'
 
-    mrp_product_id = fields.Many2one('product.product',string='Product', readonly=True, states={'draft': [('readonly', False)]},index=True,copy=True)
+    mrp_product_id = fields.Many2one('product.product', string='Product', readonly=True,
+                                     states={'draft': [('readonly', False)]}, index=True, copy=True)
 
-    batch = fields.Char('Batch Number', index=True, copy=True, tracking=True, readonly=True, states={'draft': [('readonly', False)]})
+    batch = fields.Char('Batch Number', index=True, copy=True, tracking=True, readonly=True,
+                        states={'draft': [('readonly', False)]})
 
     def keeper_approve(self):
-        for move in self.move_lines:
+        for move in self.move_lines.filtered(lambda p: p.is_subcontract)[-1:]:
             production = move.move_orig_ids.production_id.filtered(lambda p: p.state not in ('done', 'cancel'))[-1:]
             if production:
                 for move_line in move.move_line_ids:
@@ -35,7 +37,7 @@ class StockMove(models.Model):
 
     def _set_quantity_done_prepare_vals(self, qty):
         res = []
-        if self.state not in ('done' ,'cancel'):
+        if self.state not in ('done', 'cancel'):
             for ml in self.move_lline_ids:
                 ml_qty = ml.product_uom_qty - ml.qty_done
                 if float_compare(ml_qty, 0, precision_rounding=ml.product_uom_id.rounding) <= 0:
@@ -61,7 +63,8 @@ class StockMove(models.Model):
                     break
 
             for ml in self.move_line_ids:
-                if float_is_zero(ml.product_uom_qty, precision_rounding=ml.product_uom_id.rounding) and float_is_zero(ml.qty_done, precision_rounding=ml.product_uom_id.rounding):
+                if float_is_zero(ml.product_uom_qty, precision_rounding=ml.product_uom_id.rounding) and float_is_zero(
+                        ml.qty_done, precision_rounding=ml.product_uom_id.rounding):
                     res.append((2, ml.id))
 
             if float_compare(qty, 0.0, precision_rounding=self.product_uom.rounding) > 0:
@@ -80,14 +83,15 @@ class StockMove(models.Model):
 
     def _update_quantity_done(self, mo):
         self.ensure_one()
-        if self.state not in ('done','cancel'):
-            new_qty = mo.product_uom_id._compute_quantity((mo.qty_producing - mo.qty_produced) * self.unit_factor, mo.product_uom_id, rounding_method='HALF-UP')
+        if self.state not in ('done', 'cancel'):
+            new_qty = mo.product_uom_id._compute_quantity((mo.qty_producing - mo.qty_produced) * self.unit_factor,
+                                                          mo.product_uom_id, rounding_method='HALF-UP')
             if not self.is_quantity_done_editable:
                 self.move_line_ids.filtered(lambda ml: ml.state not in ('done', 'cancel')).qty_done = 0
                 self.move_line_ids = self._set_quantity_done_prepare_vals(new_qty)
             else:
                 self.quantity_done = new_qty
-        return  True
+        return True
 
     def _assign_picking(self):
         """ Try to assign the moves to an existing picking that has not been
@@ -95,7 +99,8 @@ class StockMove(models.Model):
         type (moves should already have them identical). Otherwise, create a new
         picking to assign them to. """
         Picking = self.env['stock.picking']
-        grouped_moves = groupby(sorted(self, key=lambda m: [f.id for f in m._key_assign_picking()]), key=lambda m: [m._key_assign_picking()])
+        grouped_moves = groupby(sorted(self, key=lambda m: [f.id for f in m._key_assign_picking()]),
+                                key=lambda m: [m._key_assign_picking()])
         for group, moves in grouped_moves:
             moves = self.env['stock.move'].concat(*list(moves))
             new_picking = False
@@ -110,7 +115,7 @@ class StockMove(models.Model):
                     picking.batch = moves.created_production_id.batch
                     picking.mrp_product_id = moves.created_production_id.product_id
                 if any(picking.partner_id.id != m.partner_id.id or
-                        picking.origin != m.origin for m in moves):
+                       picking.origin != m.origin for m in moves):
                     # If a picking is found, we'll append `move` to its move list and thus its
                     # `partner_id` and `ref` field will refer to multiple records. In this
                     # case, we chose to  wipe them.
@@ -128,9 +133,7 @@ class StockMove(models.Model):
 
     def _key_assign_picking(self):
         self.ensure_one()
-        return self.group_id, self.location_id, self.location_dest_id, self.picking_type_id,self.created_production_id
-
-
+        return self.group_id, self.location_id, self.location_dest_id, self.picking_type_id, self.created_production_id
 
 
 class StockProduction(models.Model):
@@ -155,7 +158,6 @@ class StockProduction(models.Model):
                             asset.name))
         return res
 
-
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
         if not args:
@@ -164,9 +166,11 @@ class StockProduction(models.Model):
             positive_operators = ['=', 'ilike', '=ilike', 'like', '=like']
             product_ids = []
             if operator in positive_operators:
-                product_ids = list(self._search([('ref', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
+                product_ids = list(
+                    self._search([('ref', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
                 if not product_ids:
-                    product_ids = list(self._search([('ref', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
+                    product_ids = list(
+                        self._search([('ref', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
             if not product_ids and operator not in expression.NEGATIVE_TERM_OPERATORS:
                 # Do not merge the 2 next lines into one single search, SQL search performance would be abysmal
                 # on a database with thousands of matching products, due to the huge merge+unique needed for the
@@ -176,7 +180,8 @@ class StockProduction(models.Model):
                 if not limit or len(product_ids) < limit:
                     # we may underrun the limit because of dupes in the results, that's fine
                     limit2 = (limit - len(product_ids)) if limit else False
-                    product2_ids = self._search(args + [('name', operator, name), ('id', 'not in', product_ids)], limit=limit2, access_rights_uid=name_get_uid)
+                    product2_ids = self._search(args + [('name', operator, name), ('id', 'not in', product_ids)],
+                                                limit=limit2, access_rights_uid=name_get_uid)
                     product_ids.extend(product2_ids)
             elif not product_ids and operator in expression.NEGATIVE_TERM_OPERATORS:
                 domain = expression.OR([
@@ -189,7 +194,8 @@ class StockProduction(models.Model):
                 ptrn = re.compile('(\[(.*?)\])')
                 res = ptrn.search(name)
                 if res:
-                    product_ids = list(self._search([('ref', '=', res.group(2))] + args, limit=limit, access_rights_uid=name_get_uid))
+                    product_ids = list(
+                        self._search([('ref', '=', res.group(2))] + args, limit=limit, access_rights_uid=name_get_uid))
             # still no results, partner in context: search on supplier info as last hope to find something
         else:
             product_ids = self._search(args, limit=limit, access_rights_uid=name_get_uid)
