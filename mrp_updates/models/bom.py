@@ -92,6 +92,10 @@ class MrpBom(models.Model):
             bom = self._bom_find(product=current_line.product_id, picking_type=picking_type or self.picking_type_id, company_id=self.company_id.id, bom_type='phantom')
             if bom:
                 converted_line_quantity = current_line.product_uom_id._compute_quantity(bom.product_qty / bom.product_qty, bom.product_uom_id)
+                if self.type == 'subcontract':
+                    converted_line_quantity = current_line.product_uom_id._compute_quantity(
+                        line_quantity / bom.product_qty, bom.product_uom_id)
+
                 bom_lines = [(line, current_line.product_id, converted_line_quantity, current_line) for line in bom.bom_line_ids] + bom_lines
                 for bom_line in bom.bom_line_ids:
                     graph[current_line.product_id.product_tmpl_id.id].append(bom_line.product_id.product_tmpl_id.id)
