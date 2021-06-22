@@ -100,7 +100,7 @@
                                             <tr>
 
                                                 <td style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
+                                                    class="text-right">
                                                     <span t-field="o.to_user.employee_id.department_id"/>
 
                                                 </td>
