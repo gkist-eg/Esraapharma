@@ -9,7 +9,7 @@ from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 class StockLot(models.Model):
     _inherit = 'stock.production.lot'
 
-    cost = fields.Monetary('Unit Price', store=True, index=True)
+    cost = fields.Float('Unit Price', store=True, index=True, digits=(10, 5))
     currency_id = fields.Many2one('res.currency', compute='_compute_value')
 
     @api.depends('company_id')
@@ -19,6 +19,7 @@ class StockLot(models.Model):
 
 class StockInventory(models.Model):
     _inherit = 'stock.inventory'
+
     def _get_inventory_lines_values(self):
         """Return the values of the inventory lines to create for this inventory.
 
@@ -45,6 +46,7 @@ class StockInventory(models.Model):
         if self.exhausted:
             vals += self._get_exhausted_inventory_lines_vals({(l['product_id'], l['location_id']) for l in vals})
         return vals
+
 
 class StockInventoryLine(models.Model):
     _inherit = 'stock.inventory.line'
@@ -160,7 +162,6 @@ class StockQuant(models.Model):
                 quant.value = quant.quantity * quant.product_id.standard_price
 
 
-
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
@@ -197,14 +198,13 @@ class StockMove(models.Model):
                         cost += line.lot_id.cost * line.qty_done
                         qty += line.qty_done
                 if qty > 0.0:
-                    svl_vals.update({'unit_cost': cost/qty,
+                    svl_vals.update({'unit_cost': cost / qty,
                                      'value': cost})
             if forced_quantity:
                 svl_vals[
                     'description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name
             svl_vals_list.append(svl_vals)
         return self.env['stock.valuation.layer'].sudo().create(svl_vals_list)
-
 
     def _create_out_svl(self, forced_quantity=None):
         """Create a `stock.valuation.layer` from `self`.
@@ -218,7 +218,8 @@ class StockMove(models.Model):
             valued_move_lines = move._get_out_move_lines()
             valued_quantity = 0
             for valued_move_line in valued_move_lines:
-                valued_quantity += valued_move_line.product_uom_id._compute_quantity(valued_move_line.qty_done, move.product_id.uom_id)
+                valued_quantity += valued_move_line.product_uom_id._compute_quantity(valued_move_line.qty_done,
+                                                                                     move.product_id.uom_id)
             if float_is_zero(forced_quantity or valued_quantity, precision_rounding=move.product_id.uom_id.rounding):
                 continue
 
@@ -232,10 +233,11 @@ class StockMove(models.Model):
                         cost += line.lot_id.cost * line.qty_done
                         qty += line.qty_done
                 if qty > 0.0:
-                    svl_vals.update({'unit_cost': cost/qty,
+                    svl_vals.update({'unit_cost': cost / qty,
                                      'value': cost * -1})
             if forced_quantity:
-                svl_vals['description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name
+                svl_vals[
+                    'description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name
             svl_vals_list.append(svl_vals)
         return self.env['stock.valuation.layer'].sudo().create(svl_vals_list)
 
