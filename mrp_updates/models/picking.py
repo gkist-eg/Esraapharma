@@ -64,7 +64,7 @@ class PickingBatch(models.Model):
         return super(PickingBatch, self)._action_done()
 
     def keeper_approve(self):
-        for move in self.move_lines.filtered(lambda p: p.is_subcontract)[-1:]:
+        for move in self.move_lines.filtered(lambda p: p.is_subcontract):
             production = move.move_orig_ids.production_id.filtered(lambda p: p.state not in ('done', 'cancel'))[-1:]
             if production:
                 for move_line in move.move_line_ids:
