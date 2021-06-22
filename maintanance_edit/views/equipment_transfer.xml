@@ -27,10 +27,15 @@
 
                 <group>
                     <group>
+
+                         <field name="company_id" readonly="1"/>
+                         <field name="employee_id" readonly="1"/>
+
                          <field name="equipment" attrs="{'readonly':[('state','=','send')]}"/>
-          <field name="from_user" attrs="{'readonly':[('state','=','send')]}"/>
+          <field name="from_user" />
           <field name="to_user" attrs="{'readonly':[('state','=','send')]}"/>
           <field name="date" attrs="{'readonly':[('state','=','send')]}"/>
+          <field name="file_attach" attrs="{'readonly':[('state','=','send')]}"/>
                     </group>
                     <group>
 
@@ -38,6 +43,8 @@
                        <field name="model"/>
                        <field name="serial_no"/>
                        <field name="note"/>
+                       <field name="assign_date"/>
+
                     </group>
 
                 </group>
