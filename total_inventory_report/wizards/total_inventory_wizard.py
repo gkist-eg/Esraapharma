@@ -109,21 +109,59 @@ class TotalInventoryWizard(models.TransientModel):
     _name = 'total.inventory.wizard'
     _description = 'Wizard that opens the stock Inventory by Location'
 
-    stock_location = fields.Many2one('stock.location', string='Stock Location')
-    start_date = fields.Datetime(string='From')
-    end_date = fields.Datetime(string='To')
+    # stock_warehouse = fields.Many2one('stock.warehouse', string='Warehouse', required=True)
 
-    line_ids = fields.One2many('total.inventory.wizard.lines', 'wizard_id', required=True, ondelete='cascade')
+    def _get_user_locations(self):
+        user_locations = self.env.user.stock_location_ids
+        return ['&', ('usage', '=', 'internal'), ('id', 'in', user_locations.ids)]
+
+    stock_location = fields.Many2one('stock.location', string='Location', required=True,
+                                     domain=_get_user_locations)
+
+    def _get_current_user(self):
+        user = self.env.user
+        return user
+
+    user = fields.Many2one('res.users', default=_get_current_user)
+
+    # stock_location = fields.Many2one('stock.location', string='Location', required=True)
+
+    # @api.onchange('stock_warehouse')
+    # def _get_locations_warehouse(self):
+    #     stock_warehouse = self.stock_warehouse.view_location_id
+    #     stock_locations = self.env["stock.location"].search([("location_id", '=', stock_warehouse.id)])
+    #     return {'domain': {'stock_location': [('id', 'in', stock_locations.ids)]}}
+
+    start_date = fields.Date(string='From', required=True)
+    end_date = fields.Date(string='To', required=True)
+
+    line_ids = fields.One2many('total.inventory.wizard.lines', 'wizard_id', required=True)
+
+    total_start = fields.Float()
+    total_end = fields.Float()
+    total_in = fields.Float()
+    total_out = fields.Float()
+    total_start_val = fields.Float()
+    total_in_val = fields.Float()
+    total_out_val = fields.Float()
+    total_end_val = fields.Float()
 
     def get_stock_quantity(self):
 
         line_ids = []
+        total_out = 0
+        total_start = 0
+        total_in = 0
+        total_end = 0
+        total_start_val = 0
+        total_in_val = 0
+        total_out_val = 0
+        total_end_val = 0
 
-        stock_moves = self.env['stock.move.line'].search(["|", ("location_id", "=", self.stock_location.id),
-                                                          ("location_dest_id", "=", self.stock_location.id),
-                                                          ("state", "=", "done"),
-                                                          ("date", ">=", self.start_date),
-                                                          ("date", "<=", self.end_date)])
+        # print(self._get_locations_warehouse())
+        # print(user_locations)
+
+        stock_moves = self.env['stock.move.line']
 
         stock_moves_groupedby_product = stock_moves.read_group(
             domain=["|", ("location_id", "=", self.stock_location.id),
@@ -162,50 +200,66 @@ class TotalInventoryWizard(models.TransientModel):
                         ("product_id", "=", product_id)],
                 fields=['lot_id', 'product_id', 'qty_done', ],
                 groupby=['lot_id'])
-            in_qty = 0
-            out_qty = 0
+
+            outcomevalbefore = 0
+            incomevalbefore = 0
             outcomeblbefore = 0
             incomeblbefore = 0
-            start_val = 0
+            in_qty = 0
+            out_qty = 0
             in_val = 0
             out_val = 0
-            end_val = 0
+
             if (outcome_qty):
                 for outcome in outcome_qty:
                     out_qty += outcome['qty_done']
                     if outcome['lot_id']:
                         lot = self.env['stock.production.lot'].search([('id', '=', outcome['lot_id'][0])])
                         out_val += outcome['qty_done'] * lot.cost
-                        print(len(outcome))
-                        print(outcome)
-                    # else:
-                    #     out_val += ['qty_done']
+                        # else:
+                        #     out_val += ['qty_done']
+                # print('outval : ' + str(out_val))
+                total_out += out_qty
+                total_out_val += out_val
             if (income_qty):
                 for income in income_qty:
                     in_qty += income['qty_done']
                     if income['lot_id']:
                         lot = self.env['stock.production.lot'].search([('id', '=', income['lot_id'][0])])
                         in_val += income['qty_done'] * lot.cost
-                    # else:
-                    #     in_val += ['qty_done'] * product.standard_price
+                        # else:
+                        #     in_val += ['qty_done'] * product.standard_price
+                # print('inval : ' + str(in_val))
+                total_in += in_qty
+                total_in_val += in_val
             if outcome_qty_before:
                 for outcomebefore in outcome_qty_before:
                     outcomeblbefore += outcomebefore['qty_done']
                     if outcomebefore['lot_id']:
                         lot = self.env['stock.production.lot'].search([('id', '=', outcomebefore['lot_id'][0])])
-                        outcomeblbefore += outcomebefore['qty_done'] * lot.cost
-                    # else:
-                    #     outcomeblbefore += ['qty_done'] * product.standard_price
+                        outcomevalbefore += outcomebefore['qty_done'] * lot.cost
+                # print('outcomevalbefore : ' + str(outcomevalbefore))
+                # else:
+                #     outcomeblbefore += ['qty_done'] * product.standard_price
             if income_qty_before:
                 for incomebefore in income_qty_before:
                     incomeblbefore += incomebefore['qty_done']
                     if incomebefore['lot_id']:
                         lot = self.env['stock.production.lot'].search([('id', '=', incomebefore['lot_id'][0])])
-                        incomeblbefore += incomebefore['qty_done'] * lot.cost
-                    # else:
-                    #     incomeblbefore += ['qty_done'] * product.standard_price
+                        incomevalbefore += incomebefore['qty_done'] * lot.cost
+                # print('incomevalbefor : ' + str(incomevalbefore))
+                # else:
+                #     incomeblbefore += ['qty_done'] * product.standard_price
+
             startbl = incomeblbefore - outcomeblbefore
+            start_val = incomevalbefore - outcomevalbefore
+            end_val = start_val + in_val - out_val
             endbl = startbl + in_qty - out_qty
+            total_start_val += start_val
+            total_end_val += end_val
+            total_start += startbl
+            total_end += endbl
+
             line_ids.append((0, 0, {
                 'product_id': product.id,
                 'start_balance': startbl,
@@ -215,13 +269,32 @@ class TotalInventoryWizard(models.TransientModel):
                 'start_val': start_val,
                 'in_val': in_val,
                 'out_val': out_val,
-                'end_val': end_val
+                'end_val': end_val,
             }))
+
         self.write({'line_ids': line_ids})
         context = {
             'lang': 'en_US',
             'active_ids': [self.id],
         }
+
+        self.total_end = total_end
+        self.total_start = total_start
+        self.total_in = total_in
+        self.total_out = total_out
+        self.total_in_val = total_in_val
+        self.total_out_val = total_out_val
+        self.total_start_val = total_start_val
+        self.total_end_val = total_end_val
+        # print(self._get_user_locations())
+        # print(total_start)
+        # print(total_in)
+        # print(total_out)
+        # print(total_end)
+        # print(total_in_val)
+        # print(total_out_val)
+        # print(startbl)
+        # print(endbl)
 
         return {
             'context': context,
@@ -238,6 +311,7 @@ class TotalInventoryWizard(models.TransientModel):
 
 class TotalInventoryWizardLines(models.TransientModel):
     _name = 'total.inventory.wizard.lines'
+    _description = 'Total Inventory Wizard Lines'
 
     wizard_id = fields.Many2one('total.inventory.wizard')
     product_id = fields.Many2one('product.product')

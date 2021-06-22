@@ -26,6 +26,7 @@
         'wizard/product_quantity_wizard.xml',
         'report/product_quantity_report_template.xml',
         'report/product_quantity_report.xml',
+        # 'report/product_quantity_report_header_footer.xml',
         'security/ir.model.access.csv'
     ],
     # only loaded in demonstration mode

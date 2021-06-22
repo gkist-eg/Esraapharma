@@ -3,7 +3,7 @@ from odoo.osv import expression
 from odoo.exceptions import UserError
 import json
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime,timedelta
 from itertools import groupby
 from odoo.tools.float_utils import float_compare, float_is_zero, float_repr, float_round
 from odoo.tools.misc import format_date, OrderedSet
@@ -19,16 +19,60 @@ class PickingBatch(models.Model):
     batch = fields.Char('Batch Number', index=True, copy=True, tracking=True, readonly=True,
                         states={'draft': [('readonly', False)]})
 
+    def _action_done(self):
+        for move in self.move_lines.filtered(lambda move: move.is_subcontract):
+            # Auto set qty_producing/lot_producing_id of MO if there isn't tracked component
+            # If there is tracked component, the flow use subcontracting_record_component instead
+            if move._has_tracked_subcontract_components():
+                continue
+            production = move.move_orig_ids.production_id.filtered(lambda p: p.state not in ('done', 'cancel'))[-1:]
+            if not production:
+                continue
+            # Manage additional quantities
+            quantity_done_move = move.product_uom._compute_quantity(move.quantity_done, production.product_uom_id)
+            if float_compare(production.product_qty, quantity_done_move, precision_rounding=production.product_uom_id.rounding) == -1:
+                change_qty = self.env['change.production.qty'].sudo().create({
+                    'mo_id': production.id,
+                    'product_qty': quantity_done_move
+                })
+                change_qty.with_context(skip_activity=True).change_prod_qty()
+            # Create backorder MO for each move lines
+            for move_line in move.move_line_ids:
+                if move_line.lot_id:
+                    production.lot_producing_id = move_line.lot_id
+                production.sudo().qty_producing = move_line.product_uom_id._compute_quantity(move_line.qty_done, production.product_uom_id)
+                production.sudo()._set_qty_producing()
+                if move_line != move.move_line_ids[-1]:
+                    backorder = production.sudo()._generate_backorder_productions(close_mo=False)
+                    # The move_dest_ids won't be set because the _split filter out done move
+                    backorder.move_finished_ids.filtered(lambda mo: mo.product_id == move.product_id).move_dest_ids = production.move_finished_ids.filtered(lambda mo: mo.product_id == move.product_id).move_dest_ids
+                    production.product_qty = production.qty_producing
+                    production = backorder
+
+        for picking in self:
+            productions_to_done = picking.sudo()._get_subcontracted_productions()._subcontracting_filter_to_done()
+            production_ids_backorder = []
+            if not self.env.context.get('cancel_backorder'):
+                production_ids_backorder = productions_to_done.filtered(lambda mo: mo.state == "progress").ids
+            productions_to_done.with_context(subcontract_move_id=True, mo_ids_to_backorder=production_ids_backorder).button_mark_done()
+            # For concistency, set the date on production move before the date
+            # on picking. (Traceability report + Product Moves menu item)
+            minimum_date = min(picking.move_line_ids.mapped('date'))
+            production_moves = productions_to_done.move_raw_ids | productions_to_done.move_finished_ids
+            production_moves.write({'date': minimum_date - timedelta(seconds=1)})
+            production_moves.move_line_ids.write({'date': minimum_date - timedelta(seconds=1)})
+        return super(PickingBatch, self)._action_done()
+
     def keeper_approve(self):
-        for move in self.move_lines.filtered(lambda p: p.is_subcontract)[-1:]:
+        for move in self.move_lines.filtered(lambda p: p.is_subcontract):
             production = move.move_orig_ids.production_id.filtered(lambda p: p.state not in ('done', 'cancel'))[-1:]
             if production:
                 for move_line in move.move_line_ids:
                     if not move_line.lot_id:
-                        move_line._create_and_assign_production_lot()
-                        production.lot_producing_id = move_line.lot_id
-                        production.lot_producing_id.ref = move_line.suplier_lot
-                        production.qty_producing = move_line.qty_done
+                        move_line.sudo()._create_and_assign_production_lot()
+                        production.sudo().lot_producing_id = move_line.lot_id
+                        production.sudo().lot_producing_id.ref = move_line.suplier_lot
+                        production.sudo().qty_producing = move_line.qty_done
         return super(PickingBatch, self).keeper_approve()
 
 

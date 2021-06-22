@@ -2,12 +2,13 @@
 <odoo>
     <!-- Wizard form view -->
     <record model="ir.ui.view" id="wizard_total_inventory_form">
-        <field name="name">Total Inventory Wizard.form</field>
+        <field name="name">Total Inventory Wizard</field>
         <field name="model">total.inventory.wizard</field>
         <field name="arch" type="xml">
             <form string="Total Inventory Wizard">
                 <group>
                     <group>
+                        <!--                        <field name="stock_warehouse"/>-->
                         <field name="stock_location"/>
                     </group>
                     <group>

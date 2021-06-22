@@ -3,25 +3,29 @@
     <data>
         <template id="total_inventory_report_template">
             <t t-call="web.html_container">
-                <t t-call="web.internal_layout">
+                <t t-call="web.external_layout">
                     <t t-foreach="docs" t-as="o">
                         <h4 class="text-center" style="font-weight: bold;">
                             Total Inventory Report
                         </h4>
-                        <h4>
-                            <span>Location :</span>
-                            <span t-esc="o.stock_location.display_name"/>
-                            <div class="pull-right">
-                                <h4>
-                                    Date From :
-                                    <span t-esc="o.start_date"/>
-                                </h4>
-                                <h4>
-                                    Date To :
-                                    <span t-esc="o.end_date"/>
-                                </h4>
-                            </div>
-                        </h4>
+                        <div>
+                            <h4>
+                                <div>
+                                    <!--                                    <span>Warehouse :</span>-->
+                                    <!--                                    <span t-esc="o.stock_warehouse.display_name"/>-->
+                                    <div class="pull-right">
+                                        <span>Date From :</span>
+                                        <span t-esc="o.start_date"/>
+                                        <span>Date To :</span>
+                                        <span t-esc="o.end_date"/>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span>Location :</span>
+                                    <span t-esc="o.stock_location.display_name"/>
+                                </div>
+                            </h4>
+                        </div>
                         <table border="1" class="table table_bordered">
                             <thead>
                                 <thead2>
@@ -40,7 +44,6 @@
                                     </th>
                                 </thead2>
                                 <tr style="page-break-inside: avoid;">
-                                    <th style="page-break-inside: avoid;">Value</th>
                                     <th style="page-break-inside: avoid;">Qty</th>
                                     <th style="page-break-inside: avoid;">Value</th>
                                     <th style="page-break-inside: avoid;">Qty</th>
@@ -48,6 +51,7 @@
                                     <th style="page-break-inside: avoid;">Qty</th>
                                     <th style="page-break-inside: avoid;">Value</th>
                                     <th style="page-break-inside: avoid;">Qty</th>
+                                    <th style="page-break-inside: avoid;">Value</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -64,15 +68,11 @@
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
-                                               t-esc="stock_move.start_val "/>
-                                        </td>
-                                        <td>
-                                            <t style="page-break-inside: avoid;"
                                                t-esc="stock_move.start_balance"/>
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
-                                               t-esc="stock_move.in_val "/>
+                                               t-esc="stock_move.start_val " groups="account.group_account_readonly"/>
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
@@ -80,7 +80,7 @@
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
-                                               t-esc="stock_move.out_val "/>
+                                               t-esc="stock_move.in_val " groups="account.group_account_readonly"/>
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
@@ -88,16 +88,61 @@
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
-                                               t-esc="stock_move.end_val "/>
+                                               t-esc="stock_move.out_val " groups="account.group_account_readonly"/>
                                         </td>
                                         <td>
                                             <t style="page-break-inside: avoid;"
                                                t-esc="stock_move.end_balance"/>
                                         </td>
+                                        <td>
+                                            <t style="page-break-inside: avoid;"
+                                               t-esc="stock_move.end_val " groups="account.group_account_readonly"/>
+                                        </td>
                                     </tr>
                                 </t>
+                                <tr style="font-weight: bold;">
+                                    <td style="page-break-inside: avoid;" colspan="1">
+                                        <td style="page-break-inside: avoid;">Total</td>
+                                    </td>
+                                    <td style="page-break-inside: avoid;">
+                                        <t/>
+                                    </td>
+                                    <td style="page-break-inside: avoid;">
+                                        <t t-esc="o.total_start_val" groups="account.group_account_readonly"/>
+                                    </td>
+                                    <td style="page-break-inside: avoid;">
+                                        <t/>
+                                    </td>
+                                    <td style="page-break-inside: avoid;">
+                                        <t t-esc="o.total_in_val" groups="account.group_account_readonly"/>
+                                    </td>
+                                    <td style="page-break-inside: avoid;">
+                                        <t/>
+                                    </td>
+                                    <td style="page-break-inside: avoid;">
+                                        <t t-esc="o.total_out_val" groups="account.group_account_readonly"/>
+                                    </td>
+                                    <td style="page-break-inside: avoid;">
+                                        <t/>
+                                    </td>
+                                    <td style="page-break-inside: avoid;">
+                                        <t t-esc="o.total_end_val" groups="account.group_account_readonly"/>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
+                        <div>
+                            <h4>
+                                <span>Printed by :</span>
+                                <span t-esc="o.user.display_name"/>
+                                <div class="pull-right">
+                                    <span>
+                                        Print Date :
+                                    </span>
+                                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+                                </div>
+                            </h4>
+                        </div>
                     </t>
                 </t>
             </t>

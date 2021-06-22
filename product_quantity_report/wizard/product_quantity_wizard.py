@@ -18,10 +18,16 @@ class ProductQuantityWizard(models.TransientModel):
 
     def _get_user_locations(self):
         user_locations = self.env.user.stock_location_ids
-        return [('id', 'in', user_locations.ids)]
+        return ['&', ('usage', '=', 'internal'), ('id', 'in', user_locations.ids)]
+
+    def _get_current_user(self):
+        user = self.env.user
+        return user
 
     stock_location = fields.Many2one('stock.location', string='Location', required=True,
                                      domain=_get_user_locations)
+
+    user = fields.Many2one('res.users', default=_get_current_user)
 
     start_date = fields.Date(string='From', required=True)
     end_date = fields.Date(string='To', required=True)
