@@ -547,9 +547,12 @@ class MrpUpdates(models.Model):
             bom = self.env['mrp.bom']._bom_find(product=self.product_id, picking_type=self.picking_type_id,
                                                 company_id=self.company_id.id, bom_type='normal',
                                                 type=self.check_repack)
-            if bom:
+            if bom.type != 'subcontact':
                 self.bom_id = bom.id
                 self.product_qty = self.bom_id.product_qty
+                self.product_uom_id = self.bom_id.product_uom_id.id
+            elif  bom.type == 'subcontact':
+                self.bom_id = bom.id
                 self.product_uom_id = self.bom_id.product_uom_id.id
             else:
                 self.bom_id = False

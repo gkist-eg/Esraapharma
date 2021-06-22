@@ -46,7 +46,7 @@ class PickingBatch(models.Model):
                     backorder = production.sudo()._generate_backorder_productions(close_mo=False)
                     # The move_dest_ids won't be set because the _split filter out done move
                     backorder.move_finished_ids.filtered(lambda mo: mo.product_id == move.product_id).move_dest_ids = production.move_finished_ids.filtered(lambda mo: mo.product_id == move.product_id).move_dest_ids
-                    production.product_qty = production.qty_producing
+                    production.sudo().product_qty = production.qty_producing
                     production = backorder
                 if not move_line.lot_id:
                     move_line.sudo()._create_and_assign_production_lot()
@@ -59,13 +59,13 @@ class PickingBatch(models.Model):
             production_ids_backorder = []
             if not self.env.context.get('cancel_backorder'):
                 production_ids_backorder = productions_to_done.filtered(lambda mo: mo.state == "progress").ids
-            productions_to_done.with_context(subcontract_move_id=True, mo_ids_to_backorder=production_ids_backorder).button_mark_done()
+            productions_to_done.sudo().with_context(subcontract_move_id=True, mo_ids_to_backorder=production_ids_backorder).button_mark_done()
             # For concistency, set the date on production move before the date
             # on picking. (Traceability report + Product Moves menu item)
             minimum_date = min(picking.move_line_ids.mapped('date'))
             production_moves = productions_to_done.move_raw_ids | productions_to_done.move_finished_ids
-            production_moves.write({'date': minimum_date - timedelta(seconds=1)})
-            production_moves.move_line_ids.write({'date': minimum_date - timedelta(seconds=1)})
+            production_moves.sudo().write({'date': minimum_date - timedelta(seconds=1)})
+            production_moves.sudo().move_line_ids.write({'date': minimum_date - timedelta(seconds=1)})
         return super(PickingBatch, self)._action_done()
 
     def keeper_approve(self):
