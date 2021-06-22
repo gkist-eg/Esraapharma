@@ -68,212 +68,140 @@
 
 
                                     </table>
-                                    <table style="width:100%">
+                                    <table>
                                         <thead style="font-size:14px">
                                             <tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
+                                                <th style="border: 1px solid black;font-size: 12.5px" width='800px'
+                                                >
+
+                                                </th>
+                                                <th style="border: 1px solid black;font-size: 12.5px" width='200px'
+                                                >
+
+
+                                                </th>
+
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
                                                     class="text-right">
+                                                    <span t-field="o.to_user.name"/>
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px" class="text-right"
+                                                >
 
                                                     اسم المستخدم
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
+                                                </td>
 
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
+                                            </tr>
+                                            <tr>
+
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-left">
+                                                    <span t-field="o.to_user.employee_id.department_id"/>
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px" class="text-right"
+                                                >
 
                                                     الادارة
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
+                                                </td>
+                                            </tr>
 
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
+
+                                            <tr>
+
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    <span t-field="o.employee_id"/>
+
+
+                                                </td>
+                                                 <td style="border: 1px solid black;font-size: 12.5px"
                                                     class="text-right">
 
                                                     تسليم
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
+                                                </td>
+                                            </tr>
 
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
+                                            <tr>
+
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+
+                                                    <span t-field="o.assign_date"/>
+                                                </td>
+                                                 <td style="border: 1px solid black;font-size: 12.5px"
                                                     class="text-right">
 
                                                     تاريخ الشراء
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
+                                                </td>
+                                            </tr>
+                                            <tr>
 
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+
+                                                    <span t-field="o.serial_no"/>
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
                                                     class="text-right">
 
                                                     سيريال الجهاز
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
+                                                </td>
+                                            </tr>
+                                            <tr>
 
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+
+                                                    <span t-field="o.equipment.category_id"/>
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
                                                     class="text-right">
 
                                                     نوع الجهاز
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
+                                                </td>
+                                            </tr>
 
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
+                                            <tr>
+
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    <span t-field="o.equipment.model"/>
+
+                                                </td>
+                                                  <td style="border: 1px solid black;font-size: 12.5px"
                                                     class="text-right">
 
                                                     موديل الجهاز
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-
-
+                                                </td>
                                             </tr>
-                                        </thead>
+                                            <tr>
+
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    <span t-field="o.note"/>
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+
+                                                    الموصفات الفنية
+                                                </td>
+                                            </tr>
 
 
+                                        </tbody>
                                     </table>
+
 
                                     <br/>
 
-                                    <table class="table table-borderless">
-                                        <thead style="font-size:20px">
-                                            <tr class="no-border">
-                                                <th class="text-center">الموصفات الفنية
-                                                </th>
 
-                                            </tr>
-                                        </thead>
-
-                                    </table>
-
-
-                                    <table style="width:100%;border: 1px bold;">
-                                        <tr>
-                                            <th class="text-center"
-                                                style="border: 1px solid black;font-size: 12.5px">
-                                                سعة الهارد
-                                            </th>
-                                            <th class="text-center"
-                                                style="border: 1px solid black;font-size: 12.5px">
-                                                نوع الهارد
-                                            </th>
-                                            <th class="text-center"
-                                                style="border: 1px solid black;font-size: 12.5px">
-                                                حجم الشاشة
-                                            </th>
-                                            <th class="text-center"
-                                                style="border: 1px solid black;font-size: 12.5px">
-                                                RAM
-                                            </th>
-
-                                            <th class="text-center"
-                                                style="border: 1px solid black;font-size: 12.5px">
-                                                Processor
-                                            </th>
-
-
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center"
-                                                style="border: 1px solid black;font-size: 13px">
-                                                0
-                                            </td>
-
-                                            <td class="text-center"
-                                                style="border: 1px solid black;font-size: 13px">
-                                                0
-                                            </td>
-                                            <td class="text-center"
-                                                style="border: 1px solid black;font-size: 13px">
-                                                0
-                                            </td>
-                                            <td class="text-center"
-                                                style="border: 1px solid black;font-size: 13px">
-                                                0
-                                            </td>
-                                            <td class="text-center"
-                                                style="border: 1px solid black;font-size: 13px">
-                                                0
-                                            </td>
-
-                                        </tr>
-
-                                    </table>
-                                    <table class="table table-borderless">
-                                        <thead style="font-size:20px">
-                                            <tr class="no-border">
-                                                <th class="text-center">أجهزة أخرى
-
-                                                </th>
-
-                                            </tr>
-                                        </thead>
-
-                                    </table>
-
-                                    <table style="width:100%;border: 1px bold;">
-                                        <tr>
-                                            <th class="text-center"
-                                                style="border: 1px solid black;font-size: 12.5px">
-                                                اخرى
-                                            </th>
-                                            <th class="text-center"
-                                                style="border: 1px solid black;font-size: 12.5px">
-                                                طابعة
-                                            </th>
-                                            <th class="text-center"
-                                                style="border: 1px solid black;font-size: 12.5px">
-                                                عدة تليفون
-                                            </th>
-                                            <th class="text-center"
-                                                style="border: 1px solid black;font-size: 12.5px">
-                                                فلاشه انترنت
-                                            </th>
-
-
-                                            <th class="text-center"
-                                                style="border: 1px solid black;font-size: 12.5px">
-                                                أسم الجهاز
-                                            </th>
-
-
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center"
-                                                style="border: 1px solid black;font-size: 13px">
-
-                                            </td>
-                                            <td class="text-center"
-                                                style="border: 1px solid black;font-size: 13px">
-                                            </td>
-                                            <td class="text-center"
-                                                style="border: 1px solid black;font-size: 13px">
-                                            </td>
-                                            <td class="text-center"
-                                                style="border: 1px solid black;font-size: 13px">
-
-                                            </td>
-
-                                            <td class="text-center"
-                                                style="border: 1px solid black;font-size: 13px">
-                                                الموديل
-                                                <br/>
-                                                السريال
-                                            </td>
-
-
-                                        </tr>
-
-                                    </table>
                                     <table class="table table-borderless">
                                         <thead style="font-size:20px">
                                             <tr class="no-border">
@@ -289,176 +217,252 @@
                                     <table style="width:100%">
                                         <thead style="font-size:14px">
                                             <tr>
-
-
                                                 <th style="border: 1px solid black;font-size: 12.5px"
                                                     class="text-left">
 
                                                     ملاحظه
                                                 </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <br/>
                                                 <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
+                                                >
+
+                                                </th>
+
+                                                <th width='200px' style="border: 1px solid black;font-size: 12.5px"
+                                                >
 
                                                     بيان
                                                 </th>
 
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
 
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    الشكل الخارجي للجهاز
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    فحص الشاشه والالوان والكسر
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-                                                    فحص الكيبورد
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    فحص الماوس
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-                                                    cdفحص ال
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    usbفحص ال
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    hdفحص مخرج
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    VGAفحص مخرج
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    فحص الهارد
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    فحص الرامات
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    فحص البطارية
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    فحص الشاحن
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    فحص السماعات
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    فحص المايك
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    فحص شبكة الانترنت
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
-                                                <th style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-right">
-
-                                                    فحص الكاميرا
-                                                </th>
-                                                <tr style="border: 1px solid black;font-size: 12.5px"
-                                                    class="text-left">
-
-                                                </tr>
+                                                <br/>
 
 
                                             </tr>
 
                                         </thead>
+                                        <tbody class="invoice_tbody">
+
+                                            <tr>
+
+
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+
+                                                    الشكل الخارجي للجهاز
+                                                </td>
+                                            </tr>
+                                            <tr>
+
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+
+                                                    فحص الشاشه والالوان والكسر
+                                                </td>
+                                            </tr>
+                                            <tr>
+
+
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    فحص الكيبورد
+                                                </td>
+                                            </tr>
+                                            <tr>
+
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    فحص الماوس
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    cdفحص ال
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    usbفحص ال
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+
+
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    hdفحص مخرج
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    VGAفحص مخرج
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+
+
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    فحص الهارد
+                                                </td>
+                                            </tr>
+                                            <tr>
+
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    فحص الرامات
+                                                </td>
+                                            </tr>
+                                            <tr>
+
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    فحص البطارية
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    فحص الشاحن
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+
+
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    فحص السماعات
+                                                </td>
+                                            </tr>
+                                            <tr>
+
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    فحص المايك
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    فحص شبكة الانترنت
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td width='200px' style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px">
+
+                                                </td>
+                                                <td style="border: 1px solid black;font-size: 12.5px"
+                                                    class="text-right">
+                                                    فحص الكاميرا
+                                                </td>
+                                            </tr>
+                                        </tbody>
 
 
                                     </table>
