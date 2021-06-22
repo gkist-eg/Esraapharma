@@ -3,7 +3,7 @@ from odoo.osv import expression
 from odoo.exceptions import UserError
 import json
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime,timedelta
 from itertools import groupby
 from odoo.tools.float_utils import float_compare, float_is_zero, float_repr, float_round
 from odoo.tools.misc import format_date, OrderedSet
