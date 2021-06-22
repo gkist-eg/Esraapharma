@@ -39,7 +39,7 @@ class PickingBatch(models.Model):
             # Create backorder MO for each move lines
             for move_line in move.move_line_ids:
                 if move_line.lot_id:
-                    production.lot_producing_id = move_line.lot_id
+                    production.sudo().lot_producing_id = move_line.lot_id
                 production.sudo().qty_producing = move_line.product_uom_id._compute_quantity(move_line.qty_done, production.product_uom_id)
                 production.sudo()._set_qty_producing()
                 if move_line != move.move_line_ids[-1]:
