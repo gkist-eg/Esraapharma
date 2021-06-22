@@ -48,6 +48,11 @@ class PickingBatch(models.Model):
                     backorder.move_finished_ids.filtered(lambda mo: mo.product_id == move.product_id).move_dest_ids = production.move_finished_ids.filtered(lambda mo: mo.product_id == move.product_id).move_dest_ids
                     production.product_qty = production.qty_producing
                     production = backorder
+                if not move_line.lot_id:
+                    move_line.sudo()._create_and_assign_production_lot()
+                    production.sudo().lot_producing_id = move_line.lot_id
+                    production.sudo().lot_producing_id.ref = move_line.suplier_lot
+                    production.sudo().qty_producing = move_line.qty_done
 
         for picking in self:
             productions_to_done = picking.sudo()._get_subcontracted_productions()._subcontracting_filter_to_done()
@@ -184,7 +189,7 @@ class StockProduction(models.Model):
     _inherit = 'stock.production.lot'
     ref = fields.Char(string='Batch Number', store=True)
 
-    cost = fields.Monetary('Unit Price', store=True, index=True)
+    cost = fields.Float('Unit Price', store=True, index=True, digits=(10, 5))
     currency_id = fields.Many2one('res.currency', compute='_compute_value')
 
     @api.depends('company_id')
