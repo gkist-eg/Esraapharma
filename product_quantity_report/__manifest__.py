@@ -19,13 +19,14 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'mail', 'stock', 'restrict_warehouse'],
+    'depends': ['base', 'mail', 'stock', 'warehouse_stock_restrictions'],
 
     # always loaded
     'data': [
         'wizard/product_quantity_wizard.xml',
         'report/product_quantity_report_template.xml',
         'report/product_quantity_report.xml',
+        'report/product_quantity_report_header_footer.xml',
         'security/ir.model.access.csv'
     ],
     # only loaded in demonstration mode
