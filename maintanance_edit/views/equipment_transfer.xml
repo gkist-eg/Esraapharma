@@ -85,7 +85,7 @@
 
 
         <menuitem name="Equipment Transfer" id="equipment_transfer_action_menu"
-                  parent="maintenance.menu_maintenance_configuration"
+                  parent="maintenance.menu_equipment_form"
                   action="equipment_transfer_action"/>
 
     </data>
