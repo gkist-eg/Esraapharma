@@ -39,28 +39,33 @@ class PickingBatch(models.Model):
             # Create backorder MO for each move lines
             for move_line in move.move_line_ids:
                 if move_line.lot_id:
-                    production.lot_producing_id = move_line.lot_id
+                    production.sudo().lot_producing_id = move_line.lot_id
                 production.sudo().qty_producing = move_line.product_uom_id._compute_quantity(move_line.qty_done, production.product_uom_id)
                 production.sudo()._set_qty_producing()
                 if move_line != move.move_line_ids[-1]:
                     backorder = production.sudo()._generate_backorder_productions(close_mo=False)
                     # The move_dest_ids won't be set because the _split filter out done move
                     backorder.move_finished_ids.filtered(lambda mo: mo.product_id == move.product_id).move_dest_ids = production.move_finished_ids.filtered(lambda mo: mo.product_id == move.product_id).move_dest_ids
-                    production.product_qty = production.qty_producing
+                    production.sudo().product_qty = production.qty_producing
                     production = backorder
+                if not move_line.lot_id:
+                    move_line.sudo()._create_and_assign_production_lot()
+                    production.sudo().lot_producing_id = move_line.lot_id
+                    production.sudo().lot_producing_id.ref = move_line.suplier_lot
+                    production.sudo().qty_producing = move_line.qty_done
 
         for picking in self:
             productions_to_done = picking.sudo()._get_subcontracted_productions()._subcontracting_filter_to_done()
             production_ids_backorder = []
             if not self.env.context.get('cancel_backorder'):
                 production_ids_backorder = productions_to_done.filtered(lambda mo: mo.state == "progress").ids
-            productions_to_done.with_context(subcontract_move_id=True, mo_ids_to_backorder=production_ids_backorder).button_mark_done()
+            productions_to_done.sudo().with_context(subcontract_move_id=True, mo_ids_to_backorder=production_ids_backorder).button_mark_done()
             # For concistency, set the date on production move before the date
             # on picking. (Traceability report + Product Moves menu item)
             minimum_date = min(picking.move_line_ids.mapped('date'))
             production_moves = productions_to_done.move_raw_ids | productions_to_done.move_finished_ids
-            production_moves.write({'date': minimum_date - timedelta(seconds=1)})
-            production_moves.move_line_ids.write({'date': minimum_date - timedelta(seconds=1)})
+            production_moves.sudo().write({'date': minimum_date - timedelta(seconds=1)})
+            production_moves.sudo().move_line_ids.write({'date': minimum_date - timedelta(seconds=1)})
         return super(PickingBatch, self)._action_done()
 
     def keeper_approve(self):
@@ -184,7 +189,7 @@ class StockProduction(models.Model):
     _inherit = 'stock.production.lot'
     ref = fields.Char(string='Batch Number', store=True)
 
-    cost = fields.Monetary('Unit Price', store=True, index=True)
+    cost = fields.Float('Unit Price', store=True, index=True, digits=(10, 5))
     currency_id = fields.Many2one('res.currency', compute='_compute_value')
 
     @api.depends('company_id')

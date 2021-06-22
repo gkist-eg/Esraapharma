@@ -136,8 +136,8 @@ class MrpUpdates(models.Model):
             order.move_finished_ids.move_line_ids.consume_line_ids = [(6, 0, consume_move_lines.ids)]
             new_pickings = self.env['stock.picking']
             for picking in self.env['stock.picking'].sudo().search(
-                    [('origin', '=', self.name), ('state', '=', 'assigned'),
-                     ('location_id', '=', self.location_dest_id.id)]):
+                    [('origin', '=', order.name), ('state', '=', 'assigned'),
+                     ('location_id', '=', order.location_dest_id.id)]):
                 moves = self.env['stock.move']
                 for move in picking.move_lines:
                     if move.quantity_done > 0 and move.state not in ('done', 'cancel'):
@@ -547,9 +547,12 @@ class MrpUpdates(models.Model):
             bom = self.env['mrp.bom']._bom_find(product=self.product_id, picking_type=self.picking_type_id,
                                                 company_id=self.company_id.id, bom_type='normal',
                                                 type=self.check_repack)
-            if bom:
+            if bom.type != 'subcontact':
                 self.bom_id = bom.id
                 self.product_qty = self.bom_id.product_qty
+                self.product_uom_id = self.bom_id.product_uom_id.id
+            elif  bom.type == 'subcontact':
+                self.bom_id = bom.id
                 self.product_uom_id = self.bom_id.product_uom_id.id
             else:
                 self.bom_id = False
