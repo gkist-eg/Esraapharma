@@ -26,6 +26,7 @@ class PickingBatch(models.Model):
                         move_line._create_and_assign_production_lot()
                         production.lot_producing_id = move_line.lot_id
                         production.lot_producing_id.ref = move_line.suplier_lot
+                        production.qty_producing = move_line.qty_done
         return super(PickingBatch, self).keeper_approve()
 
 
