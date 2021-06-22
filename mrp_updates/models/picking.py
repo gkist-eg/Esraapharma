@@ -25,10 +25,10 @@ class PickingBatch(models.Model):
             if production:
                 for move_line in move.move_line_ids:
                     if not move_line.lot_id:
-                        move_line._create_and_assign_production_lot()
-                        production.lot_producing_id = move_line.lot_id
-                        production.lot_producing_id.ref = move_line.suplier_lot
-                        production.qty_producing = move_line.qty_done
+                        move_line.sudo()._create_and_assign_production_lot()
+                        production.sudo().lot_producing_id = move_line.lot_id
+                        production.sudo().lot_producing_id.ref = move_line.suplier_lot
+                        production.sudo().qty_producing = move_line.qty_done
         return super(PickingBatch, self).keeper_approve()
 
 
