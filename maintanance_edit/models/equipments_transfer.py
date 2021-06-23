@@ -1,4 +1,4 @@
-from odoo import models, fields, api,_
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
 _STATES = [
@@ -30,16 +30,16 @@ class maintenance_edit(models.Model):
     def _getequipment(self):
         t = []
         equipment = self.env['maintenance.equipment'].search([('technician_user_id', '=', self.env.uid),
-                                                             ])
+                                                              ])
 
         if equipment:
             for l in equipment:
                 t.append(l.id)
             return [('id', 'in', t)]
 
-    equipment = fields.Many2one('maintenance.equipment', 'Equipment', store=True, domain=_getequipment)
+    equipment = fields.Many2one('maintenance.equipment', 'Equipment', store=True, domain=_getequipment, required=True)
 
-    @api.depends('equipment')
+    @api.onchange('equipment')
     def onchange_equipment(self):
         for record in self:
             if record.equipment:
@@ -55,27 +55,65 @@ class maintenance_edit(models.Model):
                 record.model = False
                 record.serial_no = False
                 record.note = False
-                record.assign_date= False
+                record.assign_date = False
+    @api.onchange('employee')
+    def onchange_employee(self):
+        for record in self:
+            if record.employee:
+                record.to_user = record.employee.parent_id.user_id
 
-    from_user = fields.Many2one('hr.employee', string='From User', store=True, compute='onchange_equipment')
-    to_user = fields.Many2one('res.users', 'To User', store=True)
-    date = fields.Date('Date', store=True)
-    assign_date = fields.Date('Receive Date', store=True,compute='onchange_equipment')
-    brand = fields.Many2one('equipment.brand', compute='onchange_equipment')
-    model = fields.Char('Model', compute='onchange_equipment')
-    serial_no = fields.Char('Serial No', compute='onchange_equipment')
-    note = fields.Text('Describtion', compute='onchange_equipment')
+            else:
+                record.to_user=False
+
+    from_user = fields.Many2one('hr.employee', string='From Employee', store=True,readonly=True,)
+    to_user = fields.Many2one('res.users', 'Manager', store=True, required=True)
+    employee = fields.Many2one('hr.employee', 'To Employee', store=True,required=True)
+    date = fields.Date('Date', store=True, required=True)
+    assign_date = fields.Date('Receive Date', store=True, )
+    brand = fields.Many2one('equipment.brand',store=True)
+    model = fields.Char('Model', store=True)
+    serial_no = fields.Char('Serial No',store=True)
+    note = fields.Text('Describtion',store=True)
 
     def button_send(self):
 
         self.write({'state': 'send'})
 
     def button_receive(self):
+        if self.equipment:
+            for line in self:
+                equipment = self.env['maintenance.equipment'].search([('id', '=', self.equipment.id),
+                                                                      ])
+
+                for x in equipment:
+                    x.employee_id = line.employee
         self.write({'state': 'receive'})
 
     @api.model
     def _get_default_employee_id(self):
         return self.env['res.users'].browse(self.env.uid)
 
-    employee_id = fields.Many2one('res.users', 'Employee', readonly=True, index=True, tracking=True,
-                                  default=_get_default_employee_id, copy=False)
+    employee_id = fields.Many2one('res.users', 'User', readonly=True, index=True, tracking=True,
+                                  default=_get_default_employee_id, copy=False ,store=True)
+
+    @api.depends('employee')
+    def _compute_employee_department(self):
+        for r in self:
+            if self.employee:
+                r.department_id = r.employee.department_id
+            else:
+                r.department_id = False
+    department_id = fields.Many2one('hr.department', compute='_compute_employee_department', store=True, readonly=True,
+
+                                    string="Department")
+
+    @api.depends('state')
+    def _compute_can_manager(self):
+
+        if self.env.uid == self.to_user.id and self.state == 'send':
+            self.can_leader_approved = True
+        else:
+            self.can_leader_approved = False
+
+
+    can_leader_approved = fields.Boolean(string='Can Leader approved', compute='_compute_can_manager')
