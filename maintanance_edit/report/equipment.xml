@@ -8,7 +8,7 @@
 
                     <div class="oe_structure"/>
 <div class="oe_structure" />
-                        <h3  class="col-xs-5 col-xs-offset-3"   style="color:#191970 ; font-family:serif">Actual Visit Report </h3>
+                        <h3  class="col-xs-5 col-xs-offset-3"   style="color:#191970 ; font-family:serif">Device Report </h3>
 <h4>
                     <div class="row " >
                             <h4 class="col-xs-6  "><span style="color:#DC143C">Department: </span><span t-field="o.department"/>
@@ -24,9 +24,10 @@
                                 <th>Device Name</th>
                                 <th>Category </th>
                                 <th>Brand </th>
-                                <th>Description</th>
                                 <th>Model</th>
                                 <th>Serial NO</th>
+                                <th>Description</th>
+
 
 
 
@@ -45,9 +46,10 @@
                                     <td><span t-esc="l.equipment" /></td>
                                     <td><span t-esc="l.brand.name" /></td>
                                     <td><span t-esc="l.category_id.name"/></td>
-                                    <td><span t-esc="l.note"/></td>
                                     <td><span t-esc="l.model"/></td>
                                     <td><span t-esc="l.serial_no"/></td>
+                                    <td><span t-esc="l.note"/></td>
+
 
 
 
