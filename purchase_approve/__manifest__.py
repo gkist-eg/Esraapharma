@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "purchase_approve",
+    'name': "Gkist Purchase Approve",
 
     'summary': """
         Short (1 phrase/line) summary of the module's purpose, used as
@@ -11,7 +11,7 @@
     """,
 
     'author': "G K I S T",
-    'website': "http://www.gkist-rg.com",
+    'website': "http://www.gkist-eg.com",
 
 
 

@@ -52,4 +52,12 @@
     </xpath>
         </template>
 
+        <record id="sequence_purchase_order_toll" model="ir.sequence">
+            <field name="name">purchase order toll</field>
+            <field name="code">purchase.order.toll</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">SO</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+        </record>
 </odoo>
