@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_device" model="ir.ui.view">
+            <field name="name">Device</field>
+            <field name="model">equipment.equipment</field>
+            <field name="arch" type="xml">
+                <form string="Choose your date">
+                    <p class="oe_gray">
+                    </p>
+                    <group>
+                        <group>
+                            <field name="department"
+                                   options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+
+                        </group>
+                        <group>
+
+
+                        </group>
+
+                    </group>
+
+
+                    <footer>
+                        <button name="print_device"
+                                string="Print "
+                                type="object"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+
+                </form>
+
+
+            </field>
+        </record>
+        <record id="action_equipment" model="ir.actions.act_window">
+            <field name="name">Device Report</field>
+            <field name="res_model">equipment.equipment</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_device"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+                id="menu_equipment"
+                action="action_equipment"
+                sequence="5"
+                parent="maintenance.menu_equipment_form"
+
+        />
+    </data>
+</odoo>

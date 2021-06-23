@@ -28,6 +28,9 @@
         'views/views.xml',
         'views/equipment_transfer.xml',
         'views/templates.xml',
+        'wizard/equipment.xml',
+        'report/equipment.xml',
+        'report/report.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

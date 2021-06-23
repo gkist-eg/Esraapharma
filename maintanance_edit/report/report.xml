@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+         <report
+            id="action_equipment"
+            model="equipment.equipment"
+            string="Device"
+            menu="True"
+            report_type="qweb-pdf"
+            name="maintanance_edit.equipment"
+            file="maintanance_edit.equipment"
+
+        />
+
+
+    </data>
+</odoo>

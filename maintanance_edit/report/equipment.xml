@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <template id="equipment">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.external_layout">
+                <div class="page" >
+
+                    <div class="oe_structure"/>
+<div class="oe_structure" />
+                        <h3  class="col-xs-5 col-xs-offset-3"   style="color:#191970 ; font-family:serif">Actual Visit Report </h3>
+<h4>
+                    <div class="row " >
+                            <h4 class="col-xs-6  "><span style="color:#DC143C">Department: </span><span t-field="o.department"/>
+
+                    </h4></div><br/><br/>
+</h4>
+
+                        <table class="table table-condensed" style="border:1px solid black;">
+                            <thead>
+                            <tr style="border:1px solid black;">
+                                <th>#</th>
+                                <th>Employee Name</th>
+                                <th>Device Name</th>
+                                <th>Category </th>
+                                <th>Brand </th>
+                                <th>Description</th>
+                                <th>Model</th>
+                                <th>Serial NO</th>
+
+
+
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="i" t-value="1" />
+
+                            <t t-foreach="o.line_ids" t-as="l" >
+
+                                <tr>
+                                    <td><span t-esc="i"/></td>
+                                    <t t-set="i" t-value="i+1"/>
+                                    <td><span t-esc="l.employee_id.name" /></td>
+                                    <td><span t-esc="l.equipment" /></td>
+                                    <td><span t-esc="l.brand.name" /></td>
+                                    <td><span t-esc="l.category_id.name"/></td>
+                                    <td><span t-esc="l.note"/></td>
+                                    <td><span t-esc="l.model"/></td>
+                                    <td><span t-esc="l.serial_no"/></td>
+
+
+
+
+                                </tr>
+
+
+                            </t>
+                            </tbody>
+                        </table>
+                    <div class="col-xs-5 col-xs-offset-3">
+                        </div>
+                    <div class="oe_structure"/>
+                </div>
+            </t>
+        </t>
+    </t>
+    </template>
+</odoo>
