@@ -119,5 +119,5 @@ class StockMoveLine(models.Model):
                                                     package_id=ml.package_id,
                                                     owner_id=ml.owner_id, strict=True)
                 reserved_qty = sum([x[1] for x in q])
-                new_product_uom_qty = ml.product_uom_id._compute_quantity(reserved_qty, ml.product_id.uom_id, rounding_method='HALF-UP')
+                new_product_uom_qty = ml.product_id.uom_id._compute_quantity(reserved_qty, ml.product_uom_id, rounding_method='HALF-UP')
                 ml.with_context(bypass_reservation_update=True).product_uom_qty += new_product_uom_qty
