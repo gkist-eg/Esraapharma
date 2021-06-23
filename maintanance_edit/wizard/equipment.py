@@ -32,6 +32,7 @@ class ActualVisit(models.TransientModel):
                         'serial_no': a.serial_no,
                         'brand': a.brand.id,
                         'category_id': a.category_id.id,
+                        'employee_id': a.employee_id.id,
 
 
                     }))
@@ -62,6 +63,7 @@ class ActualApp(models.TransientModel):
     device = fields.Char('device')
     brand = fields.Many2one('equipment.brand')
     category_id = fields.Many2one('maintenance.equipment.category')
+    employee_id = fields.Many2one('hr.employee')
     note = fields.Char('note')
     model = fields.Char('model')
     serial_no = fields.Char('serial_no')

@@ -20,6 +20,7 @@
                             <thead>
                             <tr style="border:1px solid black;">
                                 <th>#</th>
+                                <th>Employee Name</th>
                                 <th>Device Name</th>
                                 <th>Category </th>
                                 <th>Brand </th>
@@ -40,6 +41,7 @@
                                 <tr>
                                     <td><span t-esc="i"/></td>
                                     <t t-set="i" t-value="i+1"/>
+                                    <td><span t-esc="l.employee_id.name" /></td>
                                     <td><span t-esc="l.equipment" /></td>
                                     <td><span t-esc="l.brand.name" /></td>
                                     <td><span t-esc="l.category_id.name"/></td>
