@@ -106,21 +106,20 @@ class StockMoveLine(models.Model):
                 moves_to_recompute_state = self.env['stock.move']
                 quants = sum(x.available_quantity for x in
                              ml.lot_id.quant_ids.filtered(lambda quant: quant.location_id == ml.location_id))
-                actual_qty = quants + ml.product_id.uom_id._compute_quantity(ml.product_uom_qty,
-                                                                             ml.product_uom_id,
-                                                                             rounding_method='HALF-UP')
-                if round(ml.qty_done, 5) > round(actual_qty, 5):
+                done_qty = ml.product_uom_id._compute_quantity(ml.qty_done, line.product_id.uom_id,
+                                                      rounding_method='HALF-UP')
+                actual_qty = quants + ml.product_uom_id._compute_quantity(ml.product_uom_qty, ml.product_id.uom_id, rounding_method='HALF-UP')
+                if round(done_qty, 5) > round(actual_qty, 5):
                     ml.qty_done = actual_qty
                     qty = actual_qty - ml.product_uom_qty
                 else:
-                    qty = ml.qty_done - ml.product_uom_qty
+                    qty = done_qty - ml.product_uom_id._compute_quantity(ml.product_uom_qty, ml.product_id.uom_id, rounding_method='HALF-UP')
 
                 q = Quant._update_reserved_quantity(ml.product_id, ml.location_id,qty,
                                                     lot_id=ml.lot_id,
                                                     package_id=ml.package_id,
                                                     owner_id=ml.owner_id, strict=True)
                 reserved_qty = sum([x[1] for x in q])
-                new_product_uom_qty = ml.product_id.uom_id._compute_quantity(reserved_qty, ml.product_uom_id,
-                                                                             rounding_method='HALF-UP')
+                new_product_uom_qty = ml.product_uom_id._compute_quantity(reserved_qty, ml.product_id.uom_id, rounding_method='HALF-UP')
                 moves_to_recompute_state |= ml.move_id
                 ml.with_context(bypass_reservation_update=True).product_uom_qty += new_product_uom_qty
