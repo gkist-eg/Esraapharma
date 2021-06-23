@@ -28,7 +28,7 @@
                 <field name="expiration_date" force_save="1" attrs="{
                     'column_invisible': [('parent.use_expiration_date', '!=', True)],
                     'readonly': [('picking_type_use_existing_lots', '=', True)],
-                }"/>
+                }" optional="show"/>
             </xpath>
 
         </field>
@@ -41,7 +41,7 @@
 
             <xpath expr="//field[@name='expiration_date']" position="replace">
                 <field name="expiration_date" force_save="1"
-                       attrs="{'readonly': [('picking_type_use_existing_lots', '=', True)],}"/>
+                       attrs="{'readonly': [('picking_type_use_existing_lots', '=', True)],}" optional="show" />
             </xpath>
 
         </field>
@@ -58,6 +58,16 @@
                        invisible="not context.get('show_lots_text')" force_save="1"/>
             </xpath>
 
+
+        </field></record>
+    <record id="view_stock_move_line_operation_tree_lot_2" model="ir.ui.view">
+        <field name="name">stock.move.line</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='owner_id']" position="attributes">
+                    <attribute name="optional">show</attribute>
+                </xpath>
 
         </field>
     </record>
@@ -210,7 +220,7 @@
     <record model="ir.ui.view" id="view_stock_quant_tree_inherit">
         <field name="name">stock.quant.tree.editable.inherit</field>
         <field name="model">stock.quant</field>
-        <field name="inherit_id" ref="stock.view_stock_quant_tree"></field>
+        <field name="inherit_id" ref="stock.view_stock_quant_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='lot_id']" position="after">
                 <field name="suplier_lot"/>
@@ -222,7 +232,7 @@
     <record model="ir.ui.view" id="view_stock_quant_search_inherit">
         <field name="name">stock.quant.tree.editable.inherit</field>
         <field name="model">stock.quant</field>
-        <field name="inherit_id" ref="stock.quant_search_view"></field>
+        <field name="inherit_id" ref="stock.quant_search_view"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='lot_id']" position="after">
                 <field name="suplier_lot"/>
@@ -234,7 +244,7 @@
     <record model="ir.ui.view" id="view_stock_quant_form_inherit">
         <field name="name">stock.quant.tree.editable.inherit</field>
         <field name="model">stock.quant</field>
-        <field name="inherit_id" ref="stock.view_stock_quant_form"></field>
+        <field name="inherit_id" ref="stock.view_stock_quant_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='lot_id']" position="after">
                 <field name="suplier_lot"/>
