@@ -106,7 +106,7 @@ class StockMoveLine(models.Model):
                 moves_to_recompute_state = self.env['stock.move']
                 quants = sum(x.available_quantity for x in
                              ml.lot_id.quant_ids.filtered(lambda quant: quant.location_id == ml.location_id))
-                done_qty = ml.product_uom_id._compute_quantity(ml.qty_done, line.product_id.uom_id,
+                done_qty = ml.product_uom_id._compute_quantity(ml.qty_done, ml.product_id.uom_id,
                                                       rounding_method='HALF-UP')
                 actual_qty = quants + ml.product_uom_id._compute_quantity(ml.product_uom_qty, ml.product_id.uom_id, rounding_method='HALF-UP')
                 if round(done_qty, 5) > round(actual_qty, 5):
