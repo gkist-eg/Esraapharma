@@ -30,8 +30,8 @@ class ActualVisit(models.TransientModel):
                         'note': a.note,
                         'model': a.model,
                         'serial_no': a.serial_no,
-                        'brand': a.brand.name,
-                        'category_id': a.category_id.name,
+                        'brand': a.brand.id,
+                        'category_id': a.category_id.id,
 
 
                     }))
