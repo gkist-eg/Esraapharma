@@ -36,7 +36,7 @@
             </field>
         </record>
         <record id="action_equipment" model="ir.actions.act_window">
-            <field name="name">Device</field>
+            <field name="name">Device Report</field>
             <field name="res_model">equipment.equipment</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="view_device"/>
