@@ -8,7 +8,7 @@
                 expr="//field[@name='move_ids_without_package']/tree[1]/field[@name='reserved_availability']"
                 position="before"
             >
-                <field name="not_reserved" />
+                <field name="not_reserved"  optional="show"/>
             </xpath>
         </field>
     </record>

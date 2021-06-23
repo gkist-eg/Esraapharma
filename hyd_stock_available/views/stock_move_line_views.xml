@@ -8,7 +8,7 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_uom_qty']" position="before">
-                <field name="not_reserved" />
+                <field name="not_reserved"  optional="show"/>
             </xpath>
         </field>
     </record>
@@ -21,7 +21,7 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_uom_qty']" position="before">
-                <field name="not_reserved"  invisible="context.get('show_lots_text')" />
+                <field name="not_reserved"  invisible="context.get('show_lots_text')" optional="show"/>
             </xpath>
         </field>
     </record>
