@@ -69,6 +69,26 @@ class Sale(models.Model):
     _inherit = 'sale.order'
     cash_discount_sale = fields.Float('Cash Discount', store=True)
     dis_discount_sale = fields.Float('Distributor Discount', store=True)
+    return_order = fields.Boolean(string='Returned Order',
+                              compute='_compute_return_order', search='_search_return_order')
+
+    def _search_return_order(self, operator, value):
+        if operator != '=':
+            if operator == '!=' and isinstance(value, bool):
+                value = not value
+            else:
+                raise NotImplementedError()
+        lines = self.search([('invoice_status', '=', "to invoice")])
+        line_ids = lines.filtered(lambda line: line.return_order == value).ids
+        return [('id', 'in', line_ids)]
+
+    def _compute_return_order(self):
+        for record in self:
+            lines = record.order_line.filtered(lambda line: line.qty_invoiced > line.qty_delivered)
+            if lines:
+                record.return_order = True
+            else :
+                record.return_order = False
 
     @api.onchange('partner_id')
     def _onchange_ty(self):
