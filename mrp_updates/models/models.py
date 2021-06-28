@@ -169,6 +169,8 @@ class MrpUpdates(models.Model):
 
         return True
 
+
+
     @api.depends('move_finished_ids.quantity_done', 'qty_producing')
     def _compute_post_visible(self):
         for order in self:
@@ -202,7 +204,7 @@ class MrpUpdates(models.Model):
                 self.qty_producing = self.product_id.uom_id._compute_quantity(1, self.product_uom_id,
                                                                               rounding_method='HALF-UP')
 
-        for move in (self.move_raw_ids | self.move_finished_ids.filtered(
+        for move in (self.move_raw_ids(lambda m: m.state not in ('done', 'cancel')) | self.move_finished_ids.filtered(
                 lambda m: m.product_id != self.product_id and m.state not in ('done', 'cancel'))):
             if move._should_bypass_set_qty_producing():
                 continue
