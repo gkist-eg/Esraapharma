@@ -56,6 +56,7 @@ class maintenance_edit(models.Model):
                 record.serial_no = False
                 record.note = False
                 record.assign_date = False
+
     @api.onchange('employee')
     def onchange_employee(self):
         for record in self:
@@ -63,17 +64,17 @@ class maintenance_edit(models.Model):
                 record.to_user = record.employee.parent_id.user_id
 
             else:
-                record.to_user=False
+                record.to_user = False
 
-    from_user = fields.Many2one('hr.employee', string='From Employee', store=True,readonly=True,)
+    from_user = fields.Many2one('hr.employee', string='From Employee', store=True, readonly=True, )
     to_user = fields.Many2one('res.users', 'Manager', store=True, required=True)
-    employee = fields.Many2one('hr.employee', 'To Employee', store=True,required=True)
+    employee = fields.Many2one('hr.employee', 'To Employee', store=True, required=True)
     date = fields.Date('Date', store=True, required=True)
     assign_date = fields.Date('Receive Date', store=True, )
-    brand = fields.Many2one('equipment.brand',store=True)
+    brand = fields.Many2one('equipment.brand', store=True)
     model = fields.Char('Model', store=True)
-    serial_no = fields.Char('Serial No',store=True)
-    note = fields.Text('Describtion',store=True)
+    serial_no = fields.Char('Serial No', store=True)
+    note = fields.Text('Describtion', store=True)
 
     def button_send(self):
 
@@ -94,7 +95,7 @@ class maintenance_edit(models.Model):
         return self.env['res.users'].browse(self.env.uid)
 
     employee_id = fields.Many2one('res.users', 'User', readonly=True, index=True, tracking=True,
-                                  default=_get_default_employee_id, copy=False ,store=True)
+                                  default=_get_default_employee_id, copy=False, store=True)
 
     @api.depends('employee')
     def _compute_employee_department(self):
@@ -103,6 +104,7 @@ class maintenance_edit(models.Model):
                 r.department_id = r.employee.department_id
             else:
                 r.department_id = False
+
     department_id = fields.Many2one('hr.department', compute='_compute_employee_department', store=True, readonly=True,
 
                                     string="Department")
@@ -115,5 +117,22 @@ class maintenance_edit(models.Model):
         else:
             self.can_leader_approved = False
 
-
     can_leader_approved = fields.Boolean(string='Can Leader approved', compute='_compute_can_manager')
+
+
+class maintenance_stage(models.Model):
+    _inherit = 'maintenance.stage'
+
+    type = fields.Selection([('creator', 'Creator'), ('technical', 'Technical')])
+
+
+class maintenance_request(models.Model):
+    _inherit = 'maintenance.request'
+    cost=fields.Char('Cost',store=True)
+    @api.constrains('stage_id')
+    def _check_actual_visit(self):
+        for record in self:
+            if record.stage_id.type == 'creator' and record.employee_id.user_id.id != self.env.uid:
+                raise ValidationError(_('Creator the only one modify this stage') )
+            elif record.stage_id.type == 'technical' and record.user_id.id != self.env.uid:
+                raise ValidationError(_('Technical the only one modify this stage') )
