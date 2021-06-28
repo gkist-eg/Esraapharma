@@ -123,12 +123,14 @@ class maintenance_edit(models.Model):
 class maintenance_stage(models.Model):
     _inherit = 'maintenance.stage'
 
-    type = fields.Selection([('creator', 'Creator'), ('technical', 'Technical')])
+    type = fields.Selection([('creator', 'Creator'), ('technical', 'Technical')],store=True)
 
 
 class maintenance_request(models.Model):
     _inherit = 'maintenance.request'
     cost=fields.Char('Cost',store=True)
+    type = fields.Selection([('in_company', 'In Company'), ('out_company', 'Out Company')],store=True)
+
     @api.constrains('stage_id')
     def _check_actual_visit(self):
         for record in self:
