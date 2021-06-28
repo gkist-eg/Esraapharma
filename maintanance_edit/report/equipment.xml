@@ -88,4 +88,12 @@
             </t>
         </t>
     </template>
+     <record id="sale_order_approval_inherit" model="ir.ui.view">
+          <field name="model">maintenance.stage</field>
+          <field name="inherit_id" ref="maintenance.hr_equipment_stage_view_tree"/>
+          <field name="arch" type="xml">
+              <xpath expr="/tree/field[@name='done']"  position="after">
+                  <field name="type" />
+              </xpath>
+          </field></record>
 </odoo>
