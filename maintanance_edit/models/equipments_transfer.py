@@ -133,8 +133,10 @@ class maintenance_request(models.Model):
 
     @api.constrains('stage_id')
     def _check_actual_visit(self):
+       if self.stage_id:
         for record in self:
-            if record.stage_id.type == 'creator' and record.employee_id.user_id.id != self.env.uid:
+
+            if self.stage_id.type == 'creator' and self.employee_id.user_id.id != self.env.uid:
                 raise ValidationError(_('Creator the only one modify this stage') )
-            elif record.stage_id.type == 'technical' and record.user_id.id != self.env.uid:
+            elif self.stage_id.type == 'technical' and self.user_id.id != self.env.uid:
                 raise ValidationError(_('Technical the only one modify this stage') )
