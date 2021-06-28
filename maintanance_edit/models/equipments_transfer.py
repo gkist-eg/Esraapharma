@@ -43,7 +43,7 @@ class maintenance_edit(models.Model):
     def onchange_equipment(self):
         for record in self:
             if record.equipment:
-                record.from_user = record.equipment.employee_id
+                record.from_user = record.equipment.employee_have_device
                 record.brand = record.equipment.brand
                 record.model = record.equipment.model
                 record.serial_no = record.equipment.serial_no
