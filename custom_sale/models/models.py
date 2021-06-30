@@ -692,24 +692,24 @@ class Invoceder(models.Model):
                 res = {k: currency.round(v) for k, v in res.items()}
             return res
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        # OVERRIDE
-        ACCOUNTING_FIELDS = ('debit', 'credit', 'amount_currency', 'sale_type')
-        BUSINESS_FIELDS = ('price_unit', 'quantity', 'discount', 'tax_ids', 'sale_type')
-        print(vals_list)
-        for val in vals_list:
-            try:
-                if val['sale_type'] == 'bouns':
-                    price = val['price_unit']
-                    val['price_unit'] = 0.0
-                    val['list_price'] = price
-            except:
-                print(vals_list)
-
-        lines = super(Invoceder, self).create(vals_list)
-
-        return lines
+    # @api.model_create_multi
+    # def create(self, vals_list):
+    #     # OVERRIDE
+    #     ACCOUNTING_FIELDS = ('debit', 'credit', 'amount_currency', 'sale_type')
+    #     BUSINESS_FIELDS = ('price_unit', 'quantity', 'discount', 'tax_ids', 'sale_type')
+    #     print(vals_list)
+    #     for val in vals_list:
+    #         try:
+    #             if val['sale_type'] == 'bouns':
+    #                 price = val['price_unit']
+    #                 val['price_unit'] = 0.0
+    #                 val['list_price'] = price
+    #         except:
+    #             print(vals_list)
+    #
+    #     lines = super(Invoceder, self).create(vals_list)
+    #
+    #     return lines
 
 
 class Move(models.Model):
