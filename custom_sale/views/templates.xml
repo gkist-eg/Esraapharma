@@ -643,21 +643,21 @@
 
                                             </td>
                                             <td style="border: 1px solid black;"
-                                                t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender') and l.sale_ype=='sale' ">
+                                                t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender') and l.sale_type=='sale' ">
                                                 <span t-esc="l.price_unit"
                                                       t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
 
                                             </td>
                                             <td style="border: 1px solid black;"
-                                                t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender') and l.sale_ype=='bouns' ">
+                                                t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender') and l.sale_type=='bouns' ">
                                                 0
                                             </td>
                                             <td style="border: 1px solid black;"
-                                                t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender') and l.sale_ype=='bouns'">
+                                                t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender') and l.sale_type=='bouns'">
                                                 0
                                             </td>
                                             <td style="border: 1px solid black;"
-                                                t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender') and l.sale_ype=='sale'">
+                                                t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender') and l.sale_type=='sale'">
                                                 <span t-esc="l.store_price"
                                                       t-options='{"widget": "False", "precision": 2}'/>
 
