@@ -262,9 +262,7 @@ class ORder(models.Model):
                         'account.group_account_manager'):
                     line.tax_id.invalidate_cache(['invoice_repartition_line_ids'], [line.tax_id.id])
             else:
-
                 price1 = (line.price_unit * (1.0 - (line.discount or 0.0) / 100.0))
-
                 price2 = price1 * (1.0 - (line.dist_discount or 0.0) / 100.0)
                 price = price2 * (1.0 - (line.cash_discount or 0.0) / 100.0)
                 # print(line.price_unit, price1, price2, price)
@@ -692,24 +690,24 @@ class Invoceder(models.Model):
                 res = {k: currency.round(v) for k, v in res.items()}
             return res
 
-    # @api.model_create_multi
-    # def create(self, vals_list):
-    #     # OVERRIDE
-    #     ACCOUNTING_FIELDS = ('debit', 'credit', 'amount_currency', 'sale_type')
-    #     BUSINESS_FIELDS = ('price_unit', 'quantity', 'discount', 'tax_ids', 'sale_type')
-    #     print(vals_list)
-    #     for val in vals_list:
-    #         try:
-    #             if val['sale_type'] == 'bouns':
-    #                 price = val['price_unit']
-    #                 val['price_unit'] = 0.0
-    #                 val['list_price'] = price
-    #         except:
-    #             print(vals_list)
-    #
-    #     lines = super(Invoceder, self).create(vals_list)
-    #
-    #     return lines
+    @api.model_create_multi
+    def create(self, vals_list):
+        # OVERRIDE
+        ACCOUNTING_FIELDS = ('debit', 'credit', 'amount_currency', 'sale_type')
+        BUSINESS_FIELDS = ('price_unit', 'quantity', 'discount', 'tax_ids', 'sale_type')
+        print(vals_list)
+        for val in vals_list:
+            try:
+                if val['sale_type'] == 'bouns':
+                    price = val['price_unit']
+                    val['price_unit'] = 0.0
+                    val['list_price'] = price
+            except:
+                print(vals_list)
+
+        lines = super(Invoceder, self).create(vals_list)
+
+        return lines
 
 
 class Move(models.Model):
