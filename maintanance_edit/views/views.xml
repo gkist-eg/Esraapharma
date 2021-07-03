@@ -36,6 +36,8 @@
             <field name="arch" type="xml">
                   <xpath expr="//field[@name='category_id']" position="after">
                     <field name="brand" />
+                </xpath>  <xpath expr="//field[@name='employee_id']" position="after">
+                    <field name="employee_have_device" />
                 </xpath>
             </field>
  </record>

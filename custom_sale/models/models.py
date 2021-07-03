@@ -262,9 +262,7 @@ class ORder(models.Model):
                         'account.group_account_manager'):
                     line.tax_id.invalidate_cache(['invoice_repartition_line_ids'], [line.tax_id.id])
             else:
-
                 price1 = (line.price_unit * (1.0 - (line.discount or 0.0) / 100.0))
-
                 price2 = price1 * (1.0 - (line.dist_discount or 0.0) / 100.0)
                 price = price2 * (1.0 - (line.cash_discount or 0.0) / 100.0)
                 # print(line.price_unit, price1, price2, price)
@@ -1095,7 +1093,7 @@ class Move(models.Model):
                         discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
-                        x = round((base_line.price_unit * (1.0 - base_line.discount / 100.0)), 3)
+                        x = round((base_line.product_id.lst_price * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
                         discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
                         discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
@@ -1110,7 +1108,7 @@ class Move(models.Model):
                         discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
-                        discount_pharm = (base_line.price_unit * (1.0 - (base_line.discount / 100.0)))
+                        discount_pharm = (base_line.product_id.lst_price * (1.0 - (base_line.discount / 100.0)))
                         discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
                         discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_pharm
