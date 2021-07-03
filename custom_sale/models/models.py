@@ -700,6 +700,7 @@ class Invoceder(models.Model):
             try:
                 if val['sale_type'] == 'bouns':
                     price = val['price_unit']
+                    val['price_unit'] = 0.0
                     val['list_price'] = price
             except:
                 print(vals_list)
@@ -895,6 +896,49 @@ class Move(models.Model):
 
             self.update({'line_ids': lines_list,
                          })
+        if total != 0 and self.move_type == 'out_refund':
+
+            # lines_list.append((0, 0, {
+            #     'name': 'Total Discount',
+            #     'display_type': False,
+            #     'exclude_from_invoice_tab': True,
+            #     'account_id': rec,
+            #     'debit': round(dic_disc_amount, 2) + round(cash_disc_amount, 2) + round(pharma_discount, 2),
+            #     'credit':0.0 ,
+            # }))
+            if self.partner_id.dist_account.id:
+                lines_list.append((0, 0, {
+                    'name': 'Dist Discount',
+                    'display_type': False,
+                    'exclude_from_invoice_tab': True,
+                    'account_id': self.partner_id.dist_account.id,
+                    'credit': round(dic_disc_amount, 2),
+                    'debit': 0.0
+                }))
+            if self.partner_id.cash_account.id:
+                lines_list.append((0, 0, {
+                    'name': 'Cash Discount',
+                    'display_type': False,
+                    'exclude_from_invoice_tab': True,
+                    'account_id': self.partner_id.cash_account.id,
+                    'debit': 0.0,
+                    'credit': round(cash_disc_amount, 2),
+
+                }))
+
+            if self.partner_id.property_product_pricelist.pharmacy_account.id:
+                lines_list.append((0, 0, {
+                    'name': 'Pharmacy Discount',
+                    'display_type': False,
+                    'exclude_from_invoice_tab': True,
+                    'account_id': self.partner_id.property_product_pricelist.pharmacy_account.id,
+                    'debit': 0.0,
+                    'credit': round(pharma_discount, 2),
+
+                }))
+
+            self.update({'line_ids': lines_list,
+                         })
         return super(Move, self).action_post()
 
     @api.depends('invoice_line_ids.quantity')
@@ -1049,7 +1093,7 @@ class Move(models.Model):
                         discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
-                        x = round((base_line.price_unit * (1.0 - base_line.discount / 100.0)), 3)
+                        x = round((base_line.product_id.lst_price * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
                         discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
                         discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
@@ -1064,7 +1108,7 @@ class Move(models.Model):
                         discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
-                        discount_pharm = (base_line.price_unit * (1.0 - (base_line.discount / 100.0)))
+                        discount_pharm = (base_line.product_id.lst_price * (1.0 - (base_line.discount / 100.0)))
                         discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
                         discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_pharm
