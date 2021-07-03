@@ -700,7 +700,6 @@ class Invoceder(models.Model):
             try:
                 if val['sale_type'] == 'bouns':
                     price = val['price_unit']
-                    val['price_unit'] = 0.0
                     val['list_price'] = price
             except:
                 print(vals_list)
