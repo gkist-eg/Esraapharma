@@ -328,3 +328,199 @@ class PRFollowUpLine(models.TransientModel):
         ('request_approved', 'Request Approved'),
         ('fully_quotationed', 'Fully Quotationed'),
     ], )
+
+
+class POFollowup(models.TransientModel):
+    _name = 'po.followup'
+    _description = 'PO Follow Up'
+
+    choose_from = fields.Selection([('all', 'All'), ('other', 'Other')], default='all', string='Choose From',
+                                   store=True)
+    department = fields.Many2one('res.partner', string='Partner', store=True)
+    product = fields.Many2one('product.product', string='Product', store=True, domain="[('purchase_ok','=',True)]")
+    purchase = fields.Many2one('purchase.order', string='PO', store=True, )
+    choose = fields.Selection([('vendor', 'Vendor'), ('product', 'Product'), ('po', 'PO')], string='Choose', store=True)
+    date_from = fields.Date(string="From Date", default=time.strftime('%Y-%m-01'), store=True)
+    date_to = fields.Date("To Date", store=True, default=datetime.datetime.now())
+    company = fields.Many2one('res.company', 'Company', required=True, index=True,
+                              default=lambda self: self.env.user.company_id.id)
+    line_ids = fields.One2many('po.followup.line', 'wizard_id', required=True, ondelete='cascade', store=True)
+
+    def print_pdf_pr_followup(self):
+        line_ids = []
+
+        # Unlink All one2many Line Ids from same wizard
+        for wizard_id in self.env['po.followup.line'].search([('wizard_id', '=', self.id)]):
+            if wizard_id.wizard_id.id == self.id:
+                self.write({'line_ids': [(3, wizard_id.id)]})
+
+                # Creating Temp dictionary for Product List
+        for wizard in self:
+            if wizard.vendor:
+                request = self.env['purchase.order.line'].search(
+                    [('order_id.date_order', '>=', wizard.date_from),
+                     ('order_id.date_order', '<=', wizard.date_to),
+                     ('order_id.partner_id', '=', self.vendor.id),
+                     ])
+                for resource in request:
+                    for move in resource.move_ids:
+                        l = None
+                        s = None
+                        if move.state == 'done':
+                            l = move.date
+                            s = move.product_uom_qty
+
+                        if move.backorder_id:
+                            for i in move.backorder_id.move_lines:
+                                line_ids.append((0, 0, {
+                                    'pr_no': resource.order_id.name,
+                                    'pr_date': resource.order_id.date_order,
+                                    'state': resource.order_id.state,
+                                    'product_code': resource.product_id.default_code,
+                                    'product_id': resource.product_id.id,
+                                    'requested_qty': resource.product_qty,
+                                    'qty_received': s,
+                                    'received_date': l,
+                                    'backorder_id': move.backorder_id.id,
+                                    'product_uom_qty': i.product_uom_qty,
+
+                                }))
+                        else:
+                            line_ids.append((0, 0, {
+                                'pr_no': resource.order_id.name,
+                                'pr_date': resource.order_id.start_date,
+                                'state': resource.order_id.state,
+                                'product_code': resource.product_id.default_code,
+                                'product_id': resource.product_id.id,
+                                'requested_qty': resource.product_qty,
+                                'qty_received': s,
+                                'received_date': l,
+
+                            }))
+
+            if wizard.product:
+                request = self.env['purchase.order.line'].search(
+                    [('order_id.date_order', '>=', wizard.date_from),
+                     ('order_id.date_order', '<=', wizard.date_to),
+                     ('product_id', '=', self.product_id.id),
+                     ])
+                for rec in request:
+                        for move in rec.move_ids:
+                            l = None
+                            s = None
+                            if move.state == 'done':
+                                l = move.date
+                                s = move.product_uom_qty
+                            if move.backorder_id:
+                                for i in move.backorder_id.move_lines:
+                                    line_ids.append((0, 0, {
+                                        'pr_no': rec.order_id.name,
+                                        'pr_date': rec.order_id.start_date,
+                                        'state': rec.order_id.state,
+                                        'requesting_department': rec.order_id.departmnt_id.id,
+                                        'requested_qty': rec.product_qty,
+                                        'qty_received': s,
+                                        'received_date': l,
+                                        'backorder_id': move.backorder_id.id,
+                                        'product_uom_qty': i.product_uom_qty,
+                                        'po': rec.order_id.name
+
+                                    }))
+                            else:
+                                line_ids.append((0, 0, {
+                                    'pr_no': rec.order_id.name,
+                                    'pr_date': rec.order_id.start_date,
+                                    'state': rec.order_id.state,
+                                    'requested_qty': rec.product_qty,
+                                    'qty_received': s,
+                                    'received_date': l,
+                                    'po': rec.order_id.name
+
+                                }))
+
+            if wizard.choose_from == 'all':
+
+                request = self.env['purchase.order.line'].search(
+                    [('order_id.date_order', '>=', wizard.date_from),
+                     ('order_id.date_order', '<=', wizard.date_to),
+
+                     ])
+                for resource in request:
+                        for move in resource.move_ids:
+                            l = None
+                            s = None
+                            if move.state == 'done':
+                                l = move.date
+                                s = move.product_uom_qty
+                            if move.backorder_id:
+                                for i in move.backorder_id.move_lines:
+                                    line_ids.append((0, 0, {
+                                        'pr_no': resource.order_id.name,
+                                        'pr_date': resource.order_id.start_date,
+                                        'state': resource.order_id.state,
+                                        'requesting_department': resource.order_id.departmnt_id.id,
+                                        'product_code': resource.product_id.default_code,
+                                        'product_id': resource.product_id.id,
+                                        'requested_qty': resource.product_qty,
+                                        'qty_received': s,
+                                        'received_date': l,
+                                        'backorder_id': move.backorder_id.id,
+                                        'product_uom_qty': i.product_uom_qty,
+
+                                    }))
+                            else:
+                                line_ids.append((0, 0, {
+                                    'pr_no': resource.order_id.name,
+                                    'pr_date': resource.order_id.start_date,
+                                    'state': resource.order_id.state,
+                                    'requesting_department': resource.order_id.departmnt_id.id,
+                                    'product_code': resource.product_id.default_code,
+                                    'product_id': resource.product_id.id,
+                                    'requested_qty': resource.product_qty,
+                                    'qty_received': s,
+                                    'received_date': l,
+
+                                }))
+
+
+
+        # writing to One2many line_ids
+        self.write({'line_ids': line_ids})
+        context = {
+            'lang': 'en_US',
+            'active_ids': [self.id],
+        }
+        return {
+            'context': context,
+            'data': None,
+            'type': 'ir.actions.report',
+            'report_name': 'purchase_report.po_followup_report',
+            'report_type': 'qweb-html',
+            'report_file': 'purchase_report.po_followup_report',
+            'name': 'PO Follow Up Report',
+            'flags': {'action_buttons': True},
+        }
+
+
+class POFollowUpLine(models.TransientModel):
+    _name = 'po.followup.line'
+
+    wizard_id = fields.Many2one('po.followup', required=True, ondelete='cascade')
+    pr_no = fields.Char('Date', store=True)
+    pr_date = fields.Date('Date', store=True)
+    product_id = fields.Many2one('product.product', 'Product', store=True)
+    product_code = fields.Char('Product Code', store=True)
+    requested_qty = fields.Float('Qty', store=True)
+    qty_received = fields.Float('Qty', store=True)
+    received_date = fields.Date('Received Date', store=True)
+    backorder_id = fields.Many2one('stock.picking', 'Back Order of', store=True)
+    product_uom_qty = fields.Float('Back Order Qty', store=True)
+    po = fields.Char('PO', store=True)
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('to_be_approved', 'To Be Approved'),
+        ('leader_approved', 'Leader Approved'),
+        ('maneger_approved', 'Manager Approved'),
+        ('request_approved', 'Request Approved'),
+        ('fully_quotationed', 'Fully Quotationed'),
+    ], )
