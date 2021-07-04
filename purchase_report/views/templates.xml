@@ -133,11 +133,10 @@
                     <div class="row mt32 mb32">
                         <div class="col-xs-6">
                             <span t-if="o.choose == 'vendor'">Vendor:</span>
-                            <span t-field="o.department"/>
+                            <span t-field="o.vendor"/>
                             <span t-if="o.choose == 'product'">Product:</span>
                             <span t-field="o.product"/>
-                            <span t-if="o.choose == 'po'">PO:</span>
-                            <span t-field="o.product"/>
+
                         </div>
                         <div class="col-xs-6">
                             <p>
