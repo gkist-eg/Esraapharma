@@ -336,7 +336,7 @@ class POFollowup(models.TransientModel):
 
     choose_from = fields.Selection([('all', 'All'), ('other', 'Other')], default='all', string='Choose From',
                                    store=True)
-    department = fields.Many2one('res.partner', string='Partner', store=True)
+    vendor = fields.Many2one('res.partner', string='Partner', store=True)
     product = fields.Many2one('product.product', string='Product', store=True, domain="[('purchase_ok','=',True)]")
     purchase = fields.Many2one('purchase.order', string='PO', store=True, )
     choose = fields.Selection([('vendor', 'Vendor'), ('product', 'Product'), ('po', 'PO')], string='Choose', store=True)
