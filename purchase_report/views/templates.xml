@@ -156,19 +156,16 @@
                             <tr>
                                 <th>PO No</th>
                                 <th>PO Date</th>
-                                <th>PO State</th>
                                 <th t-if="o.choose == 'vendor'">Product Code</th>
                                 <th t-if="o.choose == 'vendor'">Product</th>
                                 <th t-if="o.choose == 'product'">vendor</th>
                                 <th t-if="o.choose_from == 'all'">Product Code</th>
                                 <th t-if="o.choose_from == 'all'">Product</th>
-                                <th t-if="o.choose_from == 'all'">Requesting Department</th>
                                 <th>Requested Qty</th>
                                 <th>Received Qty</th>
                                 <th>Received Date</th>
                                 <th>Back Order</th>
                                 <th>Back Order Qty</th>
-                                <th>PO.No</th>
 
 
                             </tr>
@@ -182,27 +179,21 @@
                                     <td>
                                         <span t-esc="l.pr_date"/>
                                     </td>
-                                    <td>
-                                        <span t-field="l.state"/>
-                                    </td>
+
                                     <td t-if="o.choose == 'vendor'">
                                         <span t-esc="l.product_code"/>
                                     </td>
                                     <td t-if="o.choose == 'vendor'">
                                         <span t-esc="l.product_id.name"/>
                                     </td>
-                                    <td t-if="o.choose == 'product'">
-                                        <span t-esc="l.requesting_department.name"/>
-                                    </td>
+
                                     <td t-if="o.choose_from == 'all'">
                                         <span t-esc="l.product_code"/>
                                     </td>
                                     <td t-if="o.choose_from == 'all'">
                                         <span t-esc="l.product_id.name"/>
                                     </td>
-                                    <td t-if="o.choose_from == 'all'">
-                                        <span t-esc="l.requesting_department.name"/>
-                                    </td>
+
                                     <td>
                                         <span t-esc="l.requested_qty"/>
                                     </td>
@@ -217,9 +208,6 @@
                                     </td>
                                     <td>
                                         <span t-esc="l.product_uom_qty"/>
-                                    </td>
-                                    <td>
-                                        <span t-esc="l.po"/>
                                     </td>
 
                                 </tr>
