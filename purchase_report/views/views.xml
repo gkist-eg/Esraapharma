@@ -124,7 +124,7 @@
         <menuitem
                 id="menu_po_follow_up"
                 action="action_wizard_po_follow_up"
-                sequence="100"
+                sequence="101"
                 parent="purchase.purchase_report"
                 groups="purchase.group_purchase_user"
         />

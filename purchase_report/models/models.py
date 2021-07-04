@@ -346,7 +346,7 @@ class POFollowup(models.TransientModel):
                               default=lambda self: self.env.user.company_id.id)
     line_ids = fields.One2many('po.followup.line', 'wizard_id', required=True, ondelete='cascade', store=True)
 
-    def print_pdf_pr_followup(self):
+    def print_pdf_po_followup(self):
         line_ids = []
 
         # Unlink All one2many Line Ids from same wizard
