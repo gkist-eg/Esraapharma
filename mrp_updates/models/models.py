@@ -203,9 +203,12 @@ class MrpUpdates(models.Model):
             if qty_producing_uom != 1:
                 self.qty_producing = self.product_id.uom_id._compute_quantity(1, self.product_uom_id,
                                                                               rounding_method='HALF-UP')
-
-        for move in (self.move_raw_ids(lambda m: m.state not in ('done', 'cancel')) | self.move_finished_ids.filtered(
-                lambda m: m.product_id != self.product_id and m.state not in ('done', 'cancel'))):
+        moves = self.env['stock.move']
+        moves |= self.move_finished_ids.filtered(
+                lambda m: m.product_id != self.product_id and m.state not in ('done', 'cancel'))
+        moves |= self.move_raw_ids.filtered(
+                lambda m: m.state not in ('done', 'cancel'))
+        for move in moves:
             if move._should_bypass_set_qty_producing():
                 continue
             new_qty = self.product_uom_id._compute_quantity((self.qty_producing - self.qty_produced) * move.unit_factor,
