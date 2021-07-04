@@ -388,7 +388,7 @@ class POFollowup(models.TransientModel):
                         else:
                             line_ids.append((0, 0, {
                                 'pr_no': resource.order_id.name,
-                                'pr_date': resource.order_id.start_date,
+                                'pr_date': resource.order_id.date_order,
                                 'state': resource.order_id.state,
                                 'product_code': resource.product_id.default_code,
                                 'product_id': resource.product_id.id,
@@ -415,7 +415,7 @@ class POFollowup(models.TransientModel):
                                 for i in move.backorder_id.move_lines:
                                     line_ids.append((0, 0, {
                                         'pr_no': rec.order_id.name,
-                                        'pr_date': rec.order_id.start_date,
+                                        'pr_date': rec.order_id.date_order,
                                         'state': rec.order_id.state,
                                         'requesting_department': rec.order_id.departmnt_id.id,
                                         'requested_qty': rec.product_qty,
@@ -429,7 +429,7 @@ class POFollowup(models.TransientModel):
                             else:
                                 line_ids.append((0, 0, {
                                     'pr_no': rec.order_id.name,
-                                    'pr_date': rec.order_id.start_date,
+                                    'pr_date': rec.order_id.date_order,
                                     'state': rec.order_id.state,
                                     'requested_qty': rec.product_qty,
                                     'qty_received': s,
@@ -456,7 +456,7 @@ class POFollowup(models.TransientModel):
                                 for i in move.backorder_id.move_lines:
                                     line_ids.append((0, 0, {
                                         'pr_no': resource.order_id.name,
-                                        'pr_date': resource.order_id.start_date,
+                                        'pr_date': resource.order_id.date_order,
                                         'state': resource.order_id.state,
                                         'requesting_department': resource.order_id.departmnt_id.id,
                                         'product_code': resource.product_id.default_code,
@@ -471,7 +471,7 @@ class POFollowup(models.TransientModel):
                             else:
                                 line_ids.append((0, 0, {
                                     'pr_no': resource.order_id.name,
-                                    'pr_date': resource.order_id.start_date,
+                                    'pr_date': resource.order_id.date_order,
                                     'state': resource.order_id.state,
                                     'requesting_department': resource.order_id.departmnt_id.id,
                                     'product_code': resource.product_id.default_code,
