@@ -189,7 +189,7 @@
                                         <span t-esc="l.product_id.name"/>
                                     </td>
                                     <td t-if="o.choose in ( 'product','purchase')">
-                                        <span t-esc="l.partner.name"/>
+                                        <span t-esc="l.vendor.name"/>
                                     </td>
 
 
