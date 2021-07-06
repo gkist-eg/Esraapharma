@@ -182,13 +182,13 @@
                                         <span t-esc="l.pr_date"/>
                                     </td>
 
-                                    <td t-if="o.choose in ( 'product','purchase')">
+                                    <td t-if="o.choose in ('vendor','purchase')">
                                         <span t-esc="l.product_code"/>
                                     </td>
-                                    <td t-if="o.choose in ( 'product','purchase')">
+                                    <td t-if="o.choose in ('vendor','purchase')">
                                         <span t-esc="l.product_id.name"/>
                                     </td>
-                                    <td t-if="o.choose in ( 'product','purchase')">
+                                    <td t-if="o.choose in ('product','purchase')">
                                         <span t-esc="l.vendor.name"/>
                                     </td>
 
