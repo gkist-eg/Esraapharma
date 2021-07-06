@@ -166,6 +166,8 @@
                                 <th t-if="o.choose == 'purchase'">vendor</th>
                                 <th t-if="o.choose_from == 'all'">Product Code</th>
                                 <th t-if="o.choose_from == 'all'">Product</th>
+<th t-if="o.choose_from == 'all'">Product Code</th>
+                                <th t-if="o.choose_from == 'all'">vendor</th>
                                 <th>Requested Qty</th>
                                 <th>Received Qty</th>
                                 <th>Received Date</th>
@@ -211,6 +213,10 @@
                                     <td t-if="o.choose_from == 'all'">
                                         <span t-esc="l.product_id.name"/>
                                     </td>
+  <td t-if="o.choose_from == 'all'">
+                                        <span t-esc="l.vendor.name"/>
+                                    </td>
+
 
                                     <td>
                                         <span t-esc="l.requested_qty"/>

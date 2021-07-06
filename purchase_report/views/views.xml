@@ -97,7 +97,7 @@
                                    attrs="{'invisible':['|',('choose', 'not in',('product')),('choose_from', 'not in',('other'))]}"
                                    options="{'no_create_edit': True}"/>
                             <field name="purchase"
-                                   attrs="{'invisible':['|',('choose', 'not in',('po')),('choose_from', 'not in',('other'))]}"
+                                   attrs="{'invisible':['|',('choose', 'not in',('purchase')),('choose_from', 'not in',('other'))]}"
                                    options="{'no_create_edit': True}"/>
                         </group>
                     </group>
