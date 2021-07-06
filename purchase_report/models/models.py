@@ -417,7 +417,6 @@ class POFollowup(models.TransientModel):
                                 line_ids.append((0, 0, {
                                     'pr_no': rec.order_id.name,
                                     'vendor': rec.order_id.partner_id.id,
-
                                     'pr_date': rec.order_id.date_order,
                                     'requested_qty': rec.product_qty,
                                     'qty_received': s,
@@ -456,14 +455,15 @@ class POFollowup(models.TransientModel):
                                 line_ids.append((0, 0, {
                                     'pr_no': rec.order_id.name,
                                     'vendor': rec.order_id.partner_id.id,
-
                                     'pr_date': rec.order_id.date_order,
                                     'requested_qty': rec.product_qty,
                                     'qty_received': s,
                                     'received_date': l,
                                     'backorder_id': move.backorder_id.id,
                                     'product_uom_qty': i.product_uom_qty,
-                                    'po': rec.order_id.name
+                                    'po': rec.order_id.name,
+                                    'product_code': rec.product_id.default_code,
+                                    'product_id': rec.product_id.id,
 
                                 }))
                         else:
@@ -475,7 +475,9 @@ class POFollowup(models.TransientModel):
                                 'requested_qty': rec.product_qty,
                                 'qty_received': s,
                                 'received_date': l,
-                                'po': rec.order_id.name
+                                'po': rec.order_id.name,
+                                'product_code': rec.product_id.default_code,
+                                'product_id': rec.product_id.id,
 
                             }))
 
