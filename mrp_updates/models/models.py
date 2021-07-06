@@ -383,13 +383,13 @@ class MrpUpdates(models.Model):
             elif production.state in ('draft', 'done', 'cancel'):
                 production.reservation_state = False
 
-    def action_cancel(self):
-        for production in self:
-            if production.state not in ('draft', 'confirmed', 'cancel'):
-                raise UserError(_('You can not cancel mo unless it was draft or confirmed'))
-            production.state = 'cancel'
-        res = super(MrpUpdates, self).action_cancel()
-        return res
+    # def action_cancel(self):
+    #     for production in self:
+    #         if production.state not in ('draft', 'confirmed', 'cancel'):
+    #             raise UserError(_('You can not cancel mo unless it was draft or confirmed'))
+    #         production.state = 'cancel'
+    #     res = super(MrpUpdates, self).action_cancel()
+    #     return res
 
     def button_mark_done(self):
         res = super(MrpUpdates, self).button_mark_done()
