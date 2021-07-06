@@ -339,7 +339,7 @@ class POFollowup(models.TransientModel):
     vendor = fields.Many2one('res.partner', string='Partner', store=True)
     product = fields.Many2one('product.product', string='Product', store=True, domain="[('purchase_ok','=',True)]")
     purchase = fields.Many2one('purchase.order', string='PO', store=True, )
-    choose = fields.Selection([('vendor', 'Vendor'), ('product', 'Product'), ('po', 'PO')], string='Choose', store=True)
+    choose = fields.Selection([('vendor', 'Vendor'), ('product', 'Product'), ('purchase', 'PO')], string='Choose', store=True)
     date_from = fields.Date(string="From Date", default=time.strftime('%Y-%m-01'), store=True)
     date_to = fields.Date("To Date", store=True, default=datetime.datetime.now())
     company = fields.Many2one('res.company', 'Company', required=True, index=True,
