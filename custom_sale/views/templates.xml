@@ -1,30 +1,33 @@
 <odoo>
     <data>
-<!-- QWeb Reports -->
-<!-- NAME & FILE_NAME should be the same -->
+        <!-- QWeb Reports -->
+        <!-- NAME & FILE_NAME should be the same -->
         <report
-            id="report_wizard_invoice"
-            model="invoice.wizard"
-            report_type="qweb-html"
-            string="Invoice Report"
-            name="custom_sale.wizard_invoice_template"
-            file="custom_sale.wizard_invoice_template"
+                id="report_wizard_invoice"
+                model="invoice.wizard"
+                report_type="qweb-html"
+                string="Invoice Report"
+                name="custom_sale.wizard_invoice_template"
+                file="custom_sale.wizard_invoice_template"
         />
 
         <template id="report_invoice_discount_inherit" inherit_id="account.report_invoice_document">
 
 
+            <xpath expr="//table[@class='table table-sm o_main_table']/thead/tr/th[5]" position="before">
+                <t t-if="o.move_type in ('out_invoice','out_refund','out_receipt')">
 
-        <xpath expr="//table[@class='table table-sm o_main_table']/thead/tr/th[5]" position="before">
-            <t t-if="o.move_type in ('out_invoice','out_refund','out_receipt')">
+                    <th class="text-right">
+                        <strong>Discount Distributer</strong>
+                    </th>
+                    <th class="text-right">
+                        <strong>Discount Cash</strong>
+                    </th>
 
-                <th class="text-right"><strong>Discount Distributer</strong></th>
-                <th class="text-right"><strong>Discount Cash</strong></th>
-
-        </t>
-        </xpath>
-       <xpath expr="//tbody[hasclass('invoice_tbody')]/t/tr/t[1]/td[5]" position="replace">
-            <t t-if="o.move_type in ('out_invoice','out_refund','out_receipt')">
+                </t>
+            </xpath>
+            <xpath expr="//tbody[hasclass('invoice_tbody')]/t/tr/t[1]/td[5]" position="replace">
+                <t t-if="o.move_type in ('out_invoice','out_refund','out_receipt')">
 
 
                     <td class="text-right">
@@ -37,146 +40,366 @@
                     </td>
 
 
-
-        </t>
-    </xpath>
-    </template>
+                </t>
+            </xpath>
+        </template>
 
 
         <template id="wizard_invoice_template">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="o">
-                <t t-call="web.external_layout">
-                    <div class="page">
-<div>
-                        <h1>Sales and Returns Monthly Report</h1>
-                    </div>
-                        <div class="oe_structure"/>
-<h4>
-                    <div class="col-xs-5 col-xs-offset-4">
-                                    <span>From: </span><span t-field="o.from_date"/>
-                                    <span>To: </span><span t-field="o.to_date"/>
-                    </div>
-    <div class="col-xs-5 col-xs-offset-4">
-                                    <span t-if="o.state == 'category'">Category: </span><span t-field="o.category_type.category_type"/>
-                                    <span t-if="o.state == 'only'">Partner: </span><span t-field="o.partner_ids.name"/><br/><br/>
-                                    <span t-if="o.state == 'all'">All Partner </span>
-                    </div>
-                    <div class="col-xs-5 col-xs-offset-4">
-                        <strong  t-if="o.invoice_inv == True">Invoices</strong>
-                    </div>
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div>
+                                <h1>Sales and Returns Monthly Report</h1>
+                            </div>
+                            <div class="oe_structure"/>
+                            <h4>
+                                <div class="col-xs-5 col-xs-offset-4">
+                                    <span>From:</span>
+                                    <span t-field="o.from_date"/>
+                                    <span>To:</span>
+                                    <span t-field="o.to_date"/>
+                                </div>
+                                <div class="col-xs-5 col-xs-offset-4">
+                                    <span t-if="o.state == 'category'">Category:</span>
+                                    <span t-field="o.category_type.category_type"/>
+                                    <span t-if="o.state == 'only'">Partner:</span>
+                                    <span t-field="o.partner_ids.name"/>
+                                    <br/>
+                                    <br/>
+                                    <span t-if="o.state == 'all'">All Partner</span>
+                                </div>
+                                <div class="col-xs-5 col-xs-offset-4">
+                                    <strong t-if="o.invoice_inv == True">Invoices</strong>
+                                </div>
 
-</h4>
-                        <br></br>
-                        <div>
-                   <table style="border: 1px solid black; width:100%;" t-if="o.invoice_inv == True">
-                        <thead>
-                            <tr  t-if="o.invoice_inv == True">
-                                <th style="border: 1px solid black;">
-                                    Invoice Date
-                                </th>
-                                <th style="border: 1px solid black;">
-                                   Partner
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Invoice Number
-                                </th>
-                                 <th style="border: 1px solid black;">
-                                     Total Amount
-                                </th>
-                                <th style="border: 1px solid black;">
-                                   Total Discount
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Untaxed Amount
-                                </th>
-                                <th style="border: 1px solid black;">
-                                   Total Tax
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Total
-                                </th><th style="border: 1px solid black;">
-                                    Addaitional Dis
-                                </th><th style="border: 1px solid black;">
-                                    paid Amount
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Total Residual
-                                </th>
+                            </h4>
+                            <br></br>
+                            <div>
+                                <table style="border: 1px solid black; width:100%;" t-if="o.invoice_inv == True">
+                                    <thead>
+                                        <tr t-if="o.invoice_inv == True">
+                                            <th style="border: 1px solid black;">
+                                                Invoice Date
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Partner
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Invoice Number
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Total Amount
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Total Discount
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Untaxed Amount
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Total Tax
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Total
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Addaitional Dis
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                paid Amount
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Total Residual
+                                            </th>
 
-                            </tr>
-                        </thead>
+                                        </tr>
+                                    </thead>
 
-                        <tbody class="invoice_tbody">
+                                    <tbody class="invoice_tbody">
 
-                                 <t t-foreach="o.invoices" t-as="l" style="border: 1px solid black;">
-                                     <t t-if="l.move_type == 'out_invoice'">
-                                         <tr>
-                                          <td style="border: 1px solid black;">
-                                    <span t-field="l.invoice_date" />
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.partner_id.name"/>
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.name" />
-                                </td>
-                                        <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
-                                                 <span t-esc="'%.2f'%(sum((line.price_unit * line.quantity) for line in l.invoice_line_ids))" widget='float'/>
+                                        <t t-foreach="o.invoices" t-as="l" style="border: 1px solid black;">
+                                            <t t-if="l.move_type == 'out_invoice'">
+                                                <tr>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.invoice_date"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.partner_id.name"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.name"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;"
+                                                        t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
+                                                        <span t-esc="'%.2f'%(sum((line.price_unit * line.quantity) for line in l.invoice_line_ids))"
+                                                              widget='float'/>
 
-                                </td>
-                                     <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type in ('store','tender')">
-                                                 <span t-esc="'%.2f'%(sum((line.store_price * line.quantity) for line in l.invoice_line_ids))" widget='float'/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;"
+                                                        t-if="l.partner_id.categ_id.category_type in ('store','tender')">
+                                                        <span t-esc="'%.2f'%(sum((line.store_price * line.quantity) for line in l.invoice_line_ids))"
+                                                              widget='float'/>
 
-                                </td>
-                   <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
-                               <span t-field="l.discount_totals" t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
-                   </td>
-                   <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type  == 'tender'">
-                                                 <span t-esc="'%.2f'%((sum((line.store_price * line.quantity) for line in l.invoice_line_ids)) - l.amount_untaxed)" widget='float'/>
-                   </td><td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type  == 'store'">
-                                0
-                   </td>
-                   <td style="border: 1px solid black;">
-                                    <span t-field="l.amount_untaxed"  t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
-                   </td>
-                               <td style="border: 1px solid black;">
+                                                    </td>
+                                                    <td style="border: 1px solid black;"
+                                                        t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
+                                                        <span t-field="l.discount_totals"
+                                                              t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;"
+                                                        t-if="l.partner_id.categ_id.category_type  == 'tender'">
+                                                        <span t-esc="'%.2f'%((sum((line.store_price * line.quantity) for line in l.invoice_line_ids)) - l.amount_untaxed)"
+                                                              widget='float'/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;"
+                                                        t-if="l.partner_id.categ_id.category_type  == 'store'">
+                                                        0
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.amount_untaxed"
+                                                              t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
 
-                                    <span t-field="l.amount_tax"  t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
+                                                        <span t-field="l.amount_tax"
+                                                              t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
 
-                                </td>
-                                       <td style="border: 1px solid black;" >
-                                    <span t-field="l.amount_total"  t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
-                                </td>
-                                             <td style="border: 1px solid black;">
-                                    <span t-field="l.discount_amt"/>
-                                </td>
-                              <td style="border: 1px solid black;">
-                                    <span t-esc="l.amount_total-l.amount_residual" t-options='{"widget": "float", "precision": 2}'/>
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.amount_residual" t-options="{&quot;widget&quot;: &quot;False&quot;}" />
-                                </td>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.amount_total"
+                                                              t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.discount_amt"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-esc="l.amount_total-l.amount_residual"
+                                                              t-options='{"widget": "float", "precision": 2}'/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.amount_residual"
+                                                              t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
+                                                    </td>
 
-                                         </tr>
-                                     </t>
-
-
-
-
-
-                            </t>
+                                                </tr>
+                                            </t>
 
 
+                                        </t>
 
-                        </tbody>
-                    </table>
 
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <br></br>
+                            <br></br>
+                            <legend style="color:#A52A2A;font-size: 35px;" t-if="o.invoice_inv == True">Total Invoices
+                            </legend>
+                            <table class="table table-condensed" t-if="o.invoice_inv == True">
+                                <thead>
+                                    <tr>
+                                        <th>Total Amount</th>
+                                        <th>Total Discount</th>
+                                        <th>Untaxed Amount</th>
+                                        <th>Tax</th>
+                                        <th>Total</th>
+                                        <th>Additional Dis</th>
+                                        <th>Paid Amount</th>
+                                        <th>Total Residual</th>
+
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <t>
+                                        <tr>
+                                            <td>
+                                                <span t-esc="sum((line.discount_totals+line.amount_untaxed) for line in o.invoices if line.move_type=='out_invoice')"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="sum(line.discount_totals for line in o.invoices if line.move_type=='out_invoice' )"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="sum(line.amount_untaxed for line in o.invoices if line.move_type=='out_invoice')"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="sum(line.amount_tax for line in o.invoices if line.move_type=='out_invoice')"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="sum(line.amount_total for line in o.invoices if line.move_type=='out_invoice')"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="sum(line.discount_amt for line in o.invoices if line.move_type=='out_invoice')"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="sum((line.amount_total-line.amount_residual) for line in o.invoices if line.move_type=='out_invoice')"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="sum(line.amount_residual for line in o.invoices if line.move_type=='out_invoice')"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+
+                                        </tr>
+                                    </t>
+                                </tbody>
+
+                            </table>
+                            <br></br>
+                            <div t-if="o.return_inv == True">
+                                <h1>Returns</h1>
+                            </div>
+                            <br></br>
+                            <div>
+                                <table style="border: 1px solid black; width:100%;" t-if="o.return_inv == True">
+                                    <thead>
+                                        <tr style="border: 1px solid black;" t-if="o.return_inv == True">
+                                            <th style="border: 1px solid black;">
+                                                Invoice Date
+
+                                            </th>
+
+                                            <th style="border: 1px solid black;">
+                                                Partner
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Invoice Number
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Source Invoice
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Total Amount
+
+                                            </th>
+
+                                            <th style="border: 1px solid black;">
+                                                Total Discount
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Untaxed Amount
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Total Tax
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Total
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Additional Dis
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                paid Amount
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Total Residual
+                                            </th>
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody class="invoice_tbody">
+
+
+                                        <t t-foreach="o.invoices" t-as="l" style="border: 1px solid black;">
+                                            <t t-if="l.move_type == 'out_refund'">
+                                                <tr>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.invoice_date"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.partner_id.name"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.name"/>
+                                                    </td>
+                                                    <td t-if="l.invoice_number_old" style="border: 1px solid black;">
+                                                        <span t-field="l.invoice_number_old"/>
+                                                    </td>
+                                                    <td t-if="l.invoice_number_old == False"
+                                                        style="border: 1px solid black;">
+                                                        <span t-field="l.return_source"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;"
+                                                        t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
+                                                        <span t-esc="'%.2f'%(sum((line.price_unit * line.quantity) for line in l.invoice_line_ids))"
+                                                              widget='float'/>
+
+                                                    </td>
+                                                    <td style="border: 1px solid black;"
+                                                        t-if="l.partner_id.categ_id.category_type in ('store','tender')">
+                                                        <span t-esc="'%.2f'%(sum((line.store_price * line.quantity) for line in l.invoice_line_ids))"
+                                                              widget='float'/>
+
+                                                    </td>
+                                                    <td style="border: 1px solid black;"
+                                                        t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
+                                                        <span t-field="l.discount_totals"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;"
+                                                        t-if="l.partner_id.categ_id.category_type  == 'tender'">
+                                                        <span t-esc="'%.2f'%((sum((line.store_price * line.quantity) for line in l.invoice_line_ids)) - l.amount_untaxed)"
+                                                              widget='float'/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;"
+                                                        t-if="l.partner_id.categ_id.category_type  == 'store'">
+                                                        0
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.amount_untaxed"
+                                                              t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
+                                                    </td>
+
+                                                    <td style="border: 1px solid black;">
+
+                                                        <span t-field="l.amount_tax"
+                                                              t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
+
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.amount_total"
+                                                              t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.discount_amt"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-esc="l.amount_total-l.amount_residual"
+                                                              t-options='{"widget": "float", "precision": 2}'/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="l.amount_residual"
+                                                              t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
+                                                    </td>
+
+                                                </tr>
+                                            </t>
+
+
+                                        </t>
+
+
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+
+
                         <br></br>
                         <br></br>
-                          <legend style="color:#A52A2A;font-size: 35px;"  t-if="o.invoice_inv == True">Total Invoices</legend>
-                        <table  class="table table-condensed" t-if="o.invoice_inv == True">
+                        <br></br>
+                        <legend style="color:#A52A2A;font-size: 35px;" t-if="o.return_inv == True">Total Return</legend>
+                        <table class="table table-condensed" t-if="o.return_inv == True">
                             <thead>
                                 <tr>
                                     <th>Total Amount</th>
@@ -195,583 +418,487 @@
 
                                 <t>
                                     <tr>
-                                        <td><span  t-esc="sum((line.discount_totals+line.amount_untaxed) for line in o.invoices if line.move_type=='out_invoice')" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line.discount_totals for line in o.invoices if line.move_type=='out_invoice' )" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line.amount_untaxed for line in o.invoices if line.move_type=='out_invoice')" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line.amount_tax for line in o.invoices if line.move_type=='out_invoice')" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line.amount_total for line in o.invoices if line.move_type=='out_invoice')" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line.discount_amt for line in o.invoices if line.move_type=='out_invoice')" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum((line.amount_total-line.amount_residual) for line in o.invoices if line.move_type=='out_invoice')" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line.amount_residual for line in o.invoices if line.move_type=='out_invoice')" t-options='{"widget": "float", "precision": 2}'/></td>
+                                        <td>
+                                            <span t-esc="sum((line.discount_totals+line.amount_untaxed) for line in o.invoices if line.move_type=='out_refund' )"
+                                                  t-options='{"widget": "float", "precision": 2}'/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="sum(line.discount_totals for line in o.invoices if line.move_type=='out_refund' )"
+                                                  t-options='{"widget": "float", "precision": 2}'/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="sum(line.amount_untaxed for line in o.invoices if line.move_type=='out_refund' )"
+                                                  t-options='{"widget": "float", "precision": 2}'/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="sum(line.amount_tax for line in o.invoices if line.move_type=='out_refund' )"
+                                                  t-options='{"widget": "float", "precision": 2}'/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="sum(line.amount_total for line in o.invoices if line.move_type=='out_refund' )"
+                                                  t-options='{"widget": "float", "precision": 2}'/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="sum(line.discount_amt for line in o.invoices if line.move_type=='out_refund' )"
+                                                  t-options='{"widget": "float", "precision": 2}'/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="sum((line.amount_total-line.amount_residual) for line in o.invoices  if line.move_type=='out_refund' )"
+                                                  t-options='{"widget": "float", "precision": 2}'/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="sum(line.amount_residual for line in o.invoices if line.move_type=='out_refund' )"
+                                                  t-options='{"widget": "float", "precision": 2}'/>
+                                        </td>
 
-                                                  </tr>
-                                </t>
-                            </tbody>
-
-                        </table>
-                        <br></br>
-                        <div t-if="o.return_inv == True">
-                        <h1>Returns</h1>
-                    </div>
-                        <br></br>
-                        <div>
-                   <table style="border: 1px solid black; width:100%;"  t-if="o.return_inv == True">
-                        <thead>
-                            <tr style="border: 1px solid black;"  t-if="o.return_inv == True">
-                                <th style="border: 1px solid black;">
-                                    Invoice Date
-
-                                </th>
-
-                                <th style="border: 1px solid black;">
-                                   Partner
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Invoice Number
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Source Invoice
-                                </th>
-                                 <th style="border: 1px solid black;">
-                                     Total Amount
-
-                                </th>
-
-                                <th style="border: 1px solid black;">
-                                   Total Discount
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Untaxed Amount
-                                </th>
-                                <th style="border: 1px solid black;">
-                                   Total Tax
-                                </th>
-                                  <th style="border: 1px solid black;">
-                                    Total
-                                </th><th style="border: 1px solid black;">
-                                    Additional Dis
-                            </th>
-                                <th style="border: 1px solid black;">
-                                    paid Amount
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Total Residual
-                                </th>
-
-                            </tr>
-                        </thead>
-
-                        <tbody class="invoice_tbody">
-
-
-                                 <t t-foreach="o.invoices" t-as="l" style="border: 1px solid black;">
-                                     <t t-if="l.move_type == 'out_refund'">
-                                         <tr>
-                                           <td style="border: 1px solid black;">
-                                    <span t-field="l.invoice_date" />
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.partner_id.name"/>
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.name" />
-                                </td>
-                                             <td t-if="l.invoice_number_old" style="border: 1px solid black;">
-                                    <span t-field="l.invoice_number_old" />
-                                </td><td t-if="l.invoice_number_old == False" style="border: 1px solid black;">
-                                    <span t-field="l.return_source" />
-                                </td>
-                                             <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
-                                                 <span t-esc="'%.2f'%(sum((line.price_unit * line.quantity) for line in l.invoice_line_ids))" widget='float'/>
-
-                                </td>
-                                     <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type in ('store','tender')">
-                                                 <span t-esc="'%.2f'%(sum((line.store_price * line.quantity) for line in l.invoice_line_ids))" widget='float'/>
-
-                                </td>
-<td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
-<span t-field="l.discount_totals" />
-                                </td>
-                               <td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type  == 'tender'">
-                                                 <span t-esc="'%.2f'%((sum((line.store_price * line.quantity) for line in l.invoice_line_ids)) - l.amount_untaxed)" widget='float'/>
-                                </td><td style="border: 1px solid black;" t-if="l.partner_id.categ_id.category_type  == 'store'">
-                                0
-                                         </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.amount_untaxed"  t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
-                                </td>
-
-                               <td style="border: 1px solid black;">
-
-                                    <span t-field="l.amount_tax" t-options="{&quot;widget&quot;: &quot;False&quot;}" />
-
-                                </td>
-                                              <td style="border: 1px solid black;">
-                                    <span t-field="l.amount_total"  t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
-                                </td>
-                                               <td style="border: 1px solid black;">
-                                    <span t-field="l.discount_amt"/>
-                                </td>
-                              <td style="border: 1px solid black;">
-                                    <span t-esc="l.amount_total-l.amount_residual" t-options='{"widget": "float", "precision": 2}'/>
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.amount_residual" t-options="{&quot;widget&quot;: &quot;False&quot;}"/>
-                                </td>
-
-                                         </tr>
-                                     </t>
-
-
-
-
-
-                            </t>
-
-
-
-                        </tbody>
-                    </table>
-                        </div>
-                    </div>
-
-
- <br></br>
-                            <br></br>
-                            <br></br>
-                              <legend style="color:#A52A2A;font-size: 35px;"  t-if="o.return_inv == True">Total Return</legend>
-                        <table  class="table table-condensed" t-if="o.return_inv == True">
-                            <thead>
-                                <tr>
-                                    <th>Total Amount</th>
-                                    <th>Total Discount</th>
-                                    <th>Untaxed Amount</th>
-                                    <th>Tax</th>
-                                    <th>Total</th>
-                                    <th>Additional Dis</th>
-                                    <th>Paid Amount</th>
-                                    <th>Total Residual</th>
-
-
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                <t>
-                                    <tr>
-                                        <td><span  t-esc="sum((line.discount_totals+line.amount_untaxed) for line in o.invoices if line.move_type=='out_refund' )" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line.discount_totals for line in o.invoices if line.move_type=='out_refund' )" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line.amount_untaxed for line in o.invoices if line.move_type=='out_refund' )" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line.amount_tax for line in o.invoices if line.move_type=='out_refund' )" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line.amount_total for line in o.invoices if line.move_type=='out_refund' )" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line.discount_amt for line in o.invoices if line.move_type=='out_refund' )" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum((line.amount_total-line.amount_residual) for line in o.invoices  if line.move_type=='out_refund' )" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line.amount_residual for line in o.invoices if line.move_type=='out_refund' )" t-options='{"widget": "float", "precision": 2}'/></td>
-
-                                                  </tr>
+                                    </tr>
                                 </t>
                             </tbody>
 
                         </table>
 
 
-
+                    </t>
                 </t>
             </t>
-        </t>
-    </template>
+        </template>
 
-          <report
-            id="report_wizard_detail"
-            model="detail.wizard"
-            report_type="qweb-html"
-            string="Invoice Details Report"
-            name="custom_sale.wizard_detail_template"
-            file="custom_sale.wizard_detail_template"
+        <report
+                id="report_wizard_detail"
+                model="detail.wizard"
+                report_type="qweb-html"
+                string="Invoice Details Report"
+                name="custom_sale.wizard_detail_template"
+                file="custom_sale.wizard_detail_template"
         />
 
 
         <template id="wizard_detail_template">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="o">
-                <t t-call="web.external_layout">
-                    <div class="page">
-   <div class="oe_structure"/>
-<div>
-                        <h3>Invioces Details</h3>
-                    </div>
-<h4>
-                    <div class="col-xs-5 col-xs-offset-4">
-                                    <span>From: </span><span t-field="o.from_date"/>
-                                    <span>To: </span><span t-field="o.to_date"/><br/><br/><br/>
-                    </div>
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            <div>
+                                <h3>Invioces Details</h3>
+                            </div>
+                            <h4>
+                                <div class="col-xs-5 col-xs-offset-4">
+                                    <span>From:</span>
+                                    <span t-field="o.from_date"/>
+                                    <span>To:</span>
+                                    <span t-field="o.to_date"/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                </div>
 
 
-</h4>
+                            </h4>
 
 
-
-                        <br></br>
-                        <div>
-
-
-                             <table style="border: 1px solid black; width:100%;">
-                        <thead>
-                            <tr style="border: 1px solid black;">
-                                <th style="border: 1px solid black;">
-                                    Invoice Number
-
-                                </th>
-<th style="border: 1px solid black;" >
-                                    Invoice Source
-
-                                </th>
-
-                                <th style="border: 1px solid black;">
-                                   Product category
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    product type
-
-                                </th>
-                                 <th style="border: 1px solid black;">
-                                    Dis %
-
-                                </th>
-
-                                <th style="border: 1px solid black;">
-                                   partner
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    product
-                                </th>
-
-                                 <th style="border: 1px solid black;">
-                                    product Code
-                                </th>
-
-                                <th style="border: 1px solid black;">
-                                   date
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    unit price
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    QTY
-                                </th>
-                                  <th style="border: 1px solid black;">
-                                    Total Amount
-                                </th>
-                                  <th style="border: 1px solid black;">
-                                    Pharma Dis %
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Value
-                                </th>
-                                  <th style="border: 1px solid black;">
-                                    Distributer Dis
-                                </th>
-                                <th style="border: 1px solid black;">
-                                   Value
-                                </th>
-                                  <th style="border: 1px solid black;">
-                                    Cash Dis
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Value
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Allowence Discount
-
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Total Dis
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    untaxed Amount
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Tax %
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Unit tax
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Taxes
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    Total Invoice
-                                </th>
+                            <br></br>
+                            <div>
 
 
+                                <table style="border: 1px solid black; width:100%;">
+                                    <thead>
+                                        <tr style="border: 1px solid black;">
+                                            <th style="border: 1px solid black;">
+                                                Invoice Number
+
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Invoice Source
+
+                                            </th>
+
+                                            <th style="border: 1px solid black;">
+                                                Product category
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                product type
+
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Dis %
+
+                                            </th>
+
+                                            <th style="border: 1px solid black;">
+                                                partner
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                product
+                                            </th>
+
+                                            <th style="border: 1px solid black;">
+                                                product Code
+                                            </th>
+
+                                            <th style="border: 1px solid black;">
+                                                date
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                unit price
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                QTY
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Total Amount
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Pharma Dis %
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Value
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Distributer Dis
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Value
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Cash Dis
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Value
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Allowence Discount
+
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Total Dis
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                untaxed Amount
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Tax %
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Unit tax
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Taxes
+                                            </th>
+                                            <th style="border: 1px solid black;">
+                                                Total Invoice
+                                            </th>
 
 
+                                        </tr>
+                                    </thead>
 
-                            </tr>
-                        </thead>
-
-                        <tbody class="invoice_tbody">
-
+                                    <tbody class="invoice_tbody">
 
 
-                                 <tr t-foreach="o.lines" t-as="l" style="border: 1px solid black;">
+                                        <tr t-foreach="o.lines" t-as="l" style="border: 1px solid black;">
 
 
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.move_id.name" />
-                                </td>
-                                     <td style="border: 1px solid black;" t-if="l.move_id.move_type == 'out_refund' and l.move_id.invoice_number_old">
-                                         <span t-field="l.move_id.invoice_number_old" />
-                                                                     </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.move_id.name"/>
+                                            </td>
+                                            <td style="border: 1px solid black;"
+                                                t-if="l.move_id.move_type == 'out_refund' and l.move_id.invoice_number_old">
+                                                <span t-field="l.move_id.invoice_number_old"/>
+                                            </td>
 
-                               <td t-if="l.move_id.move_type == 'out_refund' and l.move_id.invoice_number_old == False" style="border: 1px solid black;">
-                                    <span t-field="l.move_id.return_source" />
-                                </td> <td t-if="l.move_id.move_type == 'out_invoice' " style="border: 1px solid black;">
-                                   -
-                                </td>
+                                            <td t-if="l.move_id.move_type == 'out_refund' and l.move_id.invoice_number_old == False"
+                                                style="border: 1px solid black;">
+                                                <span t-field="l.move_id.return_source"/>
+                                            </td>
+                                            <td t-if="l.move_id.move_type == 'out_invoice' "
+                                                style="border: 1px solid black;">
+                                                -
+                                            </td>
 
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.product_id.categ_id.name"/>
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.sale_type" />
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.discount"/>-<span t-field="l.cash_discount" />-<span t-field="l.dist_discount"/>
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.move_id.partner_id.name"/>
-                                </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.product_id.categ_id.name"/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.sale_type"/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.discount"/>-<span t-field="l.cash_discount"/>-
+                                                <span t-field="l.dist_discount"/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.move_id.partner_id.name"/>
+                                            </td>
 
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.product_id.name"/>
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.product_id.default_code"/>
-                                </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.product_id.name"/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.product_id.default_code"/>
+                                            </td>
 
-                                <td style="border: 1px solid black;">
+                                            <td style="border: 1px solid black;">
 
-                                    <span t-field="l.move_id.invoice_date"/>
+                                                <span t-field="l.move_id.invoice_date"/>
 
-                                </td>
-                                      <td style="border: 1px solid black;" t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender')">
-                                    <span t-esc="l.price_unit" t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
+                                            </td>
+                                            <td style="border: 1px solid black;"
+                                                t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender') and l.sale_type=='sale' ">
+                                                <span t-esc="l.price_unit"
+                                                      t-options="{&quot;widget&quot;: &quot;False&quot; ,&quot;precision&quot;: &quot;2&quot; }"/>
 
-                                </td><td style="border: 1px solid black;" t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender')">
-                                    <span t-esc="l.store_price" t-options='{"widget": "False", "precision": 2}'/>
+                                            </td>
+                                            <td style="border: 1px solid black;"
+                                                t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender') and l.sale_type=='bouns' ">
+                                                0
+                                            </td>
+                                            <td style="border: 1px solid black;"
+                                                t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender') and l.sale_type=='bouns'">
+                                                0
+                                            </td>
+                                            <td style="border: 1px solid black;"
+                                                t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender') and l.sale_type=='sale'">
+                                                <span t-esc="l.store_price"
+                                                      t-options='{"widget": "False", "precision": 2}'/>
 
-                                </td>
+                                            </td>
 
-                                <td style="border: 1px solid black;">
-                                    <span t-field="l.quantity" t-options='{"widget": "float", "precision": 2}'/>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.quantity"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
 
-                                </td>
+                                            </td>
 
-                                  <td style="border: 1px solid black;" t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender')">
-                                    <span t-esc="'%.2f'% (l.price_unit*l.quantity)"  widget='float'/>
+                                            <td style="border: 1px solid black;"
+                                                t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender')">
+                                                <span t-esc="'%.2f'% (l.price_unit*l.quantity)" widget='float'/>
 
-                                </td>
-                                     <td style="border: 1px solid black;" t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender')">
-                                    <span t-esc="'%.2f'% (l.store_price*l.quantity)"  widget='float'/>
+                                            </td>
+                                            <td style="border: 1px solid black;"
+                                                t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender')">
+                                                <span t-esc="'%.2f'% (l.store_price*l.quantity)" widget='float'/>
 
-                                </td>
-                                  <td style="border: 1px solid black;">
-                                     <span t-field="l.pharmacy_discount"  t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.pharmacy_discount"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
 
-                                </td>
-                                     <td style="border: 1px solid black;">
-                                     <span  t-esc="l.price_unit * l.quantity - l.pharmacy_discount"  t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-esc="l.price_unit * l.quantity - l.pharmacy_discount"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
 
-                                </td>
+                                            </td>
 
-                                  <td style="border: 1px solid black;">
-                                    <span t-field="l.dist_amount"  t-options='{"widget": "float", "precision": 2}'/>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.dist_amount"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
 
-                                </td>   <td style="border: 1px solid black;">
-                                    <span  t-esc="l.price_unit*l.quantity-(l.pharmacy_discount+l.dist_amount)" t-options='{"widget": "float", "precision": 2}' />
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-esc="l.price_unit*l.quantity-(l.pharmacy_discount+l.dist_amount)"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
 
-                                </td>
+                                            </td>
 
-                                 <td style="border: 1px solid black;">
-                                    <span t-field="l.cash_amount"  t-options='{"widget": "float", "precision": 2}'/>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.cash_amount"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
 
-                                </td><td style="border: 1px solid black;">
-                                    <span  t-esc="l.price_unit*l.quantity-(l.pharmacy_discount+l.dist_amount+l.cash_amount)"  t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-esc="l.price_unit*l.quantity-(l.pharmacy_discount+l.dist_amount+l.cash_amount)"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
 
-                                </td>
-                                 <td style="border: 1px solid black;">
-                                    <span t-field="l.move_id.discount_rate"/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.move_id.discount_rate"/>
 
-                                </td>
-                                     <td style="border: 1px solid black;">
-                                    <span t-esc="l.move_id.discount_totals + l.move_id.discount_rate"/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-esc="l.move_id.discount_totals + l.move_id.discount_rate"/>
 
-                                </td>
-                                        <td style="border: 1px solid black;">
-                                     <span t-field="l.price_subtotal" t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.price_subtotal"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
 
-                                </td>
+                                            </td>
 
-                                        <td style="border: 1px solid black;">
-                                     <span t-field="l.tax_name"/>
+                                            <td style="border: 1px solid black;">
+                                                <span t-field="l.tax_name"/>
 
-                                </td>
-                                       <td style="border: 1px solid black;" t-if="l.quantity != 0">
-                                     <span t-esc="'%.2f'% ((l.price_total-l.price_subtotal)/l.quantity)"  widget='float'/>
+                                            </td>
+                                            <td style="border: 1px solid black;" t-if="l.quantity != 0">
+                                                <span t-esc="'%.2f'% ((l.price_total-l.price_subtotal)/l.quantity)"
+                                                      widget='float'/>
 
-                                </td>
-                                     <td style="border: 1px solid black;" t-if="l.quantity == 0">
-                                     0
+                                            </td>
+                                            <td style="border: 1px solid black;" t-if="l.quantity == 0">
+                                                0
 
-                                </td>
-                                      <td style="border: 1px solid black;">
-                                     <span t-esc=" ((l.price_total-l.price_subtotal))" t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-esc=" ((l.price_total-l.price_subtotal))"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
 
-                                </td>
-                                       <td style="border: 1px solid black;">
-                                     <span t-esc=" (l.price_total)"  t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-esc=" (l.price_total)"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
 
-                                </td>
+                                            </td>
 
-                            </tr>
+                                        </tr>
 
-                        </tbody>
-                    </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
 
+                    </t>
                 </t>
             </t>
-        </t>
-    </template>
-<!--         <report-->
-<!--            id="report_wizard_balance"-->
-<!--            model="balance.wizard"-->
-<!--            report_type="qweb-pdf"-->
-<!--            string="Customer Balance Report"-->
-<!--            name="report.custom_sale.report_balance"-->
-<!--            file="report.custom_sale.report_balance"-->
-<!--        />-->
+        </template>
+        <!--         <report-->
+        <!--            id="report_wizard_balance"-->
+        <!--            model="balance.wizard"-->
+        <!--            report_type="qweb-pdf"-->
+        <!--            string="Customer Balance Report"-->
+        <!--            name="report.custom_sale.report_balance"-->
+        <!--            file="report.custom_sale.report_balance"-->
+        <!--        />-->
         <record id="report_wizard_balance" model="ir.actions.report">
-        <field name="name">Customer Balance Report</field>
-        <field name="model">report.custom_sale.report_balance</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">custom_sale.wizard_balance_template</field>
-    </record>
+            <field name="name">Customer Balance Report</field>
+            <field name="model">report.custom_sale.report_balance</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">custom_sale.wizard_balance_template</field>
+        </record>
 
         <template id="wizard_balance_template">
-        <t t-call="web.html_container">
+            <t t-call="web.html_container">
 
                 <t t-call="web.external_layout">
                     <div class="page">
 
 
-                    <div>
-                        <h1>Customer Balance</h1>
-                    </div>
+                        <div>
+                            <h1>Customer Balance</h1>
+                        </div>
                         <br></br>
                         <div>
-                            <strong>Date From:</strong> <span t-esc="from_date"/>
-                            <strong>Date To</strong> <span t-esc="to_date"/>
+                            <strong>Date From:</strong>
+                            <span t-esc="from_date"/>
+                            <strong>Date To</strong>
+                            <span t-esc="to_date"/>
                         </div>
                         <div>
 
-                        <br></br>
-                    <table style="border: 1px solid black; width:100%;">
-                        <thead>
-                            <tr style="border: 1px solid black;">
-                                <th style="border: 1px solid black;">
-                                    Code
+                            <br></br>
+                            <table style="border: 1px solid black; width:100%;">
+                                <thead>
+                                    <tr style="border: 1px solid black;">
+                                        <th style="border: 1px solid black;">
+                                            Code
 
-                                </th> <th style="border: 1px solid black;">
-                                    Customer
+                                        </th>
+                                        <th style="border: 1px solid black;">
+                                            Customer
 
-                                </th> <th style="border: 1px solid black;">
-                                    Total
+                                        </th>
+                                        <th style="border: 1px solid black;">
+                                            Total
 
-                                </th>
+                                        </th>
 
-                                <th style="border: 1px solid black;">
-                                    Paid
-                                </th>
-                                <th style="border: 1px solid black;">
-                                    residual
+                                        <th style="border: 1px solid black;">
+                                            Paid
+                                        </th>
+                                        <th style="border: 1px solid black;">
+                                            residual
 
-                                </th>
+                                        </th>
 
 
-                            </tr>
-                        </thead>
+                                    </tr>
+                                </thead>
 
-                        <tbody class="invoice_tbody">
+                                <tbody class="invoice_tbody">
 
-                    <t t-foreach="data" t-as="datas">
+                                    <t t-foreach="data" t-as="datas">
 
-                            <tr>
+                                        <tr>
 
-                                <td style="border: 1px solid black;">
-                                     <span t-esc="datas['code']" />
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-esc="datas['partner']" />
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-esc="datas['total']" t-options='{"widget": "float", "precision": 2}'/>
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-esc="datas['paid']" t-options='{"widget": "float", "precision": 2}'/>
-                                </td>
-                                <td style="border: 1px solid black;">
-                                    <span t-esc="datas['res']" t-options='{"widget": "float", "precision": 2}' />
-                                </td>
-                            </tr>
-                                                </t>
+                                            <td style="border: 1px solid black;">
+                                                <span t-esc="datas['code']"/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-esc="datas['partner']"/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-esc="datas['total']"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-esc="datas['paid']"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td style="border: 1px solid black;">
+                                                <span t-esc="datas['res']"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
 
-                        </tbody>
+                                </tbody>
 
-                    </table>
+                            </table>
                             <br></br>
                             <br></br>
                             <br></br>
-                              <legend style="color:#A52A2A;font-size: 35px;">Total</legend>
-                        <table  class="table table-condensed">
-                            <thead>
-                                <tr>
-                                    <th>Total</th>
-                                    <th>Total Paid</th>
-                                    <th>Total Residual</th>
-
-
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                <t>
+                            <legend style="color:#A52A2A;font-size: 35px;">Total</legend>
+                            <table class="table table-condensed">
+                                <thead>
                                     <tr>
-                                        <td><span  t-esc="sum(line['total'] for line in data )" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line['paid'] for line in data )" t-options='{"widget": "float", "precision": 2}'/></td>
-                                        <td><span  t-esc="sum(line['res'] for line in data )" t-options='{"widget": "float", "precision": 2}'/></td>
+                                        <th>Total</th>
+                                        <th>Total Paid</th>
+                                        <th>Total Residual</th>
 
-                                                  </tr>
-                                </t>
-                            </tbody>
 
-                        </table>
+                                    </tr>
+                                </thead>
+                                <tbody>
 
-                        <br></br>
+                                    <t>
+                                        <tr>
+                                            <td>
+                                                <span t-esc="sum(line['total'] for line in data )"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="sum(line['paid'] for line in data )"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="sum(line['res'] for line in data )"
+                                                      t-options='{"widget": "float", "precision": 2}'/>
+                                            </td>
+
+                                        </tr>
+                                    </t>
+                                </tbody>
+
+                            </table>
+
+                            <br></br>
                         </div>
                     </div>
-
-
-
-
 
 
                 </t>
             </t>
 
-    </template>
+        </template>
 
 
     </data>

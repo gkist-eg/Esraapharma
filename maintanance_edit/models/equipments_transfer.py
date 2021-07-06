@@ -43,7 +43,7 @@ class maintenance_edit(models.Model):
     def onchange_equipment(self):
         for record in self:
             if record.equipment:
-                record.from_user = record.equipment.employee_id
+                record.from_user = record.equipment.employee_have_device
                 record.brand = record.equipment.brand
                 record.model = record.equipment.model
                 record.serial_no = record.equipment.serial_no
@@ -124,16 +124,20 @@ class maintenance_edit(models.Model):
 class maintenance_stage(models.Model):
     _inherit = 'maintenance.stage'
 
-    type = fields.Selection([('creator', 'Creator'), ('technical', 'Technical')])
+    type = fields.Selection([('creator', 'Creator'), ('technical', 'Technical')],store=True)
 
 
 class maintenance_request(models.Model):
     _inherit = 'maintenance.request'
     cost=fields.Char('Cost',store=True)
+    type = fields.Selection([('in_company', 'In Company'), ('out_company', 'Out Company')],store=True)
+
     @api.constrains('stage_id')
     def _check_actual_visit(self):
+       if self.stage_id:
         for record in self:
-            if record.stage_id.type == 'creator' and record.employee_id.user_id.id != self.env.uid:
+
+            if self.stage_id.type == 'creator' and self.employee_id.user_id.id != self.env.uid:
                 raise ValidationError(_('Creator the only one modify this stage') )
-            elif record.stage_id.type == 'technical' and record.user_id.id != self.env.uid:
+            elif self.stage_id.type == 'technical' and self.user_id.id != self.env.uid:
                 raise ValidationError(_('Technical the only one modify this stage') )

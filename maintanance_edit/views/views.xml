@@ -36,6 +36,18 @@
             <field name="arch" type="xml">
                   <xpath expr="//field[@name='category_id']" position="after">
                     <field name="brand" />
+                </xpath>  <xpath expr="//field[@name='employee_id']" position="after">
+                    <field name="employee_have_device" />
+                </xpath>
+            </field>
+ </record>
+      <record id="Maintance_edi2t" model="ir.ui.view">
+            <field name="model">maintenance.request</field>
+            <field name="inherit_id" ref="maintenance.hr_equipment_request_view_form"/>
+            <field name="arch" type="xml">
+                  <xpath expr="//field[@name='close_date']" position="after">
+                    <field name="cost" attrs="{'invisible': [('done', '!=', True)]}" />
+                    <field name="type" attrs="{'invisible': [('done', '!=', True)]}" />
                 </xpath>
             </field>
  </record>

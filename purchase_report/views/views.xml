@@ -2,61 +2,131 @@
 <odoo>
     <data>
         <record id="view_wizard_pr_follow_up" model="ir.ui.view">
-        <field name="name">PRs Follow Up</field>
-        <field name="model">pr.followup</field>
-        <field name="arch" type="xml">
-        <form string="Choose your date">
-                <p class="oe_gray">
-                </p>
-                <group>
+            <field name="name">PRs Follow Up</field>
+            <field name="model">pr.followup</field>
+            <field name="arch" type="xml">
+                <form string="Choose your date">
+                    <p class="oe_gray">
+                    </p>
+                    <group>
                         <group>
-                         <field name="choose_from" widget="radio"/>
+                            <field name="choose_from" widget="radio"/>
                         </group>
 
-                    <group>
-                        <field name="date_from" required="True"/>
-                        <field name="date_to" required="True"/>
+                        <group>
+                            <field name="date_from" required="True"/>
+                            <field name="date_to" required="True"/>
+                        </group>
                     </group>
-                </group>
 
                     <group attrs="{'invisible':[('choose_from', 'not in',('other'))]}">
 
                         <group attrs="{'invisible':[('choose_from', 'not in',('other'))]}">
-                            <field name="choose" widget="radio" attrs="{'invisible':[('choose_from', 'not in',('other'))]}"/>
+                            <field name="choose" widget="radio"
+                                   attrs="{'invisible':[('choose_from', 'not in',('other'))]}"/>
                         </group>
 
                         <group attrs="{'invisible':[('choose_from', 'not in',('other'))]}">
-                              <field name="department" attrs="{'invisible':['|',('choose', 'not in',('department')),('choose_from', 'not in',('other'))]}" options="{'no_create_edit': True}"/>
-                              <field name="product" attrs="{'invisible':['|',('choose', 'not in',('product')),('choose_from', 'not in',('other'))]}" options="{'no_create_edit': True}"/>
+                            <field name="department"
+                                   attrs="{'invisible':['|',('choose', 'not in',('department')),('choose_from', 'not in',('other'))]}"
+                                   options="{'no_create_edit': True}"/>
+                            <field name="product"
+                                   attrs="{'invisible':['|',('choose', 'not in',('product')),('choose_from', 'not in',('other'))]}"
+                                   options="{'no_create_edit': True}"/>
                         </group>
                     </group>
 
-                <footer>
+                    <footer>
                         <button name="print_pdf_pr_followup"
                                 string="Print"
                                 type="object"
                                 class="btn-primary"/>
-                        <button string="Cancel" class="btn-default" special="cancel" />
-                </footer>
-        </form>
-        </field>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
         </record>
 
         <record id="action_wizard_pr_follow_up" model="ir.actions.act_window">
-        <field name="name">PRs Follow Up</field>
-        <field name="res_model">pr.followup</field>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="view_wizard_pr_follow_up"/>
-        <field name="target">new</field>
+            <field name="name">PRs Follow Up</field>
+            <field name="res_model">pr.followup</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_pr_follow_up"/>
+            <field name="target">new</field>
         </record>
-    <menuitem id="purchase_report_2" name="Reporting" parent="purchase.purchase_report" sequence="99"  action="purchase.action_purchase_order_report_all"/>
+        <menuitem id="purchase_report_2" name="Reporting" parent="purchase.purchase_report" sequence="99"
+                  action="purchase.action_purchase_order_report_all"/>
 
         <menuitem
                 id="menu_pr_follow_up"
                 action="action_wizard_pr_follow_up"
                 sequence="100"
                 parent="purchase.purchase_report"
-                groups= "purchase.group_purchase_user"
+                groups="purchase.group_purchase_user"
+        />
+        <record id="view_wizard_po_follow_up" model="ir.ui.view">
+            <field name="name">PO Follow Up</field>
+            <field name="model">po.followup</field>
+            <field name="arch" type="xml">
+                <form string="Choose your date">
+                    <p class="oe_gray">
+                    </p>
+                    <group>
+                        <group>
+                            <field name="choose_from" widget="radio"/>
+                        </group>
+
+                        <group>
+                            <field name="date_from" required="True"/>
+                            <field name="date_to" required="True"/>
+                        </group>
+                    </group>
+
+                    <group attrs="{'invisible':[('choose_from', 'not in',('other'))]}">
+
+                        <group attrs="{'invisible':[('choose_from', 'not in',('other'))]}">
+                            <field name="choose" widget="radio"
+                                   attrs="{'invisible':[('choose_from', 'not in',('other'))]}"/>
+                        </group>
+
+                        <group attrs="{'invisible':[('choose_from', 'not in',('other'))]}">
+                            <field name="vendor"
+                                   attrs="{'invisible':['|',('choose', 'not in',('vendor')),('choose_from', 'not in',('other'))]}"
+                                   options="{'no_create_edit': True}"/>
+                            <field name="product"
+                                   attrs="{'invisible':['|',('choose', 'not in',('product')),('choose_from', 'not in',('other'))]}"
+                                   options="{'no_create_edit': True}"/>
+                            <field name="purchase"
+                                   attrs="{'invisible':['|',('choose', 'not in',('po')),('choose_from', 'not in',('other'))]}"
+                                   options="{'no_create_edit': True}"/>
+                        </group>
+                    </group>
+
+                    <footer>
+                        <button name="print_pdf_po_followup"
+                                string="Print"
+                                type="object"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_wizard_po_follow_up" model="ir.actions.act_window">
+            <field name="name">PO Follow Up</field>
+            <field name="res_model">po.followup</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_po_follow_up"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+                id="menu_po_follow_up"
+                action="action_wizard_po_follow_up"
+                sequence="101"
+                parent="purchase.purchase_report"
+                groups="purchase.group_purchase_user"
         />
     </data>
 </odoo>
