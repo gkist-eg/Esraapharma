@@ -105,6 +105,7 @@ class maintenance_edit(models.Model):
             else:
                 r.department_id = False
 
+
     department_id = fields.Many2one('hr.department', compute='_compute_employee_department', store=True, readonly=True,
 
                                     string="Department")

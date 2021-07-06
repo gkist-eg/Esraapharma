@@ -61,7 +61,7 @@ class Move(models.Model):
         # Get the incoming and outgoing sml between self.invoice_date and the previous invoice (if any).
         write_dates = [wd for wd in self.invoice_line_ids.mapped('write_date') if wd]
         self_datetime = max(write_dates) if write_dates else None
-        last_write_dates = last_invoice and [wd for wd in last_invoice.invoice_line_ids.mapped('write_date') if wd]
+        last_write_dates = last_invoice and [wd for wd in last_invoice.invoice_line_ids.mapped('create_date') if wd]
         last_invoice_datetime = max(last_write_dates) if last_write_dates else None
 
         def _filter_incoming_sml(ml):
@@ -152,19 +152,3 @@ class Move(models.Model):
         return lot_values
 
 
-    # def action_post(self):
-    #     for invoice in self:
-    #         if self.move_type != 'entry':
-    #             if invoice.partner_id.change_serial and invoice.move_type == 'out_invoice' and invoice.move_type != 'entry':
-    #                 invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
-    #             if invoice.warehouse_id.sale_store and invoice.move_type == 'out_invoice' and invoice.move_type != 'entry':
-    #                 invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
-    #             else:
-    #                 if invoice.move_type == 'out_invoice' and not invoice.partner_id.change_serial:
-    #                     invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
-    #             if invoice.move_type == 'out_refund' and invoice.move_type != 'entry':
-    #                 invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
-    #             if invoice.move_type == 'in_refund' and invoice.move_type != 'entry':
-    #                 invoice.name = self.env['ir.sequence'].next_by_code('refund_bill')
-    #
-    #     return super().action_post()
