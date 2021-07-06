@@ -136,6 +136,8 @@
                             <span t-field="o.vendor"/>
                             <span t-if="o.choose == 'product'">Product:</span>
                             <span t-field="o.product"/>
+                            <span t-if="o.choose == 'po'">PO:</span>
+                            <span t-field="o.po"/>
 
                         </div>
                         <div class="col-xs-6">
@@ -156,9 +158,9 @@
                             <tr>
                                 <th>PO No</th>
                                 <th>PO Date</th>
-                                <th t-if="o.choose == 'vendor'">Product Code</th>
-                                <th t-if="o.choose == 'vendor'">Product</th>
-                                <th t-if="o.choose == 'product'">vendor</th>
+                                <th t-if="o.choose in ( 'product','purchase')">Product Code</th>
+                                <th t-if="o.choose in ( 'product','purchase')">Product</th>
+                                <th t-if="o.choose in ( 'product','purchase')">vendor</th>
                                 <th t-if="o.choose_from == 'all'">Product Code</th>
                                 <th t-if="o.choose_from == 'all'">Product</th>
                                 <th>Requested Qty</th>
@@ -180,12 +182,16 @@
                                         <span t-esc="l.pr_date"/>
                                     </td>
 
-                                    <td t-if="o.choose == 'vendor'">
+                                    <td t-if="o.choose in ( 'product','purchase')">
                                         <span t-esc="l.product_code"/>
                                     </td>
-                                    <td t-if="o.choose == 'vendor'">
+                                    <td t-if="o.choose in ( 'product','purchase')">
                                         <span t-esc="l.product_id.name"/>
                                     </td>
+                                    <td t-if="o.choose in ( 'product','purchase')">
+                                        <span t-esc="l.partner.name"/>
+                                    </td>
+
 
                                     <td t-if="o.choose_from == 'all'">
                                         <span t-esc="l.product_code"/>

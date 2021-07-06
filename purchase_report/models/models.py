@@ -358,118 +358,165 @@ class POFollowup(models.TransientModel):
         for wizard in self:
             if wizard.vendor:
 
-                    for resource in self.env['purchase.order.line'].search(
-                            [('order_id.date_order', '>=', wizard.date_from),
-                     ('order_id.date_order', '<=', wizard.date_to),
-                     ('order_id.partner_id', '=', self.vendor.id),]):
-                        for move in resource.move_ids:
-                            l = None
-                            s = None
-                            if move.state == 'done':
-                                l = move.date
-                                s = move.product_uom_qty
+                for resource in self.env['purchase.order.line'].search(
+                        [('order_id.date_order', '>=', wizard.date_from),
+                         ('order_id.date_order', '<=', wizard.date_to),
+                         ('order_id.partner_id', '=', self.vendor.id), ]):
+                    for move in resource.move_ids:
+                        l = None
+                        s = None
+                        if move.state == 'done':
+                            l = move.date
+                            s = move.product_uom_qty
 
-                            if move.backorder_id:
-                                for i in move.backorder_id.move_lines:
-                                    line_ids.append((0, 0, {
-                                        'pr_no': resource.order_id.name,
-                                        'pr_date': resource.order_id.date_order,
-                                        'product_code': resource.product_id.default_code,
-                                        'product_id': resource.product_id.id,
-                                        'requested_qty': resource.product_qty,
-                                        'qty_received': s,
-                                        'received_date': l,
-                                        'backorder_id': move.backorder_id.id,
-                                        'product_uom_qty': i.product_uom_qty,
-
-                                    }))
-                            else:
+                        if move.backorder_id:
+                            for i in move.backorder_id.move_lines:
                                 line_ids.append((0, 0, {
                                     'pr_no': resource.order_id.name,
                                     'pr_date': resource.order_id.date_order,
+                                    'vendor': resource.order_id.partner_id.id,
+
                                     'product_code': resource.product_id.default_code,
                                     'product_id': resource.product_id.id,
                                     'requested_qty': resource.product_qty,
                                     'qty_received': s,
                                     'received_date': l,
+                                    'backorder_id': move.backorder_id.id,
+                                    'product_uom_qty': i.product_uom_qty,
 
                                 }))
+                        else:
+                            line_ids.append((0, 0, {
+                                'pr_no': resource.order_id.name,
+                                'vendor': resource.order_id.partner_id.id,
 
-            if wizard.product:
+                                'pr_date': resource.order_id.date_order,
+                                'product_code': resource.product_id.default_code,
+                                'product_id': resource.product_id.id,
+                                'requested_qty': resource.product_qty,
+                                'qty_received': s,
+                                'received_date': l,
+
+                            }))
+
+            elif wizard.product:
                 request = self.env['purchase.order.line'].search(
                     [('order_id.date_order', '>=', wizard.date_from),
                      ('order_id.date_order', '<=', wizard.date_to),
                      ('product_id', '=', self.product.id),
                      ])
                 for rec in request:
-                        for move in rec.move_ids:
-                            l = None
-                            s = None
-                            if move.state == 'done':
-                                l = move.date
-                                s = move.product_uom_qty
-                            if move.backorder_id:
-                                for i in move.backorder_id.move_lines:
-                                    line_ids.append((0, 0, {
-                                        'pr_no': rec.order_id.name,
-                                        'pr_date': rec.order_id.date_order,
-                                        'requested_qty': rec.product_qty,
-                                        'qty_received': s,
-                                        'received_date': l,
-                                        'backorder_id': move.backorder_id.id,
-                                        'product_uom_qty': i.product_uom_qty,
-                                        'po': rec.order_id.name
-
-                                    }))
-                            else:
+                    for move in rec.move_ids:
+                        l = None
+                        s = None
+                        if move.state == 'done':
+                            l = move.date
+                            s = move.product_uom_qty
+                        if move.backorder_id:
+                            for i in move.backorder_id.move_lines:
                                 line_ids.append((0, 0, {
                                     'pr_no': rec.order_id.name,
+                                    'vendor': rec.order_id.partner_id.id,
+
                                     'pr_date': rec.order_id.date_order,
                                     'requested_qty': rec.product_qty,
                                     'qty_received': s,
                                     'received_date': l,
+                                    'backorder_id': move.backorder_id.id,
+                                    'product_uom_qty': i.product_uom_qty,
                                     'po': rec.order_id.name
 
                                 }))
+                        else:
+                            line_ids.append((0, 0, {
+                                'pr_no': rec.order_id.name,
+                                'vendor': rec.order_id.partner_id.id,
 
-            if wizard.choose_from == 'all':
+                                'pr_date': rec.order_id.date_order,
+                                'requested_qty': rec.product_qty,
+                                'qty_received': s,
+                                'received_date': l,
+                                'po': rec.order_id.name
+
+                            }))
+            elif wizard.purchase:
+                request = self.env['purchase.order.line'].search(
+                    [
+                     ('order_id.id', '=', self.purchase.id),
+                     ])
+                for rec in request:
+                    for move in rec.move_ids:
+                        l = None
+                        s = None
+                        if move.state == 'done':
+                            l = move.date
+                            s = move.product_uom_qty
+                        if move.backorder_id:
+                            for i in move.backorder_id.move_lines:
+                                line_ids.append((0, 0, {
+                                    'pr_no': rec.order_id.name,
+                                    'vendor': rec.order_id.partner_id.id,
+
+                                    'pr_date': rec.order_id.date_order,
+                                    'requested_qty': rec.product_qty,
+                                    'qty_received': s,
+                                    'received_date': l,
+                                    'backorder_id': move.backorder_id.id,
+                                    'product_uom_qty': i.product_uom_qty,
+                                    'po': rec.order_id.name
+
+                                }))
+                        else:
+                            line_ids.append((0, 0, {
+                                'pr_no': rec.order_id.name,
+                                'vendor': rec.order_id.partner_id.id,
+
+                                'pr_date': rec.order_id.date_order,
+                                'requested_qty': rec.product_qty,
+                                'qty_received': s,
+                                'received_date': l,
+                                'po': rec.order_id.name
+
+                            }))
+
+            elif wizard.choose_from == 'all':
                 for resource in self.env['purchase.order.line'].search(
                         [('order_id.date_order', '>=', wizard.date_from),
-                     ('order_id.date_order', '<=', wizard.date_to),]):
+                         ('order_id.date_order', '<=', wizard.date_to), ]):
 
-                        for move in resource.move_ids:
-                            l = None
-                            s = None
-                            if move.state == 'done':
-                                l = move.date
-                                s = move.product_uom_qty
-                            if move.backorder_id:
-                                for i in move.backorder_id.move_lines:
-                                    line_ids.append((0, 0, {
-                                        'pr_no': resource.order_id.name,
-                                        'pr_date': resource.order_id.date_order,
-                                        'product_code': resource.product_id.default_code,
-                                        'product_id': resource.product_id.id,
-                                        'requested_qty': resource.product_qty,
-                                        'qty_received': s,
-                                        'received_date': l,
-                                        'backorder_id': move.backorder_id.id,
-                                        'product_uom_qty': i.product_uom_qty,
-
-                                    }))
-                            else:
+                    for move in resource.move_ids:
+                        l = None
+                        s = None
+                        if move.state == 'done':
+                            l = move.date
+                            s = move.product_uom_qty
+                        if move.backorder_id:
+                            for i in move.backorder_id.move_lines:
                                 line_ids.append((0, 0, {
                                     'pr_no': resource.order_id.name,
+                                    'vendor': resource.order_id.partner_id.id,
                                     'pr_date': resource.order_id.date_order,
                                     'product_code': resource.product_id.default_code,
                                     'product_id': resource.product_id.id,
                                     'requested_qty': resource.product_qty,
                                     'qty_received': s,
                                     'received_date': l,
+                                    'backorder_id': move.backorder_id.id,
+                                    'product_uom_qty': i.product_uom_qty,
 
                                 }))
+                        else:
+                            line_ids.append((0, 0, {
+                                'pr_no': resource.order_id.name,
+                                'vendor': resource.order_id.partner_id.id,
+                                'pr_date': resource.order_id.date_order,
+                                'product_code': resource.product_id.default_code,
+                                'product_id': resource.product_id.id,
+                                'requested_qty': resource.product_qty,
+                                'qty_received': s,
+                                'received_date': l,
 
-
+                            }))
 
         # writing to One2many line_ids
         self.write({'line_ids': line_ids})
@@ -496,6 +543,7 @@ class POFollowUpLine(models.TransientModel):
     pr_no = fields.Char('Date', store=True)
     pr_date = fields.Date('Date', store=True)
     product_id = fields.Many2one('product.product', 'Product', store=True)
+    vendor = fields.Many2one('res.partner', 'Product', store=True)
     product_code = fields.Char('Product Code', store=True)
     requested_qty = fields.Float('Qty', store=True)
     qty_received = fields.Float('Qty', store=True)
