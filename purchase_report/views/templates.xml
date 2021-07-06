@@ -136,7 +136,7 @@
                             <span t-field="o.vendor"/>
                             <span t-if="o.choose == 'product'">Product:</span>
                             <span t-field="o.product"/>
-                            <span t-if="o.choose == 'po'">PO:</span>
+                            <span t-if="o.choose == 'purchase'">PO:</span>
                             <span t-field="o.purchase"/>
 
                         </div>
