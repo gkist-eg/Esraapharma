@@ -621,6 +621,9 @@ class Invoceder(models.Model):
 
                     else:
                         self.price_total = self.price_subtotal = subtotal
+                if currency:
+                    res = {k: currency.round(v) for k, v in self.items()}
+                return res
 
                 # In case of multi currency, round before it's use for computing debit credit
 
@@ -668,8 +671,12 @@ class Invoceder(models.Model):
 
                     else:
                         self.price_total = self.price_subtotal = subtotal
+                if currency:
+                    res = {k: currency.round(v) for k, v in self.items()}
+                return res
 
-                # In case of multi currency, round before it's use for computing debit credit
+            # In case of multi currency, round before it's use for computing debit credit
+
 
     @api.model_create_multi
     def create(self, vals_list):
