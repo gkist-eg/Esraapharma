@@ -1109,7 +1109,7 @@ class Move(models.Model):
                     if base_line.product_id and base_line.sale_type == 'sale':
                         x = round((base_line.price_unit * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dist_discount_sale / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale / 100.0))
                         discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
@@ -1124,12 +1124,12 @@ class Move(models.Model):
                 else:
                     if base_line.product_id and base_line.sale_type == 'sale':
                         discount_pharm = ((base_line.price_unit * (1.0 - (base_line.discount / 100.0))))
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dist_discount_sale / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale / 100.0))
                         discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
                         discount_pharm = (base_line.product_id.lst_price * (1.0 - (base_line.discount / 100.0)))
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dist_discount_sale / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale / 100.0))
                         discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
                         price_unit_wo_discount = sign * discount_pharm
 
