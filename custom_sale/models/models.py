@@ -576,30 +576,13 @@ class Invoceder(models.Model):
     def _get_price_total_and_subtotal_model(self, price_unit, quantity, discount,
                                             currency, product, partner, taxes,
                                             move_type):
-        ''' This method is used to compute 'price_total' & 'price_subtotal'.e3 ``
-
-        :param price_unit:  The current price unit.
-        :param quantity:    The current quantity.
-        :param discount:    The current discount.
-        :param currency:    The line's currency.
-        :param product:     The line's product.
-        :param partner:     The line's partner.
-        :param taxes:       The applied taxes.
-        :param move_type:   The type of the move.
-        :return:            A dictionary containing 'price_subtotal' & 'price_total'.
-        '''
-        res = {}
-
-        # Compute 'price_subtotal'.
-        for record in self:
+        for line in self:
             if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
                 if product:
                     x = round((price_unit * (1.0 - discount / 100.0)), 3)
                     price_unit_wo_discount1 = round_half_up(x, 2)
-                    f=res['dis_discount_sale']
-                    y=res['cash_discount_sale']
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (f or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - (y or 0.0) / 100.0)
+                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (line.dist_discount or 0.0) / 100.0)
+                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - (line.cash_discount or 0.0) / 100.0)
                 else:
                     price_unit_wo_discount = price_unit
 
@@ -615,41 +598,38 @@ class Invoceder(models.Model):
                                                               partner=partner,
                                                               is_refund=move_type in ('out_refund', 'in_refund'))
                         # print(price_unit_wo_discount, taxes_res)
-                        res['price_subtotal'] = 0.00
-                        res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
+                        self.price_subtotal = 0.00
+                        self.price_total = taxes_res['total_included'] - taxes_res['total_excluded']
                     elif self.sale_type == 'sale':
                         taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
                                                               quantity=quantity, currency=currency, product=product,
                                                               partner=partner,
                                                               is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
+                        self.price_subtotal = taxes_res['total_excluded']
+                        self.price_total = taxes_res['total_included']
                     elif not self.sale_type:
                         taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
                                                               quantity=quantity, currency=currency, product=product,
                                                               partner=partner,
                                                               is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
+                        self.price_subtotal = taxes_res['total_excluded']
+                        self.price_total = taxes_res['total_included']
 
                 else:
                     if self.sale_type == 'bouns':
-                        res['price_total'] = res['price_subtotal'] = 0.00
+                        self.price_total = self.price_subtotal = 0.00
 
                     else:
-                        res['price_total'] = res['price_subtotal'] = subtotal
+                        self.price_total = self.price_subtotal = subtotal
 
                 # In case of multi currency, round before it's use for computing debit credit
-                if currency:
-                    res = {k: currency.round(v) for k, v in res.items()}
-                return res
+
             else:
                 if product:
-                    f = res['dis_discount_sale']
-                    y = res['cash_discount_sale']
+
                     price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (f or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((y or 0.0)) / 100.0)
+                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
+                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((partner.cash_discount or 0.0)) / 100.0)
                 else:
                     price_unit_wo_discount = price_unit
 
@@ -665,34 +645,31 @@ class Invoceder(models.Model):
                                                               partner=partner,
                                                               is_refund=move_type in ('out_refund', 'in_refund'))
                         # print(price_unit_wo_discount, taxes_res)
-                        res['price_subtotal'] = 0.00
-                        res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
+                        self.price_subtotal = 0.00
+                        self.price_total = taxes_res['total_included'] - taxes_res['total_excluded']
                     elif self.sale_type == 'sale':
                         taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
                                                               quantity=quantity, currency=currency, product=product,
                                                               partner=partner,
                                                               is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
+                        self.price_subtotal = taxes_res['total_excluded']
+                        self.price_total = taxes_res['total_included']
                     elif not self.sale_type:
                         taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
                                                               quantity=quantity, currency=currency, product=product,
                                                               partner=partner,
                                                               is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
+                        self.price_subtotal = taxes_res['total_excluded']
+                        self.price_total = taxes_res['total_included']
 
                 else:
                     if self.sale_type == 'bouns':
-                        res['price_total'] = res['price_subtotal'] = 0.00
+                        self.price_total = self.price_subtotal = 0.00
 
                     else:
-                        res['price_total'] = res['price_subtotal'] = subtotal
+                        self.price_total = self.price_subtotal = subtotal
 
                 # In case of multi currency, round before it's use for computing debit credit
-                if currency:
-                    res = {k: currency.round(v) for k, v in res.items()}
-                return res
 
     @api.model_create_multi
     def create(self, vals_list):
