@@ -622,7 +622,7 @@ class Invoceder(models.Model):
                     else:
                         self.price_total = self.price_subtotal = subtotal
                 if currency:
-                    res = {k: currency.round(v) for k, v in self.items()}
+                    res = {k: currency.round(v) for k, v in line.items()}
                 return res
 
                 # In case of multi currency, round before it's use for computing debit credit
@@ -672,7 +672,7 @@ class Invoceder(models.Model):
                     else:
                         self.price_total = self.price_subtotal = subtotal
                 if currency:
-                    res = {k: currency.round(v) for k, v in self.items()}
+                    res = {k: currency.round(v) for k, v in line.items()}
                 return res
 
             # In case of multi currency, round before it's use for computing debit credit
