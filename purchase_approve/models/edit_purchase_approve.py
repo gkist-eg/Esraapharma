@@ -64,7 +64,7 @@ class EditPurchaseOrder(models.Model):
         ('maneger_approved', 'Manager Approved'),
         ('purchase', 'Purchase Order'),
         ('done', 'Locked'),
-        ('cancel', 'Canselled'),
+        ('cancel', 'Cancelled'),
     ], default='draft', readonly=True)
     approver_id = fields.Many2one('res.users', string='Approver', readonly=True)
     approverrr_id = fields.Many2one('res.users', string='Final Approver', readonly=True)
