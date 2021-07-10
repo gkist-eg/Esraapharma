@@ -596,8 +596,8 @@ class Invoceder(models.Model):
                 if product:
                     x = round((price_unit * (1.0 - discount / 100.0)), 3)
                     price_unit_wo_discount1 = round_half_up(x, 2)
-                    f=res['dist_discount']
-                    y=res['cash_discount']
+                    f=res['dis_discount_sale']
+                    y=res['cash_discount_sale']
                     price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (f or 0.0) / 100.0)
                     price_unit_wo_discount = price_unit_wo_discount2 * (1 - (y or 0.0) / 100.0)
                 else:
@@ -645,8 +645,8 @@ class Invoceder(models.Model):
                 return res
             else:
                 if product:
-                    f = res['dist_discount']
-                    y = res['cash_discount']
+                    f = res['dis_discount_sale']
+                    y = res['cash_discount_sale']
                     price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
                     price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (f or 0.0) / 100.0)
                     price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((y or 0.0)) / 100.0)
