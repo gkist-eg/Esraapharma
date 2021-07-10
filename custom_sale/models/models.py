@@ -574,23 +574,23 @@ class Invoceder(models.Model):
 
     def compute_dist(self):
         dist = 0
+        for r in self:
+            order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
+            if order:
+                for x in order:
+                    dist = x.dis_discount_sale
 
-        order = self.env['sale.order'].search([('name', '=', self.invoice_origin)])
-        if order:
-            for x in order:
-                dist = x.dis_discount_sale
-
-        return dist
+            return dist
 
     def compute_cash(self):
         cash = 0
+        for r in self:
+            order = self.env['sale.order'].search([('name', '=',  r.move_id.invoice_origin)])
+            if order:
+                for x in order:
+                    cash = x.cash_discount_sale
 
-        order = self.env['sale.order'].search([('name', '=', self.invoice_origin)])
-        if order:
-            for x in order:
-                cash = x.cash_discount_sale
-
-        return cash
+            return cash
 
     @api.model
     def _get_price_total_and_subtotal_model(self, price_unit, quantity, discount,
@@ -616,7 +616,7 @@ class Invoceder(models.Model):
                 x = round((price_unit * (1.0 - discount / 100.0)), 3)
                 price_unit_wo_discount1 = round_half_up(x, 2)
                 price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
-                price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_dist() or 0.0) / 100.0)
+                price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash() or 0.0) / 100.0)
             else:
                 price_unit_wo_discount = price_unit
 
@@ -664,8 +664,8 @@ class Invoceder(models.Model):
             if product:
 
                 price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
-                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
-                price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((partner.cash_discount or 0.0)) / 100.0)
+                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
+                price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
             else:
                 price_unit_wo_discount = price_unit
 
