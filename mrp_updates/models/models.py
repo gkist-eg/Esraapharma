@@ -139,6 +139,7 @@ class MrpUpdates(models.Model):
                     [('origin', '=', order.name), ('state', '=', 'assigned'),
                      ('location_id', '=', order.location_dest_id.id)]):
                 moves = self.env['stock.move']
+                done_moves = self.env['stock.move']
                 for move in picking.move_lines:
                     if move.quantity_done > 0 and move.state not in ('done', 'cancel'):
                         if move.product_uom_qty > move.quantity_done > 0:
@@ -152,6 +153,8 @@ class MrpUpdates(models.Model):
                                 lambda x: x.state not in ('done', 'cancel'))
                             move.move_orig_ids = move.move_orig_ids.filtered(lambda x: x.state == 'done')
                             moves |= new_move
+                        elif move.product_uom_qty == move.quantity_done:
+                            done_moves |= move
                         elif move.product_uom_qty <= move.quantity_done:
                             move.product_uom_qty = move.quantity_done
                             picking.do_unreserve()
@@ -164,12 +167,14 @@ class MrpUpdates(models.Model):
                     new_pickings |= new_picking
                     picking.do_unreserve()
                     picking.action_assign()
+                    picking.name = self.env['ir.sequence'].next_by_code('production.picking')
+                elif done_moves and not moves:
+                    picking.name = self.env['ir.sequence'].next_by_code('production.picking')
+
             if new_pickings:
                 new_pickings.action_confirm()
 
         return True
-
-
 
     @api.depends('move_finished_ids.quantity_done', 'qty_producing')
     def _compute_post_visible(self):
@@ -205,9 +210,9 @@ class MrpUpdates(models.Model):
                                                                               rounding_method='HALF-UP')
         moves = self.env['stock.move']
         moves |= self.move_finished_ids.filtered(
-                lambda m: m.product_id != self.product_id and m.state not in ('done', 'cancel'))
+            lambda m: m.product_id != self.product_id and m.state not in ('done', 'cancel'))
         moves |= self.move_raw_ids.filtered(
-                lambda m: m.state not in ('done', 'cancel'))
+            lambda m: m.state not in ('done', 'cancel'))
         for move in moves:
             if move._should_bypass_set_qty_producing():
                 continue
@@ -383,13 +388,13 @@ class MrpUpdates(models.Model):
             elif production.state in ('draft', 'done', 'cancel'):
                 production.reservation_state = False
 
-    # def action_cancel(self):
-    #     for production in self:
-    #         if production.state not in ('draft', 'confirmed', 'cancel'):
-    #             raise UserError(_('You can not cancel mo unless it was draft or confirmed'))
-    #         production.state = 'cancel'
-    #     res = super(MrpUpdates, self).action_cancel()
-    #     return res
+    def action_cancel(self):
+        for production in self:
+            if production.state not in ('draft', 'confirmed', 'cancel'):
+                raise UserError(_('You can not cancel mo unless it was draft or confirmed'))
+            production.state = 'cancel'
+        res = super(MrpUpdates, self).action_cancel()
+        return res
 
     def button_mark_done(self):
         res = super(MrpUpdates, self).button_mark_done()
@@ -556,7 +561,7 @@ class MrpUpdates(models.Model):
                 self.bom_id = bom.id
                 self.product_qty = self.bom_id.product_qty
                 self.product_uom_id = self.bom_id.product_uom_id.id
-            elif  bom.type == 'subcontact':
+            elif bom.type == 'subcontact':
                 self.bom_id = bom.id
                 self.product_uom_id = self.bom_id.product_uom_id.id
             else:
