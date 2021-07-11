@@ -69,26 +69,6 @@ class Sale(models.Model):
     _inherit = 'sale.order'
     cash_discount_sale = fields.Float('Cash Discount', store=True)
     dis_discount_sale = fields.Float('Distributor Discount', store=True)
-    return_order = fields.Boolean(string='Returned Order',
-                              compute='_compute_return_order', search='_search_return_order')
-
-    def _search_return_order(self, operator, value):
-        if operator != '=':
-            if operator == '!=' and isinstance(value, bool):
-                value = not value
-            else:
-                raise NotImplementedError()
-        lines = self.search([('invoice_status', '=', "to invoice")])
-        line_ids = lines.filtered(lambda line: line.return_order == value).ids
-        return [('id', 'in', line_ids)]
-
-    def _compute_return_order(self):
-        for record in self:
-            lines = record.order_line.filtered(lambda line: line.qty_invoiced > line.qty_delivered)
-            if lines:
-                record.return_order = True
-            else :
-                record.return_order = False
 
     @api.onchange('partner_id')
     def _onchange_ty(self):
@@ -262,7 +242,9 @@ class ORder(models.Model):
                         'account.group_account_manager'):
                     line.tax_id.invalidate_cache(['invoice_repartition_line_ids'], [line.tax_id.id])
             else:
+
                 price1 = (line.price_unit * (1.0 - (line.discount or 0.0) / 100.0))
+
                 price2 = price1 * (1.0 - (line.dist_discount or 0.0) / 100.0)
                 price = price2 * (1.0 - (line.cash_discount or 0.0) / 100.0)
                 # print(line.price_unit, price1, price2, price)
@@ -354,14 +336,6 @@ class Invoceder(models.Model):
         for line in self:
             if line.product_id:
                 line.publicprice = line.product_id.pubprice
-
-    @api.depends('price_unit', 'product_id', 'discount')
-    def onchange_p_price(self):
-        for line in self:
-            if line.product_id:
-                line.p_unit = line.product_id.lst_price
-        return
-    p_unit = fields.Float("Price Unit", store=True, digits=('Product Price'),compute='onchange_p_price')
 
     @api.depends('price_unit', 'product_id', 'discount')
     def compute_store_price(self):
@@ -580,26 +554,6 @@ class Invoceder(models.Model):
             else:
                 rec.tax_name = ''
 
-    def compute_dist(self):
-        dist = 0
-        for r in self:
-            order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
-            if order:
-                for x in order:
-                    dist = x.dis_discount_sale
-
-            return dist
-
-    def compute_cash(self):
-        cash = 0
-        for r in self:
-            order = self.env['sale.order'].search([('name', '=',  r.move_id.invoice_origin)])
-            if order:
-                for x in order:
-                    cash = x.cash_discount_sale
-
-            return cash
-
     @api.model
     def _get_price_total_and_subtotal_model(self, price_unit, quantity, discount,
                                             currency, product, partner, taxes,
@@ -623,8 +577,8 @@ class Invoceder(models.Model):
             if product:
                 x = round((price_unit * (1.0 - discount / 100.0)), 3)
                 price_unit_wo_discount1 = round_half_up(x, 2)
-                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
-                price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash() or 0.0) / 100.0)
+                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
+                price_unit_wo_discount = price_unit_wo_discount2 * (1 - (partner.cash_discount or 0.0) / 100.0)
             else:
                 price_unit_wo_discount = price_unit
 
@@ -672,8 +626,8 @@ class Invoceder(models.Model):
             if product:
 
                 price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
-                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
-                price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
+                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
+                price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((partner.cash_discount or 0.0)) / 100.0)
             else:
                 price_unit_wo_discount = price_unit
 
@@ -1117,14 +1071,14 @@ class Move(models.Model):
                     if base_line.product_id and base_line.sale_type == 'sale':
                         x = round((base_line.price_unit * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
-                        x = round((base_line.product_id.lst_price * (1.0 - base_line.discount / 100.0)), 3)
+                        x = round((base_line.price_unit * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale/ 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_cash
 
                     else:
@@ -1132,13 +1086,13 @@ class Move(models.Model):
                 else:
                     if base_line.product_id and base_line.sale_type == 'sale':
                         discount_pharm = ((base_line.price_unit * (1.0 - (base_line.discount / 100.0))))
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
-                        discount_pharm = (base_line.product_id.lst_price * (1.0 - (base_line.discount / 100.0)))
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
+                        discount_pharm = (base_line.price_unit * (1.0 - (base_line.discount / 100.0)))
+                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
                         price_unit_wo_discount = sign * discount_pharm
 
                     else:
