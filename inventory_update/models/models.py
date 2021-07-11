@@ -364,7 +364,7 @@ class StockPicking(models.Model):
                 if line.sale_line_id:
                     received += line.sale_line_id.qty_delivered
                     orderd += line.sale_line_id.product_uom_qty
-                    if 0.0 < orderd < (received + line.quantity_done):
+                    if 0.0 < orderd+1 < (received + line.quantity_done):
                         raise UserError(_('Quantity can not be larger than qty to do.'))
                 if orderd > 0.0 and (received + line.quantity_done) > (orderd + (orderd / 10)):
                     raise UserError(_('Quantity can not be larger than qty to do.'))
@@ -390,7 +390,7 @@ class StockPicking(models.Model):
                 if line.sale_line_id:
                     received += line.sale_line_id.qty_delivered
                     orderd += line.sale_line_id.product_uom_qty
-                    if 0.0 < orderd < (received + line.quantity_done):
+                    if 0.0 < orderd+1 < (received + line.quantity_done):
                         raise UserError(_('Quantity can not be larger than qty to do.'))
                 if orderd > 0.0 and (received + line.quantity_done) > (orderd + (orderd / 10)):
                     raise UserError(_('Quantity can not be larger than qty to do.'))
