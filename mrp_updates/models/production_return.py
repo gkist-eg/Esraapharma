@@ -158,10 +158,10 @@ class ReturnPicking(models.TransientModel):
                             for line in return_line.move_id.move_line_ids.filtered(
                                     lambda m: m.lot_id == return_line.lot_id and m.state not in ('done', 'cancel')):
                                 if line.qty_done == return_line.quantity:
-                                    move_lines |= line
+                                    line.move_id_action_done()
                                 elif line.qty_done > return_line.quantity:
                                     line.qty_done -= return_line.quantity
-                        move_lines.unlink()
+                        # move_lines.unlink()
                     else:
                         r = self.production_id.move_raw_ids.filtered(
                             lambda x: return_line.move_id == x.origin_returned_move_id and x.state == 'draft')
