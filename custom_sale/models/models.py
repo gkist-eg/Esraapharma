@@ -628,7 +628,7 @@ class Invoceder(models.Model):
                 price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
                 price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash() or 0.0) / 100.0)
             else:
-                price_unit_wo_discount = self.compute_price()
+                price_unit_wo_discount = product.lst_price
 
             subtotal = quantity * price_unit_wo_discount
 
