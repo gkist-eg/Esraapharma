@@ -364,7 +364,7 @@ class StockPicking(models.Model):
                 if line.sale_line_id:
                     received += line.sale_line_id.qty_delivered
                     orderd += line.sale_line_id.product_uom_qty
-                if orderd > 0 and (received + line.qty_done) > (orderd + (orderd / 10)):
+                if orderd > 0 and (received + line.quantity_done) > (orderd + (orderd / 10)):
                     raise UserError(_('Quantity can not be larger than qty x to do .'))
         self.approve = True
         self.keeper_id = self.env.user.id
