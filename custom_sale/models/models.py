@@ -348,12 +348,19 @@ class Invoceder(models.Model):
     cash_discount_sale = fields.Float('Cash Discount', store=True, index=True)
     dis_discount_sale = fields.Float('Distributor Discount', store=True, index=True)
     publicprice = fields.Float("Public Price", store=True, digits=('Product Price'))
+    p_unit = fields.Float("Price Unit", store=True, digits=('Product Price'))
 
     @api.onchange('product_id')
     def onchange_public_price(self):
         for line in self:
             if line.product_id:
                 line.publicprice = line.product_id.pubprice
+
+    @api.depends('price_unit', 'product_id', 'discount')
+    def onchange_p_price(self):
+        for line in self:
+            if line.product_id:
+                line.p_unit = line.product_id.lst_price
 
     @api.depends('price_unit', 'product_id', 'discount')
     def compute_store_price(self):
