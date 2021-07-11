@@ -8,20 +8,21 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//filter[@name='to_invoice']" position="after">
-  <filter string="Returned Orders"
-                        name="outdated" domain="[('return_order', '=', True)]"/>
+                    <filter string="Returned Orders"
+                            name="outdated" domain="[('return_order', '=', True)]"/>
                 </xpath>
 
             </field>
-        </record>      <record id="view_sales_order_filter_inherit" model="ir.ui.view">
+        </record>
+        <record id="view_sales_order_filter_inherit" model="ir.ui.view">
             <field name="name">sale.order</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_sales_order_filter"/>
             <field name="arch" type="xml">
 
                 <xpath expr="//filter[@name='activities_overdue']" position="after">
-  <filter string="Returned Orders"
-                        name="outdated" domain="[('return_order', '=', True)]"/>
+                    <filter string="Returned Orders"
+                            name="outdated" domain="[('return_order', '=', True)]"/>
                 </xpath>
 
             </field>
@@ -146,6 +147,10 @@
                     <attribute name="readonly">True</attribute>
 
                 </xpath>
+                <xpath expr="//field[@name='partner_id']"
+                       position="attributes">
+                    <attribute name="options">{'no_create_edit': True, 'no_create':True, 'no_open':True}</attribute>
+                </xpath>
                 <xpath expr="//field[@name='payment_term_id']"
                        position="attributes">
                     <attribute name="readonly">True</attribute>
@@ -184,7 +189,7 @@
                     <!-- Add your fields or attributes here -->
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
-                                        <field name="return_order" invisible="1"/>
+                    <field name="return_order" invisible="1"/>
 
                     <field name="cash_discount_sale" readonly="1" force_save="1"/>
                     <!-- Add your fields or attributes here -->
@@ -269,12 +274,12 @@
                                         <field name="qty_invoiced"
                                                attrs="{'invisible': [('parent.state', 'not in', ['sale', 'done'])]}"/>
                                     </div>
-                                    <field name="cash_discount"/>
-                                    <field name="dist_discount"/>
+                                    <field name="cash_discount" invisible="1"/>
+                                    <field name="dist_discount" invisible="1"/>
                                     <field name="cash_discount_sale" invisible="1"/>
                                     <field name="dis_discount_sale" invisible="1"/>
-                                    <field name="cash_amount"/>
-                                    <field name="dist_amount"/>
+                                    <field name="cash_amount" invisible="1"/>
+                                    <field name="dist_amount" invisible="1"/>
                                     <field name="price_unit" readonly="1"/>
                                     <field name="real_price" invisible="1"/>
                                     <field name="tax_id" widget="many2many_tags" options="{'no_create': True}"
@@ -459,10 +464,10 @@
                             <field name="store_price" readonly="1"/>
                             <field name="cash_discount" invisible="1"/>
                             <field name="dist_discount" invisible="1"/>
-                            <field name="cash_discount_sale"/>
-                            <field name="dis_discount_sale"/>
-                            <field name="cash_amount"/>
-                            <field name="dist_amount"/>
+                            <field name="cash_discount_sale" invisible="1"/>
+                            <field name="dis_discount_sale" invisible="1"/>
+                            <field name="cash_amount" invisible="1"/>
+                            <field name="dist_amount" invisible="1"/>
                             <field name="discount" string="Disc.%" groups="product.group_discount_per_so_line"
                                    optional="show" widget="product_discount"/>
                             <field name="price_subtotal" widget="monetary"
@@ -605,8 +610,8 @@
                 <xpath expr="//field[@name='invoice_line_ids']//tree/field[@name='price_unit']" position="after">
                     <field name="publicprice" readonly="True"
                            attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
-                    <field name="store_price" readonly="1"
-                           attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
+                    <field name="p_unit" readonly="1" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
+                    <field name="store_price" readonly="1" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
                     <field name="list_price" invisible="1"/>
                     <field name="move_type" invisible="1"/>
                     <field name="batch_no" invisible="1"/>

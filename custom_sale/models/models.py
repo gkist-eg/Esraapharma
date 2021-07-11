@@ -70,7 +70,7 @@ class Sale(models.Model):
     cash_discount_sale = fields.Float('Cash Discount', store=True)
     dis_discount_sale = fields.Float('Distributor Discount', store=True)
     return_order = fields.Boolean(string='Returned Order',
-                              compute='_compute_return_order', search='_search_return_order')
+                                  compute='_compute_return_order', search='_search_return_order')
 
     def _search_return_order(self, operator, value):
         if operator != '=':
@@ -87,7 +87,7 @@ class Sale(models.Model):
             lines = record.order_line.filtered(lambda line: line.qty_invoiced > line.qty_delivered)
             if lines:
                 record.return_order = True
-            else :
+            else:
                 record.return_order = False
 
     @api.onchange('partner_id')
@@ -348,12 +348,19 @@ class Invoceder(models.Model):
     cash_discount_sale = fields.Float('Cash Discount', store=True, index=True)
     dis_discount_sale = fields.Float('Distributor Discount', store=True, index=True)
     publicprice = fields.Float("Public Price", store=True, digits=('Product Price'))
+    p_unit = fields.Float("Price Unit", store=True, digits=('Product Price'))
 
     @api.onchange('product_id')
     def onchange_public_price(self):
         for line in self:
             if line.product_id:
                 line.publicprice = line.product_id.pubprice
+
+    @api.depends('price_unit', 'product_id', 'discount')
+    def onchange_p_price(self):
+        for line in self:
+            if line.product_id:
+                line.p_unit = line.product_id.lst_price
 
     @api.depends('price_unit', 'product_id', 'discount')
     def compute_store_price(self):
@@ -560,7 +567,6 @@ class Invoceder(models.Model):
                 rec.cash_amount = 0.0
                 rec.pre_amount = 0.0
 
-
     @api.depends('tax_ids')
     def _compute_func_tax(self):
         for rec in self:
@@ -585,12 +591,24 @@ class Invoceder(models.Model):
     def compute_cash(self):
         cash = 0
         for r in self:
-            order = self.env['sale.order'].search([('name', '=',  r.move_id.invoice_origin)])
+            order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
             if order:
                 for x in order:
                     cash = x.cash_discount_sale
 
             return cash
+
+    def compute_price(self):
+        price = 0
+        for r in self:
+            order = self.env['sale.order.line'].search(
+                [('product_id', '=', r.product_id.id),
+                 ('sale_type', '=', r.sale_type)])
+            if order:
+                for x in order.order_line:
+                    price = x.price_unit
+
+            return price
 
     @api.model
     def _get_price_total_and_subtotal_model(self, price_unit, quantity, discount,
@@ -613,12 +631,14 @@ class Invoceder(models.Model):
         # Compute 'price_subtotal'.
         if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
             if product:
-                x = round((price_unit * (1.0 - discount / 100.0)), 3)
+                p_unit = self.compute_price()
+
+                x = round((p_unit * (1.0 - discount / 100.0)), 3)
                 price_unit_wo_discount1 = round_half_up(x, 2)
                 price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
                 price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash() or 0.0) / 100.0)
             else:
-                price_unit_wo_discount = price_unit
+                price_unit_wo_discount = self.compute_price()
 
             subtotal = quantity * price_unit_wo_discount
 
@@ -662,12 +682,12 @@ class Invoceder(models.Model):
             return res
         else:
             if product:
-
-                price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
+                p_unit = self.compute_price()
+                price_unit_wo_discount1 = (p_unit * (1 - ((discount or 0.0) / 100.0)))
                 price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
                 price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
             else:
-                price_unit_wo_discount = price_unit
+                price_unit_wo_discount = self.compute_price()
 
             subtotal = quantity * price_unit_wo_discount
 
@@ -675,7 +695,8 @@ class Invoceder(models.Model):
             if taxes:
 
                 if self.sale_type == 'bouns':
-                    price_unit_wo_discount1 = (price_unit * (1.0 - (discount / 100.0)))
+                    p_unit = self.compute_price()
+                    price_unit_wo_discount1 = (p_unit * (1.0 - (discount / 100.0)))
                     taxes_res = taxes._origin.compute_all(price_unit_wo_discount1,
                                                           quantity=quantity, currency=currency, product=product,
                                                           partner=partner,
@@ -1115,7 +1136,7 @@ class Move(models.Model):
                     elif base_line.product_id and base_line.sale_type == 'bouns':
                         x = round((base_line.product_id.lst_price * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale/ 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale / 100.0))
                         discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
                         price_unit_wo_discount = sign * discount_cash
 
