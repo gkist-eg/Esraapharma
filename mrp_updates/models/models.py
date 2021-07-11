@@ -390,9 +390,10 @@ class MrpUpdates(models.Model):
 
     def action_cancel(self):
         for production in self:
-            if production.state not in ('draft', 'confirmed', 'cancel'):
+            if production.state in ('done','to_close', 'cancel') or production.qty_producing != 0.0 or production.qty_produced != 0.0:
                 raise UserError(_('You can not cancel mo unless it was draft or confirmed'))
             production.state = 'cancel'
+
         res = super(MrpUpdates, self).action_cancel()
         return res
 
