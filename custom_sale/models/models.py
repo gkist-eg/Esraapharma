@@ -605,7 +605,7 @@ class Invoceder(models.Model):
                 [('product_id', '=', r.product_id.id),
                  ('sale_type', '=', r.sale_type)])
             if order:
-                for x in order.order_line:
+                for x in order:
                     price = x.price_unit
 
             return price
