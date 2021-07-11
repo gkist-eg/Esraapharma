@@ -714,6 +714,7 @@ class Move(models.Model):
             if line.product_id:
                 rec = line.account_id.id
 
+
         lines_list = []
 
         dic_disc_amount = self.dist_discount_totals
