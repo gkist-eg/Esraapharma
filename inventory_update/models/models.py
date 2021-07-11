@@ -364,8 +364,10 @@ class StockPicking(models.Model):
                 if line.sale_line_id:
                     received += line.sale_line_id.qty_delivered
                     orderd += line.sale_line_id.product_uom_qty
+                    if 0 < orderd < (received + line.quantity_done):
+                        raise UserError(_('Quantity can not be larger than qty to do.'))
                 if orderd > 0 and (received + line.quantity_done) > (orderd + (orderd / 10)):
-                    raise UserError(_('Quantity can not be larger than qty x to do .'))
+                    raise UserError(_('Quantity can not be larger than qty to do.'))
         self.approve = True
         self.keeper_id = self.env.user.id
         rec = []
@@ -379,6 +381,19 @@ class StockPicking(models.Model):
     def _action_done(self):
         res = super()._action_done()
         for picking in self:
+            for line in picking.move_lines:
+                received = 0
+                orderd = 0
+                if line.purchase_line_id:
+                    received += line.purchase_line_id.qty_received
+                    orderd += line.purchase_line_id.product_qty
+                if line.sale_line_id:
+                    received += line.sale_line_id.qty_delivered
+                    orderd += line.sale_line_id.product_uom_qty
+                    if 0 < orderd < (received + line.quantity_done):
+                        raise UserError(_('Quantity can not be larger than qty to do.'))
+                if orderd > 0 and (received + line.quantity_done) > (orderd + (orderd / 10)):
+                    raise UserError(_('Quantity can not be larger than qty to do.'))
             if picking.picking_type_id.code == 'incoming' and picking.picking_type_id.use_create_lots and not picking.picking_type_id.use_existing_lots:
                 picking.name = self.env['ir.sequence'].next_by_code('delivered.picking')
         return res
