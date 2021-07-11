@@ -598,6 +598,15 @@ class Invoceder(models.Model):
                     cash = x.cash_discount_sale
 
             return cash
+    def compute_price(self):
+        price = 0
+        for r in self:
+            order = self.env['sale.order'].search([('name', '=',  r.move_id.invoice_origin),('order_line.product_id','=',r.product_id.id),('order_line.sale_type','=',r.sale_type)])
+            if order:
+                for x in order.order_line:
+                    price = x.price_unit
+
+            return price
 
     @api.model
     def _get_price_total_and_subtotal_model(self, price_unit, quantity, discount,
@@ -620,12 +629,12 @@ class Invoceder(models.Model):
         # Compute 'price_subtotal'.
         if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
             if product:
-                x = round((price_unit * (1.0 - discount / 100.0)), 3)
+                x = round((self.compute_price() * (1.0 - discount / 100.0)), 3)
                 price_unit_wo_discount1 = round_half_up(x, 2)
                 price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
                 price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash() or 0.0) / 100.0)
             else:
-                price_unit_wo_discount = price_unit
+                price_unit_wo_discount = self.compute_price()
 
             subtotal = quantity * price_unit_wo_discount
 
@@ -670,11 +679,11 @@ class Invoceder(models.Model):
         else:
             if product:
 
-                price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
+                price_unit_wo_discount1 = (self.compute_price() * (1 - ((discount or 0.0) / 100.0)))
                 price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
                 price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
             else:
-                price_unit_wo_discount = price_unit
+                price_unit_wo_discount = self.compute_price()
 
             subtotal = quantity * price_unit_wo_discount
 
@@ -682,7 +691,7 @@ class Invoceder(models.Model):
             if taxes:
 
                 if self.sale_type == 'bouns':
-                    price_unit_wo_discount1 = (price_unit * (1.0 - (discount / 100.0)))
+                    price_unit_wo_discount1 = (self.compute_price() * (1.0 - (discount / 100.0)))
                     taxes_res = taxes._origin.compute_all(price_unit_wo_discount1,
                                                           quantity=quantity, currency=currency, product=product,
                                                           partner=partner,
