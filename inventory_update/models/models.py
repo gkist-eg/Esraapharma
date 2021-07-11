@@ -332,29 +332,40 @@ class StockPicking(models.Model):
                             pickings_without_lots |= picking
                             products_without_lots |= product
 
-        if not self._should_show_transfers():
-            if pickings_without_moves:
-                raise UserError(_('Please add some items to move.'))
-            if pickings_without_quantities:
-                raise UserError(self._get_without_quantities_error_message())
-            if pickings_without_lots:
-                raise UserError(_('You need to supply a Lot/Serial number for products %s.') % ', '.join(
-                    products_without_lots.mapped('display_name')))
-        else:
-            message = ""
-            if pickings_without_moves:
-                message += _('Transfers %s: Please add some items to move.') % ', '.join(
-                    pickings_without_moves.mapped('name'))
-            if pickings_without_quantities:
-                message += _(
-                    '\n\nTransfers %s: You cannot validate these transfers if no quantities are reserved nor done. To force these transfers, switch in edit more and encode the done quantities.') % ', '.join(
-                    pickings_without_quantities.mapped('name'))
-            if pickings_without_lots:
-                message += _('\n\nTransfers %s: You need to supply a Lot/Serial number for products %s.') % (
-                    ', '.join(pickings_without_lots.mapped('name')),
-                    ', '.join(products_without_lots.mapped('display_name')))
-            if message:
-                raise UserError(message.lstrip())
+            if not self._should_show_transfers():
+                if pickings_without_moves:
+                    raise UserError(_('Please add some items to move.'))
+                if pickings_without_quantities:
+                    raise UserError(self._get_without_quantities_error_message())
+                if pickings_without_lots:
+                    raise UserError(_('You need to supply a Lot/Serial number for products %s.') % ', '.join(
+                        products_without_lots.mapped('display_name')))
+            else:
+                message = ""
+                if pickings_without_moves:
+                    message += _('Transfers %s: Please add some items to move.') % ', '.join(
+                        pickings_without_moves.mapped('name'))
+                if pickings_without_quantities:
+                    message += _(
+                        '\n\nTransfers %s: You cannot validate these transfers if no quantities are reserved nor done. To force these transfers, switch in edit more and encode the done quantities.') % ', '.join(
+                        pickings_without_quantities.mapped('name'))
+                if pickings_without_lots:
+                    message += _('\n\nTransfers %s: You need to supply a Lot/Serial number for products %s.') % (
+                        ', '.join(pickings_without_lots.mapped('name')),
+                        ', '.join(products_without_lots.mapped('display_name')))
+                if message:
+                    raise UserError(message.lstrip())
+            for line in picking.move_lines:
+                received = 0
+                orderd = 0
+                if line.purchase_line_id:
+                    received += line.purchase_line_id.qty_received
+                    orderd += line.purchase_line_id.product_qty
+                if line.sale_line_id:
+                    received += line.sale_line_id.qty_received
+                    orderd += line.sale_line_id.product_qty
+                if orderd > 0 and (received + line.qty_done) > (orderd + (orderd / 10)):
+                    raise UserError(_('Quantity can not be larger than qty x to do .'))
         self.approve = True
         self.keeper_id = self.env.user.id
         rec = []
