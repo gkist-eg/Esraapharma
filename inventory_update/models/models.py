@@ -361,7 +361,7 @@ class StockPicking(models.Model):
                 if line.purchase_line_id:
                     received += line.purchase_line_id.qty_received
                     orderd += line.purchase_line_id.product_qty
-                if line.sale_line_id:
+                if line.sale_line_id and line.location_dest_id.usage == 'customer':
                     received += line.sale_line_id.qty_delivered
                     orderd += line.sale_line_id.product_uom_qty
                 if orderd > 0.0 and (received + line.quantity_done) > (orderd + (orderd / 10)):
@@ -385,7 +385,7 @@ class StockPicking(models.Model):
                 if line.purchase_line_id:
                     received += line.purchase_line_id.qty_received
                     orderd += line.purchase_line_id.product_qty
-                if line.sale_line_id:
+                if line.sale_line_id and line.location_dest_id.usage == 'customer':
                     received += line.sale_line_id.qty_delivered
                     orderd += line.sale_line_id.product_uom_qty
                 if orderd > 0.0 and received > (orderd + (orderd / 10)):
