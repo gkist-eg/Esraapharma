@@ -356,6 +356,14 @@ class Invoceder(models.Model):
                 line.publicprice = line.product_id.pubprice
 
     @api.depends('price_unit', 'product_id', 'discount')
+    def onchange_p_price(self):
+        for line in self:
+            if line.product_id:
+                line.p_unit = line.product_id.lst_price
+        return
+    p_unit = fields.Float("Price Unit", store=True, digits=('Product Price'),compute='onchange_p_price')
+
+    @api.depends('price_unit', 'product_id', 'discount')
     def compute_store_price(self):
         for line in self:
             if line.move_id.partner_id.categ_id.category_type == 'store' or line.move_id.partner_id.categ_id.category_type == 'tender':
@@ -572,6 +580,26 @@ class Invoceder(models.Model):
             else:
                 rec.tax_name = ''
 
+    def compute_dist(self):
+        dist = 0
+        for r in self:
+            order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
+            if order:
+                for x in order:
+                    dist = x.dis_discount_sale
+
+            return dist
+
+    def compute_cash(self):
+        cash = 0
+        for r in self:
+            order = self.env['sale.order'].search([('name', '=',  r.move_id.invoice_origin)])
+            if order:
+                for x in order:
+                    cash = x.cash_discount_sale
+
+            return cash
+
     @api.model
     def _get_price_total_and_subtotal_model(self, price_unit, quantity, discount,
                                             currency, product, partner, taxes,
@@ -595,8 +623,8 @@ class Invoceder(models.Model):
             if product:
                 x = round((price_unit * (1.0 - discount / 100.0)), 3)
                 price_unit_wo_discount1 = round_half_up(x, 2)
-                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
-                price_unit_wo_discount = price_unit_wo_discount2 * (1 - (partner.cash_discount or 0.0) / 100.0)
+                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
+                price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash() or 0.0) / 100.0)
             else:
                 price_unit_wo_discount = price_unit
 
@@ -644,8 +672,8 @@ class Invoceder(models.Model):
             if product:
 
                 price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
-                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
-                price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((partner.cash_discount or 0.0)) / 100.0)
+                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
+                price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
             else:
                 price_unit_wo_discount = price_unit
 
@@ -1089,14 +1117,14 @@ class Move(models.Model):
                     if base_line.product_id and base_line.sale_type == 'sale':
                         x = round((base_line.price_unit * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
-                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
                         x = round((base_line.product_id.lst_price * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
-                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale/ 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
                         price_unit_wo_discount = sign * discount_cash
 
                     else:
@@ -1104,13 +1132,13 @@ class Move(models.Model):
                 else:
                     if base_line.product_id and base_line.sale_type == 'sale':
                         discount_pharm = ((base_line.price_unit * (1.0 - (base_line.discount / 100.0))))
-                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
                         discount_pharm = (base_line.product_id.lst_price * (1.0 - (base_line.discount / 100.0)))
-                        discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
                         price_unit_wo_discount = sign * discount_pharm
 
                     else:
