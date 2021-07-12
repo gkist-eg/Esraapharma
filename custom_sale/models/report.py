@@ -45,7 +45,7 @@ class InvoiceReport(models.TransientModel):
             for partner in partners:
               if self.state == 'category':
                   invoices = self.env['account.move'].search([
-                      ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
+                      ('invoice_date', '>=', rec.from_date),('state', '!=', 'cancel'), ('invoice_date', '<=', rec.to_date), (
                           'move_type', 'in', ['out_invoice', 'out_refund']),('cust_categ_id.category_type','=',self.category_type.category_type), ('partner_id', 'in', partners)])
                   invoice = []
                   for inv in invoices:
@@ -54,7 +54,7 @@ class InvoiceReport(models.TransientModel):
                   rec.invoices = [(6, 0, invoice)]
               else:
                invoices = self.env['account.move'].search([
-                   ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
+                   ('invoice_date', '>=', rec.from_date), ('state', '!=', 'cancel'),('invoice_date', '<=', rec.to_date), (
                        'move_type', 'in', ['out_invoice', 'out_refund']), ('partner_id', 'in', partners)])
                invoice = []
                for inv in invoices:
@@ -109,7 +109,7 @@ class DetailsReport(models.TransientModel):
                 if self.invoice_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                            'move_type', '=', 'out_invoice'), ('partner_id', 'in', partners),('cust_categ_id.category_type','=',self.category_type.category_type)
+                            'move_type', '=', 'out_invoice'), ('partner_id', 'in', partners), ('state', '!=', 'cancel'),('cust_categ_id.category_type','=',self.category_type.category_type)
                     ])
 
                     # rec.write({'invoices':[(6,0,invoice)]})
@@ -120,7 +120,7 @@ class DetailsReport(models.TransientModel):
                 if self.return_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                            'move_type', '=', 'out_refund'), ('partner_id', 'in', partners),('cust_categ_id.category_type','=',self.category_type.category_type)
+                            'move_type', '=', 'out_refund'), ('state', '!=', 'cancel'),('partner_id', 'in', partners),('cust_categ_id.category_type','=',self.category_type.category_type)
                     ])
 
                     # rec.write({'invoices':[(6,0,invoice)]})
@@ -131,7 +131,7 @@ class DetailsReport(models.TransientModel):
                 if self.invoice_inv and self.return_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                            'move_type', 'in', ('out_refund', 'out_invoice')), ('cust_categ_id.category_type','=',self.category_type.category_type),('partner_id', 'in', partners)
+                            'move_type', 'in', ('out_refund', 'out_invoice')), ('state', '!=', 'cancel'),('cust_categ_id.category_type','=',self.category_type.category_type),('partner_id', 'in', partners)
                     ])
 
                     # rec.write({'invoices':[(6,0,invoice)]})
@@ -144,7 +144,7 @@ class DetailsReport(models.TransientModel):
                 if self.invoice_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                            'move_type', '=', 'out_invoice'), ('partner_id', 'in', partners)
+                            'move_type', '=', 'out_invoice'), ('state', '!=', 'cancel'),('partner_id', 'in', partners)
                     ])
 
                     # rec.write({'invoices':[(6,0,invoice)]})
@@ -155,7 +155,7 @@ class DetailsReport(models.TransientModel):
                 if self.return_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                            'move_type', '=', 'out_refund'), ('partner_id', 'in', partners)
+                            'move_type', '=', 'out_refund'), ('state', '!=', 'cancel'),('partner_id', 'in', partners)
                     ])
 
                     # rec.write({'invoices':[(6,0,invoice)]})
@@ -166,7 +166,7 @@ class DetailsReport(models.TransientModel):
                 if self.invoice_inv and self.return_inv:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                            'move_type', 'in', ('out_refund', 'out_invoice')),('partner_id', 'in', partners)
+                            'move_type', 'in', ('out_refund', 'out_invoice')),('state', '!=', 'cancel'),('partner_id', 'in', partners)
                     ])
 
                     # rec.write({'invoices':[(6,0,invoice)]})
@@ -219,7 +219,7 @@ class BalanceReport(models.TransientModel):
                 if self.state == 'category':
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                            'move_type', '=', 'out_invoice'), ('partner_id', '=', partner),('cust_categ_id.category_type','=',self.category_type.category_type)])
+                            'move_type', '=', 'out_invoice'), ('state', '!=', 'cancel'),('partner_id', '=', partner),('cust_categ_id.category_type','=',self.category_type.category_type)])
                     total = 0
                     res = 0
                     status=' '
@@ -241,7 +241,7 @@ class BalanceReport(models.TransientModel):
                 else:
                     invoices = self.env['account.move'].search([
                         ('invoice_date', '>=', rec.from_date), ('invoice_date', '<=', rec.to_date), (
-                            'move_type', '=', 'out_invoice'), ('partner_id', '=', partner)])
+                            'move_type', '=', 'out_invoice'), ('state', '!=', 'cancel'),('partner_id', '=', partner)])
                     total = 0
                     res = 0
                     status=''
