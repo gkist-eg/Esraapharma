@@ -368,9 +368,9 @@ class Invoceder(models.Model):
         for line in self:
             if line.move_id.partner_id.categ_id.category_type == 'store' or line.move_id.partner_id.categ_id.category_type == 'tender':
                 if line.discount:
-                    line.store_price = round((line.price_unit * (1.0 - line.discount / 100.0)), 3)
+                    line.store_price = round((line.p_unit * (1.0 - line.discount / 100.0)), 3)
                 else:
-                    line.store_price = line.price_unit
+                    line.store_price = line.p_unit
         return
 
     store_price = fields.Float(string='Store/Tender Price', digits=(12, 2), store=True, compute='compute_store_price')
@@ -557,7 +557,7 @@ class Invoceder(models.Model):
     def _compute_discount(self):
         for rec in self:
             if rec.sale_type != 'bouns':
-                price = rec.price_unit
+                price = rec.p_unit
                 price1 = (price * (1.0 - (rec.discount or 0.0) / 100.0))
                 price2 = price1 * (1.0 - (rec.dist_discount or 0.0) / 100.0)
                 rec.pre_amount = price * ((rec.discount or 0.0) / 100.0) * rec.quantity
@@ -587,6 +587,9 @@ class Invoceder(models.Model):
             if order:
                 for x in order:
                     dist = x.dis_discount_sale
+            else:
+
+                    dist = r.move_id.partner_id.dist_discount
 
             return dist
 
@@ -597,6 +600,9 @@ class Invoceder(models.Model):
             if order:
                 for x in order:
                     cash = x.cash_discount_sale
+            else:
+
+                    cash = r.move_id.partner_id.cash_discount
 
             return cash
 
@@ -1115,7 +1121,7 @@ class Move(models.Model):
                 is_refund = move.move_type in ('out_refund', 'in_refund')
                 if move.partner_id.categ_id.category_type == 'store' or move.partner_id.categ_id.category_type == 'tender':
                     if base_line.product_id and base_line.sale_type == 'sale':
-                        x = round((base_line.price_unit * (1.0 - base_line.discount / 100.0)), 3)
+                        x = round((base_line.p_unit * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
                         discount_dist = discount_pharm * (1.0 - (base_line.move_id.dis_discount_sale / 100.0))
                         discount_cash = discount_dist * (1.0 - (base_line.move_id.cash_discount_sale / 100.0))
