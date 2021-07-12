@@ -625,206 +625,106 @@ class Invoceder(models.Model):
         res = {}
 
         # Compute 'price_subtotal'.
-        if move_type == 'out_invoice':
-            price_unit = self.p_unit
+        price_unit = self.p_unit
 
-            if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
-                if product:
-                    x = round((price_unit * (1.0 - discount / 100.0)), 3)
-                    price_unit_wo_discount1 = round_half_up(x, 2)
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash() or 0.0) / 100.0)
-                else:
-                    price_unit_wo_discount = price_unit
-
-                subtotal = quantity * price_unit_wo_discount
-
-                # Compute 'price_total'.
-                if taxes:
-
-                    if self.sale_type == 'bouns':
-
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        # print(price_unit_wo_discount, taxes_res)
-                        res['price_subtotal'] = 0.00
-                        res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
-                    elif self.sale_type == 'sale':
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-                    elif not self.sale_type:
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-
-                else:
-                    if self.sale_type == 'bouns':
-                        res['price_total'] = res['price_subtotal'] = 0.00
-
-                    else:
-                        res['price_total'] = res['price_subtotal'] = subtotal
-
-                # In case of multi currency, round before it's use for computing debit credit
-                if currency:
-                    res = {k: currency.round(v) for k, v in res.items()}
-                return res
+        if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
+            if product:
+                x = round((price_unit * (1.0 - discount / 100.0)), 3)
+                price_unit_wo_discount1 = round_half_up(x, 2)
+                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
+                price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash() or 0.0) / 100.0)
             else:
-                if product:
+                price_unit_wo_discount = price_unit
 
-                    price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
-                else:
-                    price_unit_wo_discount = price_unit
+            subtotal = quantity * price_unit_wo_discount
 
-                subtotal = quantity * price_unit_wo_discount
+            # Compute 'price_total'.
+            if taxes:
 
-                # Compute 'price_total'.
-                if taxes:
+                if self.sale_type == 'bouns':
 
-                    if self.sale_type == 'bouns':
-                        price_unit_wo_discount1 = (price_unit * (1.0 - (discount / 100.0)))
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount1,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        # print(price_unit_wo_discount, taxes_res)
-                        res['price_subtotal'] = 0.00
-                        res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
-                    elif self.sale_type == 'sale':
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-                    elif not self.sale_type:
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
+                                                          quantity=quantity, currency=currency, product=product,
+                                                          partner=partner,
+                                                          is_refund=move_type in ('out_refund', 'in_refund'))
+                    # print(price_unit_wo_discount, taxes_res)
+                    res['price_subtotal'] = 0.00
+                    res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
+                elif self.sale_type == 'sale':
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
+                                                          quantity=quantity, currency=currency, product=product,
+                                                          partner=partner,
+                                                          is_refund=move_type in ('out_refund', 'in_refund'))
+                    res['price_subtotal'] = taxes_res['total_excluded']
+                    res['price_total'] = taxes_res['total_included']
+                elif not self.sale_type:
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
+                                                          quantity=quantity, currency=currency, product=product,
+                                                          partner=partner,
+                                                          is_refund=move_type in ('out_refund', 'in_refund'))
+                    res['price_subtotal'] = taxes_res['total_excluded']
+                    res['price_total'] = taxes_res['total_included']
+
+            else:
+                if self.sale_type == 'bouns':
+                    res['price_total'] = res['price_subtotal'] = 0.00
 
                 else:
-                    if self.sale_type == 'bouns':
-                        res['price_total'] = res['price_subtotal'] = 0.00
+                    res['price_total'] = res['price_subtotal'] = subtotal
 
-                    else:
-                        res['price_total'] = res['price_subtotal'] = subtotal
-
-                # In case of multi currency, round before it's use for computing debit credit
-                if currency:
-                    res = {k: currency.round(v) for k, v in res.items()}
-                return res
+            # In case of multi currency, round before it's use for computing debit credit
+            if currency:
+                res = {k: currency.round(v) for k, v in res.items()}
+            return res
         else:
-            if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
-                if product:
-                    x = round((price_unit * (1.0 - discount / 100.0)), 3)
-                    price_unit_wo_discount1 = round_half_up(x, 2)
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - (partner.cash_discount or 0.0) / 100.0)
-                else:
-                    price_unit_wo_discount = price_unit
+            if product:
 
-                subtotal = quantity * price_unit_wo_discount
-
-                # Compute 'price_total'.
-                if taxes:
-
-                    if self.sale_type == 'bouns':
-
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        # print(price_unit_wo_discount, taxes_res)
-                        res['price_subtotal'] = 0.00
-                        res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
-                    elif self.sale_type == 'sale':
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-                    elif not self.sale_type:
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-
-                else:
-                    if self.sale_type == 'bouns':
-                        res['price_total'] = res['price_subtotal'] = 0.00
-
-                    else:
-                        res['price_total'] = res['price_subtotal'] = subtotal
-
-                # In case of multi currency, round before it's use for computing debit credit
-                if currency:
-                    res = {k: currency.round(v) for k, v in res.items()}
-                return res
+                price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
+                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
+                price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
             else:
-                if product:
+                price_unit_wo_discount = price_unit
 
-                    price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((partner.cash_discount or 0.0)) / 100.0)
-                else:
-                    price_unit_wo_discount = price_unit
+            subtotal = quantity * price_unit_wo_discount
 
-                subtotal = quantity * price_unit_wo_discount
+            # Compute 'price_total'.
+            if taxes:
 
-                # Compute 'price_total'.
-                if taxes:
+                if self.sale_type == 'bouns':
+                    price_unit_wo_discount1 = (price_unit * (1.0 - (discount / 100.0)))
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount1,
+                                                          quantity=quantity, currency=currency, product=product,
+                                                          partner=partner,
+                                                          is_refund=move_type in ('out_refund', 'in_refund'))
+                    # print(price_unit_wo_discount, taxes_res)
+                    res['price_subtotal'] = 0.00
+                    res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
+                elif self.sale_type == 'sale':
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
+                                                          quantity=quantity, currency=currency, product=product,
+                                                          partner=partner,
+                                                          is_refund=move_type in ('out_refund', 'in_refund'))
+                    res['price_subtotal'] = taxes_res['total_excluded']
+                    res['price_total'] = taxes_res['total_included']
+                elif not self.sale_type:
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
+                                                          quantity=quantity, currency=currency, product=product,
+                                                          partner=partner,
+                                                          is_refund=move_type in ('out_refund', 'in_refund'))
+                    res['price_subtotal'] = taxes_res['total_excluded']
+                    res['price_total'] = taxes_res['total_included']
 
-                    if self.sale_type == 'bouns':
-                        price_unit_wo_discount1 = (price_unit * (1.0 - (discount / 100.0)))
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount1,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        # print(price_unit_wo_discount, taxes_res)
-                        res['price_subtotal'] = 0.00
-                        res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
-                    elif self.sale_type == 'sale':
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-                    elif not self.sale_type:
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
+            else:
+                if self.sale_type == 'bouns':
+                    res['price_total'] = res['price_subtotal'] = 0.00
 
                 else:
-                    if self.sale_type == 'bouns':
-                        res['price_total'] = res['price_subtotal'] = 0.00
+                    res['price_total'] = res['price_subtotal'] = subtotal
 
-                    else:
-                        res['price_total'] = res['price_subtotal'] = subtotal
-
-                # In case of multi currency, round before it's use for computing debit credit
-                if currency:
-                    res = {k: currency.round(v) for k, v in res.items()}
-                return res
+            # In case of multi currency, round before it's use for computing debit credit
+            if currency:
+                res = {k: currency.round(v) for k, v in res.items()}
+            return res
 
     @api.model_create_multi
     def create(self, vals_list):
