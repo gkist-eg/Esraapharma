@@ -96,6 +96,9 @@ class Sale(models.Model):
             if self.partner_id:
                 record.dis_discount_sale = record.partner_id.dist_discount
                 record.cash_discount_sale = record.partner_id.cash_discount
+            else:
+                record.dis_discount_sale = 0
+                record.cash_discount_sale = 0
 
     office = fields.Many2one('hr.department', store=True)
 
@@ -1265,7 +1268,7 @@ class Move(models.Model):
                             price_unit_wo_discount = sign * discount_cash
 
                         else:
-                            price_unit_wo_discount = sign * base_line.price_unit
+                            price_unit_wo_discount = sign * base_line.p_unit
                     else:
                         if base_line.product_id and base_line.sale_type == 'sale':
                             discount_pharm = ((base_line.p_unit * (1.0 - (base_line.discount / 100.0))))
@@ -1279,7 +1282,7 @@ class Move(models.Model):
                             price_unit_wo_discount = sign * discount_pharm
 
                         else:
-                            price_unit_wo_discount = sign * base_line.price_unit
+                            price_unit_wo_discount = sign * base_line.p_unit
 
 
 
