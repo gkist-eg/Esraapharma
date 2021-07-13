@@ -586,28 +586,16 @@ class Invoceder(models.Model):
     def compute_dist(self):
         dist = 0
         for r in self:
-            order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
-            if order:
-                for x in order:
-                    dist = x.dis_discount_sale
-            else:
+            dist = r.dis_discount_sale
 
-                dist = 0
-
-            return dist
+        return dist
 
     def compute_cash(self):
-        cash = 0
+        cash=0
         for r in self:
-            order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
-            if order:
-                for x in order:
-                    cash = x.cash_discount_sale
-            else:
 
-                cash = 0
-
-            return cash
+            cash=r.cash_discount_sale
+        return cash
 
     @api.model
     def _get_price_total_and_subtotal_model(self, price_unit, quantity, discount,
@@ -1195,28 +1183,15 @@ class Move(models.Model):
     def compute_dist(self):
         dist = 0
         for r in self:
-            order = self.env['sale.order'].search([('name', '=', r.invoice_origin)])
-            if order:
-                for x in order:
-                    dist = x.dis_discount_sale
-            else:
+            dist = r.dis_discount_sale
 
-                dist = r.partner_id.dist_discount
-
-            return dist
+        return dist
 
     def compute_cash(self):
         cash = 0
         for r in self:
-            order = self.env['sale.order'].search([('name', '=', r.invoice_origin)])
-            if order:
-                for x in order:
-                    cash = x.cash_discount_sale
-            else:
-
-                cash = r.partner_id.cash_discount
-
-            return cash
+            cash = r.cash_discount_sale
+        return cash
 
     def _recompute_tax_lines(self, recompute_tax_base_amount=False):
         ''' Compute the dynamic tax lines of the journal entry.
