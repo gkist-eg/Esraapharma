@@ -592,7 +592,7 @@ class Invoceder(models.Model):
                     dist = x.dis_discount_sale
             else:
 
-                dist = r.move_id.partner_id.dist_discount
+                dist = 0
 
             return dist
 
@@ -605,7 +605,7 @@ class Invoceder(models.Model):
                     cash = x.cash_discount_sale
             else:
 
-                cash = r.move_id.partner_id.cash_discount
+                cash = 0
 
             return cash
 
