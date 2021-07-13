@@ -620,12 +620,12 @@ class Invoceder(models.Model):
 
             if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
                 if product:
-                    x = round((price_unit * (1.0 - discount / 100.0)), 3)
+                    x = round((product.lst_price * (1.0 - discount / 100.0)), 3)
                     price_unit_wo_discount1 = round_half_up(x, 2)
                     price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
                     price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash() or 0.0) / 100.0)
                 else:
-                    price_unit_wo_discount = price_unit
+                    price_unit_wo_discount = product.lst_price
 
                 subtotal = quantity * price_unit_wo_discount
 
@@ -670,11 +670,11 @@ class Invoceder(models.Model):
             else:
                 if product:
 
-                    price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
+                    price_unit_wo_discount1 = (product.lst_price * (1 - ((discount or 0.0) / 100.0)))
                     price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
                     price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
                 else:
-                    price_unit_wo_discount = price_unit
+                    price_unit_wo_discount = product.lst_price
 
                 subtotal = quantity * price_unit_wo_discount
 
@@ -682,7 +682,7 @@ class Invoceder(models.Model):
                 if taxes:
 
                     if self.sale_type == 'bouns':
-                        price_unit_wo_discount1 = (price_unit * (1.0 - (discount / 100.0)))
+                        price_unit_wo_discount1 = (product.lst_price * (1.0 - (discount / 100.0)))
                         taxes_res = taxes._origin.compute_all(price_unit_wo_discount1,
                                                               quantity=quantity, currency=currency, product=product,
                                                               partner=partner,
