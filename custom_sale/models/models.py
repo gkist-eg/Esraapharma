@@ -1221,79 +1221,152 @@ class Move(models.Model):
             '''
 
             move = base_line.move_id
-            if move.is_invoice(include_receipts=True):
+            if base_line.move_id.move_type == 'out_invoice':
+                if move.is_invoice(include_receipts=True):
 
-                handle_price_include = True
-                sign = -1 if move.is_inbound() else 1
-                quantity = base_line.quantity
-                is_refund = move.move_type in ('out_refund', 'in_refund')
-                if move.partner_id.categ_id.category_type == 'store' or move.partner_id.categ_id.category_type == 'tender':
-                    if base_line.product_id and base_line.sale_type == 'sale':
-                        x = round((base_line.product_id.lst_price * (1.0 - base_line.discount / 100.0)), 3)
-                        discount_pharm = round_half_up(x, 2)
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
-                        price_unit_wo_discount = sign * discount_cash
-                    elif base_line.product_id and base_line.sale_type == 'bouns':
-                        x = round((base_line.product_id.lst_price * (1.0 - base_line.discount / 100.0)), 3)
-                        discount_pharm = round_half_up(x, 2)
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
-                        price_unit_wo_discount = sign * discount_cash
+                    handle_price_include = True
+                    sign = -1 if move.is_inbound() else 1
+                    quantity = base_line.quantity
+                    is_refund = move.move_type in ('out_refund', 'in_refund')
+                    if move.partner_id.categ_id.category_type == 'store' or move.partner_id.categ_id.category_type == 'tender':
+                        if base_line.product_id and base_line.sale_type == 'sale':
+                            x = round((base_line.p_unit * (1.0 - base_line.discount / 100.0)), 3)
+                            discount_pharm = round_half_up(x, 2)
+                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
+                            discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
+                            price_unit_wo_discount = sign * discount_cash
+                        elif base_line.product_id and base_line.sale_type == 'bouns':
+                            x = round((base_line.p_unit * (1.0 - base_line.discount / 100.0)), 3)
+                            discount_pharm = round_half_up(x, 2)
+                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
+                            discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
+                            price_unit_wo_discount = sign * discount_cash
 
+                        else:
+                            price_unit_wo_discount = sign * base_line.product_id.lst_price
                     else:
-                        price_unit_wo_discount = sign * base_line.product_id.lst_price
+                        if base_line.product_id and base_line.sale_type == 'sale':
+                            discount_pharm = ((base_line.p_unit * (1.0 - (base_line.discount / 100.0))))
+                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
+                            discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
+                            price_unit_wo_discount = sign * discount_cash
+                        elif base_line.product_id and base_line.sale_type == 'bouns':
+                            discount_pharm = (base_line.p_unit * (1.0 - (base_line.discount / 100.0)))
+                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist()/ 100.0))
+                            discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
+                            price_unit_wo_discount = sign * discount_pharm
+
+                        else:
+                            price_unit_wo_discount = sign * base_line.product_id.lst_price
+
+
+
                 else:
-                    if base_line.product_id and base_line.sale_type == 'sale':
-                        discount_pharm = ((base_line.product_id.lst_price * (1.0 - (base_line.discount / 100.0))))
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
-                        price_unit_wo_discount = sign * discount_cash
-                    elif base_line.product_id and base_line.sale_type == 'bouns':
-                        discount_pharm = (base_line.product_id.lst_price * (1.0 - (base_line.discount / 100.0)))
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
-                        price_unit_wo_discount = sign * discount_pharm
 
-                    else:
-                        price_unit_wo_discount = sign * base_line.product_id.lst_price
+                    handle_price_include = False
+                    quantity = 1.00
+                    tax_type = base_line.tax_ids[0].type_tax_use if base_line.tax_ids else None
+                    is_refund = (tax_type == 'sale' and base_line.debit) or (
+                                tax_type == 'purchase' and base_line.credit)
+                    price_unit_wo_discount = base_line.balance
+                    # print(base_line.balance, 'balance')
 
+                balance_taxes_res = base_line.tax_ids._origin.compute_all(
+                    price_unit_wo_discount,
+                    currency=base_line.currency_id,
+                    quantity=quantity,
+                    product=base_line.product_id,
+                    partner=base_line.partner_id,
+                    is_refund=is_refund,
+                    handle_price_include=handle_price_include,
+                )
 
+                if move.move_type == 'entry':
+                    repartition_field = is_refund and 'refund_repartition_line_ids' or 'invoice_repartition_line_ids'
+                    repartition_tags = base_line.tax_ids.mapped(repartition_field).filtered(
+                        lambda x: x.repartition_type == 'base').tag_ids
+                    tags_need_inversion = (tax_type == 'sale' and not is_refund) or (
+                                tax_type == 'purchase' and is_refund)
+                    if tags_need_inversion:
+                        balance_taxes_res['base_tags'] = base_line._revert_signed_tags(repartition_tags).ids
+                        for tax_res in balance_taxes_res['taxes']:
+                            tax_res['tag_ids'] = base_line._revert_signed_tags(
+                                self.env['account.account.tag'].browse(tax_res['tag_ids'])).ids
 
+                return balance_taxes_res
             else:
+                if move.is_invoice(include_receipts=True):
 
-                handle_price_include = False
-                quantity = 1.00
-                tax_type = base_line.tax_ids[0].type_tax_use if base_line.tax_ids else None
-                is_refund = (tax_type == 'sale' and base_line.debit) or (
-                        tax_type == 'purchase' and base_line.credit)
-                price_unit_wo_discount = base_line.balance
-                # print(base_line.balance, 'balance')
+                    handle_price_include = True
+                    sign = -1 if move.is_inbound() else 1
+                    quantity = base_line.quantity
+                    is_refund = move.move_type in ('out_refund', 'in_refund')
+                    if move.partner_id.categ_id.category_type == 'store' or move.partner_id.categ_id.category_type == 'tender':
+                        if base_line.product_id and base_line.sale_type == 'sale':
+                            x = round((base_line.price_unit * (1.0 - base_line.discount / 100.0)), 3)
+                            discount_pharm = round_half_up(x, 2)
+                            discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
+                            discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
+                            price_unit_wo_discount = sign * discount_cash
+                        elif base_line.product_id and base_line.sale_type == 'bouns':
+                            x = round((base_line.product_id.lst_price * (1.0 - base_line.discount / 100.0)), 3)
+                            discount_pharm = round_half_up(x, 2)
+                            discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
+                            discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
+                            price_unit_wo_discount = sign * discount_cash
 
-            balance_taxes_res = base_line.tax_ids._origin.compute_all(
-                price_unit_wo_discount,
-                currency=base_line.currency_id,
-                quantity=quantity,
-                product=base_line.product_id,
-                partner=base_line.partner_id,
-                is_refund=is_refund,
-                handle_price_include=handle_price_include,
-            )
+                        else:
+                            price_unit_wo_discount = sign * base_line.price_unit
+                    else:
+                        if base_line.product_id and base_line.sale_type == 'sale':
+                            discount_pharm = ((base_line.price_unit * (1.0 - (base_line.discount / 100.0))))
+                            discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
+                            discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
+                            price_unit_wo_discount = sign * discount_cash
+                        elif base_line.product_id and base_line.sale_type == 'bouns':
+                            discount_pharm = (base_line.product_id.lst_price * (1.0 - (base_line.discount / 100.0)))
+                            discount_dist = discount_pharm * (1.0 - (base_line.partner_id.dist_discount / 100.0))
+                            discount_cash = discount_dist * (1.0 - (base_line.partner_id.cash_discount / 100.0))
+                            price_unit_wo_discount = sign * discount_pharm
 
-            if move.move_type == 'entry':
-                repartition_field = is_refund and 'refund_repartition_line_ids' or 'invoice_repartition_line_ids'
-                repartition_tags = base_line.tax_ids.mapped(repartition_field).filtered(
-                    lambda x: x.repartition_type == 'base').tag_ids
-                tags_need_inversion = (tax_type == 'sale' and not is_refund) or (
-                        tax_type == 'purchase' and is_refund)
-                if tags_need_inversion:
-                    balance_taxes_res['base_tags'] = base_line._revert_signed_tags(repartition_tags).ids
-                    for tax_res in balance_taxes_res['taxes']:
-                        tax_res['tag_ids'] = base_line._revert_signed_tags(
-                            self.env['account.account.tag'].browse(tax_res['tag_ids'])).ids
+                        else:
+                            price_unit_wo_discount = sign * base_line.price_unit
 
-            return balance_taxes_res
 
+
+                else:
+
+                    handle_price_include = False
+                    quantity = 1.00
+                    tax_type = base_line.tax_ids[0].type_tax_use if base_line.tax_ids else None
+                    is_refund = (tax_type == 'sale' and base_line.debit) or (
+                                tax_type == 'purchase' and base_line.credit)
+                    price_unit_wo_discount = base_line.balance
+                    # print(base_line.balance, 'balance')
+
+                balance_taxes_res = base_line.tax_ids._origin.compute_all(
+                    price_unit_wo_discount,
+                    currency=base_line.currency_id,
+                    quantity=quantity,
+                    product=base_line.product_id,
+                    partner=base_line.partner_id,
+                    is_refund=is_refund,
+                    handle_price_include=handle_price_include,
+                )
+
+                if move.move_type == 'entry':
+                    repartition_field = is_refund and 'refund_repartition_line_ids' or 'invoice_repartition_line_ids'
+                    repartition_tags = base_line.tax_ids.mapped(repartition_field).filtered(
+                        lambda x: x.repartition_type == 'base').tag_ids
+                    tags_need_inversion = (tax_type == 'sale' and not is_refund) or (
+                                tax_type == 'purchase' and is_refund)
+                    if tags_need_inversion:
+                        balance_taxes_res['base_tags'] = base_line._revert_signed_tags(repartition_tags).ids
+                        for tax_res in balance_taxes_res['taxes']:
+                            tax_res['tag_ids'] = base_line._revert_signed_tags(
+                                self.env['account.account.tag'].browse(tax_res['tag_ids'])).ids
+
+                return balance_taxes_res
         taxes_map = {}
 
         # ==== Add tax lines ====
