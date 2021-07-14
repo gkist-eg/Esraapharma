@@ -65,6 +65,7 @@ class PurchaseRequestLine(models.Model):
     )
 
     @api.onchange("product_qty")
+    @api.depends("product_qty",)
     def get_ordered_m_supply_chain_qty(self):
         for rec in self:
             if rec.product_qty:
