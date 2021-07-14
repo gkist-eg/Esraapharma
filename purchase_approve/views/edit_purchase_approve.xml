@@ -27,6 +27,7 @@
                     </xpath>
                     <xpath expr="//form/header/button[@name='button_cancel']" position="attributes">
                         <attribute name="states">maneger_approved,leader_approved</attribute>
+                        <attribute name="groups">purchase.group_purchase_manager</attribute>
                     </xpath>
                     <xpath expr="//field[@name='state']" position="replace">
                         <field name="state" widget="statusbar"
