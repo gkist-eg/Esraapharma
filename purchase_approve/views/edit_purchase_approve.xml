@@ -17,12 +17,16 @@
                         <button name="button_manegerapprove" string="Maneger Approve" class="oe_highlight"
                                 type="object" attrs="{'invisible':[('state', '!=', 'leader_approved')]}"
                                 groups="purchase.group_purchase_manager"/>
+
                     </xpath>
                     <xpath expr="//form/header/button[@id='draft_confirm']" position="attributes">
                         <attribute name="invisible">1</attribute>
                     </xpath>
                     <xpath expr="//form/header/button[@id='bid_confirm']" position="attributes">
                         <attribute name="states">maneger_approved</attribute>
+                    </xpath>
+                    <xpath expr="//form/header/button[@name='button_cancel']" position="attributes">
+                        <attribute name="states">maneger_approved,leader_approved</attribute>
                     </xpath>
                     <xpath expr="//field[@name='state']" position="replace">
                         <field name="state" widget="statusbar"
