@@ -14,4 +14,13 @@
             </notebook>
         </field>
     </record>
+      <record id="invoice_tree" model="ir.ui.view">
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+        <field name="arch" type="xml">
+           <xpath expr="/tree" position="attributes">
+        <attribute name="import">false</attribute>
+</xpath>
+        </field>
+    </record>
 </odoo>
