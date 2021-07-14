@@ -41,7 +41,8 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <field name="state" widget="statusbar"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,to_be_approved,leader_approved,maneger_approved,request_approved,fully_quotationed"
+                        statusbar_colors='{"request_approved":"blue"}'/>
                         <button name="purchase_approval" string="Request Approve" class="oe_highlight"
                                 type="object" attrs="{'invisible':[('to_be_approve', '=', False)]}"/>
                         <button name="leadr_approved" string="Leader Approved" class="oe_highlight"
@@ -52,6 +53,8 @@
                                 type="object" attrs="{'invisible': [('to_reset', '=', False)]}"/>
                         <button name="requst_approved" string="Done" class="oe_highlight"
                                 type="object" attrs="{'invisible': [('is_request_approv', '=', False)]}"/>
+                        <button name="action_cancel" string="Cancel" class="oe_highlight"
+                                type="object" states="maneger_approved,leader_approved" groups="purchase.group_purchase_manager"/>
                         <button name="tap_for_quotation" string="New Quotation" class="oe_highlight"
                                 type="object" groups="purchase.group_purchase_user"
                                 attrs="{'invisible':[('state', 'not in', ('request_approved', 'fully_quotationed'))]}"/>

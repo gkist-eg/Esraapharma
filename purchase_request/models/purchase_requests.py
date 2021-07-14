@@ -58,7 +58,7 @@ class PurchaseRequests(models.Model):
     due_date = fields.Date("Due Date", tracking=True)
     attachment_ids = fields.Many2many('ir.attachment', string='Attachments', tracking=True)
     request_category_id = fields.Many2one('product.category', string='Request Category', tracking=True, required=True)
-    product_id = fields.Many2one('product.product',related='request_line_ids.product_id', string='Requested Product',)
+    product_id = fields.Many2one('product.product', related='request_line_ids.product_id', string='Requested Product', )
     state = fields.Selection([
         ('draft', 'Draft'),
         ('to_be_approved', 'To Be Approved'),
@@ -66,6 +66,7 @@ class PurchaseRequests(models.Model):
         ('maneger_approved', 'Manager Approved'),
         ('request_approved', 'Request Approved'),
         ('fully_quotationed', 'Fully Quotationed'),
+        ('cancel', 'Cancelled'),
     ], default='draft', readonly=False, tracking=True, store=True)
 
     to_be_approve = fields.Boolean("To Be Approved", default=False, compute="get_buttom_to_be_approv")
@@ -120,8 +121,12 @@ class PurchaseRequests(models.Model):
                 rec.to_reset = True
             elif rec.env.user.id == rec.purchase_approver_id.id and rec.state == "maneger_approved":
                 rec.to_reset = True
-            else :
-                rec.to_reset =  False
+            else:
+                rec.to_reset = False
+
+    def action_cancel(self):
+        for rec in self:
+            rec.state = 'cancel'
 
     def hide_buttom_leader_approv(self):
         for rec in self:
@@ -172,7 +177,8 @@ class PurchaseRequests(models.Model):
 
     def purchase_approval(self):
         for rec in self:
-            self.env['mail.message'].send("Purchase Request", 'Purchase Request need to be approved', self._name, self.id,
+            self.env['mail.message'].send("Purchase Request", 'Purchase Request need to be approved', self._name,
+                                          self.id,
                                           self.name, self.approver_id.user_id)
             rec.state = "to_be_approved"
 
