@@ -224,35 +224,38 @@ class PaymentRequest(models.Model):
                 order.bill_numbers = len(order.bill_ids)
 
     def button_confirmed(self):
-        if not self.line_ids:
-            raise UserError(_('Can not Confirm Request Without Items'))
-        recive = self.env['res.users'].search(
-            [("groups_id", "=", self.env.ref('account.group_account_manager').id)])
-        self.env['mail.message'].send("Message subject", 'Payment Request Need to be approved', self._name, self.id,
-                                      self.name, recive)
-        self.manager_id = self.env.user
-        self.write({'state': 'pending'})
+        for record in self:
+            if not record.line_ids:
+                raise UserError(_('Can not Confirm Request Without Items'))
+            recive = record.env['res.users'].search(
+                [("groups_id", "=", self.env.ref('account.group_account_manager').id)])
+            self.env['mail.message'].send("Message subject", 'Payment Request Need to be approved', record._name, record.id,
+                                          record.name, recive)
+            record.manager_id = self.env.user
+            record.write({'state': 'pending'})
 
     def button_confirm(self):
-        if not self.line_ids:
-            raise UserError(_('Can not Confirm Request Without Items'))
-        recive = self.env['res.users'].search(
-            [("groups_id", "=", self.env.ref('purchase.group_purchase_manager').id)])
-        self.env['mail.message'].send("Message subject", 'Payment Request Need to be confirmed', self._name, self.id,
-                                      self.name, recive)
-        self.coach_id = self.env.user
-        self.write({'state': 'confirmed'})
+        for record in self:
+            if not record.line_ids:
+                raise UserError(_('Can not Confirm Request Without Items'))
+            recive = record.env['res.users'].search(
+                [("groups_id", "=", record.env.ref('purchase.group_purchase_manager').id)])
+            record.env['mail.message'].send("Message subject", 'Payment Request Need to be confirmed', record._name, record.id,
+                                          record.name, recive)
+            record.coach_id = record.env.user
+            record.write({'state': 'confirmed'})
 
     def button_valdite(self):
-        self.env['mail.message'].send("Message subject", 'Payment Request Validated', self._name, self.id,
-                                      self.name, self.create_uid)
-        self.accountant_id = self.env.user
-
-        self.write({'state': 'validated'})
+        for record in self:
+            record.env['mail.message'].send("Message subject", 'Payment Request Validated', record._name, record.id,
+                                          record.name, record.create_uid)
+            record.accountant_id = record.env.user
+            record.write({'state': 'validated'})
 
     def button_done(self):
-        self.accountant_m_id = self.env.user
-        self.write({'state': 'done'})
+        for record in self:
+            record.accountant_m_id = record.env.user
+            record.write({'state': 'done'})
 
     @api.model
     def create(self, vals):
