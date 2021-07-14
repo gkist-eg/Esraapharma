@@ -22,7 +22,7 @@ class Moveline(models.Model):
             if line.product_id:
                 if line.sale_type == 'sale':
 
-                    line.pharmacy_discount = (line.price_unit * line.quantity) *((line.discount or 0.0) / 100)
+                    line.pharmacy_discount = (line.p_unit * line.quantity) *((line.discount or 0.0) / 100)
                 else:
 
                     line.pharmacy_discount = 0
@@ -53,9 +53,9 @@ class Move(models.Model):
                 if line:
 
                     if line.sale_type=='sale':
-                        amount_totals=line.price_unit*line.quantity
+                        amount_totals=line.p_unit*line.quantity
                     if line.sale_type=='bouns':
-                        amount_totals=line.price_unit*line.quantity
+                        amount_totals=line.p_unit*line.quantity
                     pharmacy = round(line.pharmacy_discount, 3)
                     cash = round(line.cash_amount, 3)
                     dist = round(line.dist_amount, 3)

@@ -569,6 +569,10 @@
                     </attribute
                     >
                 </xpath>
+                 <xpath expr="//field[@name='partner_id']"
+                       position="attributes">
+                    <attribute name="options">{'no_create_edit': True, 'no_create':True, 'no_open':True}</attribute>
+                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
 
                     <field name="cust_categ_id"
