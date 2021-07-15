@@ -42,3 +42,14 @@ class ExpenseEditsheet(models.Model):
                    ('company_id', '=', employee.company_id.id)]
         return res
 
+
+    @api.model
+    def _default_employee_id(self):
+        employee = self.env.user.employee_id
+        if not employee and not self.env.user.has_group('hr_expense.group_hr_expense_team_approver'):
+            raise ValidationError(_('The current user has no related employee. Please, create one.'))
+        return employee
+
+    employee_id = fields.Many2one('hr.employee', string="Employee", required=True, readonly=True, tracking=True, states={'draft': [('readonly', False)]}, default=_default_employee_id, check_company=True, domain= lambda self: self.env['hr.expense']._get_employee_id_domain())
+
+
