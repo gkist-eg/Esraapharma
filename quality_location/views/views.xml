@@ -42,15 +42,25 @@
             <field name="model">quality.check</field>
             <field name="inherit_id" ref="quality_mrp_workorder.quality_check_view_form_inherit_mrp_workorder"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='name']" position="after">
-                    <field name="title" readonly="1"/>
-                </xpath>
+
                 <xpath expr="//field[@name='lot_id']" position="replace">
                     <field name="lot_id" readonly="1"/>
                 </xpath>
                 <xpath expr="//field[@name='finished_lot_id']" position="replace">
                     <field name="finished_lot_id" readonly="1"
                            attrs="{'invisible': [('finished_lot_id', '=', False)]}"/>
+                </xpath>
+
+            </field>
+        </record>
+        <record id="quality_check_view_form_inherit" model="ir.ui.view">
+            <field name="name">quality.check.view.form</field>
+            <field name="model">quality.check</field>
+            <field name="inherit_id" ref="quality_control.quality_check_view_tree"/>
+            <field name="arch" type="xml">
+
+                  <xpath expr="//field[@name='name']" position="after">
+                    <field name="title" readonly="1"/>
                 </xpath>
 
             </field>
