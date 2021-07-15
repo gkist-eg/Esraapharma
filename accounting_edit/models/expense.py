@@ -23,7 +23,7 @@ class ExpenseEditsheet(models.Model):
     _inherit = 'hr.expense.sheet'
 
     @api.model
-    def _get_employee_id_domain(self):
+    def _get_employee_id_domainx(self):
         res = [('id', '=', 0)]  # Nothing accepted by domain, by default
         if self.env.user.employee_ids:
             user = self.env.user
@@ -50,6 +50,6 @@ class ExpenseEditsheet(models.Model):
             raise ValidationError(_('The current user has no related employee. Please, create one.'))
         return employee
 
-    employee_id = fields.Many2one('hr.employee', string="Employee", required=True, readonly=True, tracking=True, states={'draft': [('readonly', False)]}, default=_default_employee_id, check_company=True, domain= lambda self: self.env['hr.expense']._get_employee_id_domain())
+    employee_id = fields.Many2one('hr.employee', string="Employee", required=True, readonly=True, tracking=True, states={'draft': [('readonly', False)]}, default=_default_employee_id, check_company=True, domain= lambda self: self.env['hr.expense']._get_employee_id_domainx())
 
 
