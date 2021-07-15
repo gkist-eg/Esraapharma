@@ -72,10 +72,13 @@ class PurchaseRequestLine(models.Model):
             if rec.product_qty:
                 if rec.request_state == 'draft' and self.env.user.id == rec.request_line_id.requested_by_id.id:
                     rec.ordered_qty = rec.product_qty
+                    rec.m_qty = rec.product_qty
+                    rec.supply_chain_qty = rec.product_qty
                 elif rec.request_state == 'to_be_approved' and self.env['hr.employee'].search(
                         [('user_id', '=', self.env.user.id)],
                         limit=1).id == rec.request_line_id.approver_id.id:
                     rec.m_qty = rec.ordered_qty
+                    rec.supply_chain_qty = rec.ordered_qty
                 elif rec.request_state == 'leader_approved' and self.env.user.id == rec.request_line_id.purchase_approver_id.id:
                     rec.supply_chain_qty = rec.m_qty
 
