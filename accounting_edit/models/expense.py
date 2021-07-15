@@ -19,4 +19,26 @@ class ExpenseEdit(models.Model):
         if  self.catg_id:
 
             self.product_id = False
+class ExpenseEditsheet(models.Model):
+    _inherit = 'hr.expense.sheet'
+
+    @api.model
+    def _get_employee_id_domain(self):
+        res = [('id', '=', 0)]  # Nothing accepted by domain, by default
+        if self.env.user.employee_ids:
+            user = self.env.user
+            employee = self.env.user.employee_id
+            res = [
+                '|', '|', '|',
+                ('department_id.manager_id', '=', employee.id),
+                ('parent_id', '=', employee.id),
+                ('id', '=', employee.id),
+                ('expense_manager_id', '=', user.id),
+                '|', ('company_id', '=', False), ('company_id', '=', employee.company_id.id),
+            ]
+        elif self.env.user.employee_id:
+            employee = self.env.user.employee_id
+            res = [('id', '=', employee.id), '|', ('company_id', '=', False),
+                   ('company_id', '=', employee.company_id.id)]
+        return res
 
