@@ -72,15 +72,6 @@ class StockMoveLine(models.Model):
                 else:
                     self.product_uom_id = self.product_id.uom_id.id
 
-    @api.onchange('lot_id', 'lot_id.expiration_date', 'qty_done')
-    def _onchange_lot_id(self):
-        if not self.picking_type_use_existing_lots or not self.product_id.use_expiration_date:
-            return
-        if self.lot_id:
-            self.expiration_date = self.lot_id.expiration_date
-        else:
-            self.expiration_date = False
-
     @api.onchange('product_id', 'location_id', 'lot_id')
     def _onchange_domain_id(self):
         products = []
