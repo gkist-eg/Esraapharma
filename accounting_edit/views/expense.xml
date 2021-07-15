@@ -26,10 +26,7 @@
                     </attribute
                     >
                 </xpath>
-           <xpath expr="//field[@name='employee_id']"
-                       position="replace">
-               <field name="employee_id"/>
-                </xpath>
+
 
 
         </field>
