@@ -15,6 +15,25 @@
 
         </field>
     </record>
+    <record id="view_expense_edits_sheet" model="ir.ui.view">
+         <field name="model">hr.expense.sheet</field>
+        <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"/>
+        <field name="arch" type="xml">
+
+           <xpath expr="//field[@name='user_id']"
+                       position="attributes">
+                    <attribute name="readonly">True
+                    </attribute
+                    >
+                </xpath>
+           <xpath expr="//field[@name='employee_id']"
+                       position="replace">
+               <field name="employee_id"/>
+                </xpath>
+
+
+        </field>
+    </record>
 
 
 </odoo>
