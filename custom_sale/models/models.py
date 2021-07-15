@@ -596,6 +596,12 @@ class Invoceder(models.Model):
 
             cash=r.cash_discount_sale
         return cash
+    def compute_picking_id(self):
+        picking_id = True
+        for r in self:
+            picking_id = r.lot_id
+        return picking_id
+
 
     @api.model
     def _get_price_total_and_subtotal_model(self, price_unit, quantity, discount,
@@ -613,7 +619,7 @@ class Invoceder(models.Model):
         :param move_type:   The type of the move.
         :return:            A dictionary containing 'price_subtotal' & 'price_total'.
         '''
-        if move_type == 'out_refund' and self.lot_id:
+        if move_type == 'out_refund' and self.compute_picking_id():
             res = {}
 
             # Compute 'price_subtotal'.
@@ -715,7 +721,7 @@ class Invoceder(models.Model):
                 if currency:
                     res = {k: currency.round(v) for k, v in res.items()}
                 return res
-        if move_type == 'out_refund' and not self.lot_id:
+        if move_type == 'out_refund' and not self.compute_picking_id():
             res = {}
 
             # Compute 'price_subtotal'.
@@ -1268,6 +1274,12 @@ class Move(models.Model):
         for r in self:
             cash = r.cash_discount_sale
         return cash
+
+    def compute_picking_id(self):
+        picking_id = True
+        for r in self:
+            picking_id = r.picking_id
+        return picking_id
 
     def _recompute_tax_lines(self, recompute_tax_base_amount=False):
         ''' Compute the dynamic tax lines of the journal entry.
