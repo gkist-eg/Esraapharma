@@ -715,7 +715,7 @@ class Invoceder(models.Model):
                 if currency:
                     res = {k: currency.round(v) for k, v in res.items()}
                 return res
-        else:
+        if move_type == 'out_refund' and not self.lot_id:
             res = {}
 
             # Compute 'price_subtotal'.
@@ -1370,7 +1370,7 @@ class Move(models.Model):
                                 self.env['account.account.tag'].browse(tax_res['tag_ids'])).ids
 
                 return balance_taxes_res
-            else:
+            if base_line.move_id.move_type == 'out_refund' and not base_line.move_id.picking_id:
                 if move.is_invoice(include_receipts=True):
 
                     handle_price_include = True
