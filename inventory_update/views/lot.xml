@@ -239,7 +239,6 @@
             <xpath expr="//field[@name='lot_id']" position="after">
                 <field name="suplier_lot"/>
                 <field name="supplier_id"/>
-
                 <field name="balet_ids"/>
 
             </xpath>
