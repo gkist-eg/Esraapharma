@@ -18,7 +18,7 @@ class StockMove(models.Model):
     _order = 'product_id,id'
 
     @api.depends('move_line_ids.product_qty')
-    @api.onchange('move_line_ids.product_qty','move_line_ids.product_uom_qty')
+    @api.onchange('move_line_ids.product_qty', 'move_line_ids.product_uom_qty')
     def _compute_reserved_availability(self):
         """ Fill the `availability` field on a stock move, which is the actual reserved quantity
         and is represented by the aggregated `product_qty` on the linked move lines. If the move
@@ -61,7 +61,7 @@ class StockMove(models.Model):
     @api.depends('move_line_ids.qty_done', 'move_line_ids.product_uom_id', 'move_line_nosuggest_ids.qty_done',
                  'picking_type_id')
     @api.onchange('move_line_ids.qty_done', 'move_line_ids.product_uom_id', 'move_line_nosuggest_ids.qty_done',
-                 'picking_type_id')
+                  'picking_type_id')
     def _quantity_done_compute(self):
         """ This field represents the sum of the move lines `qty_done`. It allows the user to know
         if there is still work to do.
@@ -101,6 +101,7 @@ class StockMove(models.Model):
                     self.env['uom.uom'].browse(line_uom_id)._compute_quantity(qty, uom, round=False)
                     for line_uom_id, qty in rec.get(move.ids[0] if move.ids else move.id, [])
                 )
+
     @api.depends('has_tracking', 'picking_type_id.use_create_lots', 'picking_type_id.use_existing_lots', 'state')
     def _compute_display_assign_serial(self):
         for move in self:
@@ -273,7 +274,7 @@ class StockPicking(models.Model):
     def _check_expired_lots(self):
         super(StockPicking, self)._check_expired_lots()
         expired_pickings = self.move_line_ids.filtered(lambda ml: ml.lot_id.product_expiry_alert and (
-                    not ml.location_id.scrap_location and not ml.location_dest_id.scrap_location)).picking_id
+                not ml.location_id.scrap_location and not ml.location_dest_id.scrap_location)).picking_id
         return expired_pickings
 
     @api.depends('state')
@@ -368,9 +369,10 @@ class StockPicking(models.Model):
                     raise UserError(_('Quantity can not be larger than qty to do.'))
         self.approve = True
         self.keeper_id = self.env.user.id
-        rec = []
         recive = self.env['res.users'].search(
-            [("groups_id", "=", self.env.ref('stock.group_stock_manager').id),("stock_location_ids", "in", self.location_id.ids),("stock_location_ids", "in", self.location_dest_id.ids),])
+            [("groups_id", "=", self.env.ref('stock.group_stock_manager').id),
+             ("stock_location_ids", "in", self.location_id.ids),
+             ("stock_location_ids", "in", self.location_dest_id.ids)])
 
         self.env['mail.message'].send("Picking need to be Valdited", "Picking need to be Valdited", self._name,
                                       self.id,
@@ -398,7 +400,9 @@ class StockPicking(models.Model):
         res = super().action_confirm()
         for record in self:
             recive = self.env['res.users'].search(
-                [("groups_id", "=", record.env.ref('stock.group_stock_user').id),("stock_location_ids", "in", self.location_id.ids),("stock_location_ids", "in", self.location_dest_id.ids),])
+                [("groups_id", "=", record.env.ref('stock.group_stock_user').id),
+                 ("stock_location_ids", "in", self.location_id.ids),
+                 ("stock_location_ids", "in", self.location_dest_id.ids), ])
 
             if recive:
                 record.env['mail.message'].send("Picking been created", "Picking been created", record._name,
