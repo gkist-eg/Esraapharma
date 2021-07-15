@@ -78,6 +78,7 @@ class PurchaseRequestLine(models.Model):
                         [('user_id', '=', self.env.user.id)],
                         limit=1).id == rec.request_line_id.approver_id.id:
                     rec.m_qty = rec.product_qty
+                    rec.supply_chain_qty = rec.product_qty
                 elif rec.request_state in ('leader_approved', 'maneger_approved') and self.env.user.id == rec.request_line_id.purchase_approver_id.id:
                     rec.supply_chain_qty = rec.product_qty
 
