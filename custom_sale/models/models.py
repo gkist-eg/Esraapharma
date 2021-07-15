@@ -591,16 +591,15 @@ class Invoceder(models.Model):
         return dist
 
     def compute_cash(self):
-        cash=0
+        cash = 0
         for r in self:
-
-            cash=r.cash_discount_sale
+            cash = r.cash_discount_sale
         return cash
 
     def compute_dist_out_refund(self):
         dist = 0
         for r in self:
-            order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
+            order = self.env['sale.order'].search([('name', '=', r.lot_id)])
             if order:
                 for x in order:
                     dist = x.dis_discount_sale
@@ -608,10 +607,11 @@ class Invoceder(models.Model):
                 dist = r.partner_id.dist_discount
 
             return dist
+
     def compute_cash_out_refund(self):
         cash = 0
         for r in self:
-            order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
+            order = self.env['sale.order'].search([('name', '=', r.lot_id)])
             if order:
                 for x in order:
                     cash = x.cash_discount_sale
@@ -693,7 +693,7 @@ class Invoceder(models.Model):
             else:
                 if product:
 
-                    price_unit_wo_discount1 = (price_unit* (1 - ((discount or 0.0) / 100.0)))
+                    price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
                     price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
                     price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
                 else:
@@ -747,8 +747,10 @@ class Invoceder(models.Model):
                 if product:
                     x = round((price_unit * (1.0 - discount / 100.0)), 3)
                     price_unit_wo_discount1 = round_half_up(x, 2)
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist_out_refund() or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash_out_refund() or 0.0) / 100.0)
+                    price_unit_wo_discount2 = price_unit_wo_discount1 * (
+                                1 - (self.compute_dist_out_refund() or 0.0) / 100.0)
+                    price_unit_wo_discount = price_unit_wo_discount2 * (
+                                1 - (self.compute_cash_out_refund() or 0.0) / 100.0)
                 else:
                     price_unit_wo_discount = price_unit
 
@@ -796,8 +798,10 @@ class Invoceder(models.Model):
                 if product:
 
                     price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist_out_refund() or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash_out_refund() or 0.0)) / 100.0)
+                    price_unit_wo_discount2 = price_unit_wo_discount1 * (
+                                1 - (self.compute_dist_out_refund() or 0.0) / 100.0)
+                    price_unit_wo_discount = price_unit_wo_discount2 * (
+                                1 - ((self.compute_cash_out_refund() or 0.0)) / 100.0)
                 else:
                     price_unit_wo_discount = price_unit
 
@@ -1299,7 +1303,7 @@ class Move(models.Model):
                             price_unit_wo_discount = sign * discount_cash
                         elif base_line.product_id and base_line.sale_type == 'bouns':
                             discount_pharm = (base_line.p_unit * (1.0 - (base_line.discount / 100.0)))
-                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist()/ 100.0))
+                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
                             discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
                             price_unit_wo_discount = sign * discount_pharm
 
@@ -1314,7 +1318,7 @@ class Move(models.Model):
                     quantity = 1.00
                     tax_type = base_line.tax_ids[0].type_tax_use if base_line.tax_ids else None
                     is_refund = (tax_type == 'sale' and base_line.debit) or (
-                                tax_type == 'purchase' and base_line.credit)
+                            tax_type == 'purchase' and base_line.credit)
                     price_unit_wo_discount = base_line.balance
                     # print(base_line.balance, 'balance')
 
@@ -1333,7 +1337,7 @@ class Move(models.Model):
                     repartition_tags = base_line.tax_ids.mapped(repartition_field).filtered(
                         lambda x: x.repartition_type == 'base').tag_ids
                     tags_need_inversion = (tax_type == 'sale' and not is_refund) or (
-                                tax_type == 'purchase' and is_refund)
+                            tax_type == 'purchase' and is_refund)
                     if tags_need_inversion:
                         balance_taxes_res['base_tags'] = base_line._revert_signed_tags(repartition_tags).ids
                         for tax_res in balance_taxes_res['taxes']:
@@ -1372,7 +1376,7 @@ class Move(models.Model):
                             price_unit_wo_discount = sign * discount_cash
                         elif base_line.product_id and base_line.sale_type == 'bouns':
                             discount_pharm = (base_line.product_id.lst_price * (1.0 - (base_line.discount / 100.0)))
-                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist_out_refund/ 100.0))
+                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist_out_refund / 100.0))
                             discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash_out_refund / 100.0))
                             price_unit_wo_discount = sign * discount_pharm
 
@@ -1387,7 +1391,7 @@ class Move(models.Model):
                     quantity = 1.00
                     tax_type = base_line.tax_ids[0].type_tax_use if base_line.tax_ids else None
                     is_refund = (tax_type == 'sale' and base_line.debit) or (
-                                tax_type == 'purchase' and base_line.credit)
+                            tax_type == 'purchase' and base_line.credit)
                     price_unit_wo_discount = base_line.balance
                     # print(base_line.balance, 'balance')
 
@@ -1406,7 +1410,7 @@ class Move(models.Model):
                     repartition_tags = base_line.tax_ids.mapped(repartition_field).filtered(
                         lambda x: x.repartition_type == 'base').tag_ids
                     tags_need_inversion = (tax_type == 'sale' and not is_refund) or (
-                                tax_type == 'purchase' and is_refund)
+                            tax_type == 'purchase' and is_refund)
                     if tags_need_inversion:
                         balance_taxes_res['base_tags'] = base_line._revert_signed_tags(repartition_tags).ids
                         for tax_res in balance_taxes_res['taxes']:
@@ -1414,6 +1418,7 @@ class Move(models.Model):
                                 self.env['account.account.tag'].browse(tax_res['tag_ids'])).ids
 
                 return balance_taxes_res
+
         taxes_map = {}
 
         # ==== Add tax lines ====
@@ -1532,4 +1537,3 @@ class Move(models.Model):
 
             if in_draft_mode:
                 taxes_map_entry['tax_line'].update(taxes_map_entry['tax_line']._get_fields_onchange_balance())
-
