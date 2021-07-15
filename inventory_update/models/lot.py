@@ -9,6 +9,7 @@ class Quant(models.Model):
     suplier_lot = fields.Char(related='lot_id.suplier_lot',string='Suplier Lot', store=True, readonly=False)
     batch = fields.Char(related='lot_id.ref', store=True, readonly=False)
     balet_ids = fields.Many2many('balet.location', string="Pallets",related='lot_id.balet_ids')
+    supplier_id = fields.Many2one('res.partner', 'Supplier', related='lot_id.supplier_id', store=True)
 
     @api.model
     def action_view_quants(self):
@@ -25,15 +26,16 @@ class Quant(models.Model):
         return self._get_quants_action(extend=True)
 
 
-
 class LotNumber(models.Model):
     _inherit = 'stock.production.lot'
+
     box_no = fields.Float('No Of Boxes', default=1.0, store=True)
     box_qty = fields.Float('Box weight / Qty', default=1.0, store=True)
     prod_date = fields.Date(string='Production Date', help='This is the date on which the product made.', store=True)
     attachment_ids = fields.Many2many('ir.attachment', string='Attachments', )
     balet_ids = fields.Many2many('balet.location', string="Pallets")
     suplier_lot = fields.Char(string='Supplier Lot', store=True)
+    supplier_id = fields.Many2one('res.partner', 'Supplier', store=True)
 
     expiration_date = fields.Date(string='Expiration Date',
                                       help='This is the date on which the goods with this Serial Number may become dangerous and must not be consumed.')
@@ -123,3 +125,4 @@ class LotNumberLot(models.Model):
         self.lot_id.suplier_lot = self.suplier_lot
         self.lot_id.attachment_ids = self.attachment_ids
         self.lot_id.balet_ids = self.balet_ids
+        self.lot_id.supplier_id = self.picking_id.partner_id

@@ -48,20 +48,21 @@ class StockPicking(models.Model):
     @api.onchange('picking_type_id', 'partner_id', 'location_id', 'location_dest_id')
     def onchange_locations(self):
         if (self.picking_type_id.code == 'internal' or self.picking_type_id.allow_return) and self.state == 'draft':
-            if self.user_has_groups('restrict_warehouse.group_restrict_warehouse'):
-                domain = {'location_id': [('id', '=', self.env.user.stock_location_ids.ids),
-                                          ('stock_usage', 'not in', ('production', 'qrtin')),
-                                          ('usage', '=', 'internal')],
-                          'location_dest_id': [('id', '=', self.env.user.stock_location_ids.ids), (
-                          'usage', 'in', ('internal', 'inventory')),
-                          ('stock_usage', 'not in', ('production', 'qrtin'))]}
-                return {'domain': domain}
+
             if self.env.user.has_group('quality_location.group_stock_approve'):
                 domain = {'location_id': [('id', '=', self.env.user.stock_location_ids.ids),
                                           ('stock_usage', '!=', 'production'), ('usage', '=', 'internal')],
                           'location_dest_id': [('id', '=', self.env.user.stock_location_ids.ids),
                                                ('usage', 'in', ('internal', 'inventory')),
                                                ('stock_usage', '!=', 'production')]}
+                return {'domain': domain}
+            elif self.user_has_groups('restrict_warehouse.group_restrict_warehouse'):
+                domain = {'location_id': [('id', '=', self.env.user.stock_location_ids.ids),
+                                          ('stock_usage', 'not in', ('production', 'qrtin')),
+                                          ('usage', '=', 'internal')],
+                          'location_dest_id': [('id', '=', self.env.user.stock_location_ids.ids), (
+                          'usage', 'in', ('internal', 'inventory')),
+                          ('stock_usage', 'not in', ('production', 'qrtin'))]}
                 return {'domain': domain}
         else:
             if self.user_has_groups('restrict_warehouse.group_restrict_warehouse'):
