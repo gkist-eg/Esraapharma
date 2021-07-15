@@ -112,18 +112,6 @@ class StockPicking(models.Model):
         if picking_type.code == 'internal':
             return picking_type.default_location_src_id
 
-    @api.onchange('picking_type_id', 'partner_id','location_id','location_dest_id')
-    def onchange_locations(self):
-        if (self.picking_type_id.code == 'internal' or self.picking_type_id.allow_return) and self.state == 'draft':
-            if self.user_has_groups('restrict_warehouse.group_restrict_warehouse'):
-                domain = {'location_id': [('id', '=', self.env.user.stock_location_ids.ids),('usage', '=', 'internal')], 'location_dest_id': [('id', '=', self.env.user.stock_location_ids.ids),('usage', 'in', ('internal', 'inventory'))]}
-                return {'domain': domain}
-        else:
-            if self.user_has_groups('restrict_warehouse.group_restrict_warehouse'):
-                domain = {
-                    'location_id': [('id', '=', False)],
-                    'location_dest_id':  [('id', '=', False)]}
-                return {'domain': domain}
 
     @api.onchange('picking_type_id', 'partner_id')
     def onchange_picking_type(self):
