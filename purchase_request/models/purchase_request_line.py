@@ -65,8 +65,8 @@ class PurchaseRequestLine(models.Model):
         related="request_line_id.nname", string="Source Document", store=True
     )
 
-    @api.onchange("product_qty", 'ordered_qty', 'm_qty')
-    @api.depends("product_qty", 'ordered_qty', 'm_qty')
+    @api.onchange("product_qty")
+    @api.depends("product_qty")
     def get_ordered_m_supply_chain_qty(self):
         for rec in self:
             if rec.product_qty:
@@ -77,10 +77,9 @@ class PurchaseRequestLine(models.Model):
                 elif rec.request_state == 'to_be_approved' and self.env['hr.employee'].search(
                         [('user_id', '=', self.env.user.id)],
                         limit=1).id == rec.request_line_id.approver_id.id:
-                    rec.m_qty = rec.ordered_qty
-                    rec.supply_chain_qty = rec.ordered_qty
+                    rec.m_qty = rec.product_qty
                 elif rec.request_state == 'leader_approved' and self.env.user.id == rec.request_line_id.purchase_approver_id.id:
-                    rec.supply_chain_qty = rec.m_qty
+                    rec.supply_chain_qty = rec.product_qty
 
     def get_description_default(self):
         for rec in self:
