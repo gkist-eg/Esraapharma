@@ -53,8 +53,8 @@ class StockPicking(models.Model):
                                           ('stock_usage', 'not in', ('production', 'qrtin')),
                                           ('usage', '=', 'internal')],
                           'location_dest_id': [('id', '=', self.env.user.stock_location_ids.ids), (
-                          'usage', 'in', ('internal', 'inventory'),
-                          ('stock_usage', 'not in', ('production', 'qrtin')))]}
+                          'usage', 'in', ('internal', 'inventory')),
+                          ('stock_usage', 'not in', ('production', 'qrtin'))]}
                 return {'domain': domain}
             if self.env.user.has_group('quality_location.group_stock_approve'):
                 domain = {'location_id': [('id', '=', self.env.user.stock_location_ids.ids),
