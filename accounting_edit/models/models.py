@@ -17,6 +17,7 @@ class journal_default(models.Model):
         'user_id', 'account_account_id', string='Default Account')
 
 
+
 class account_journal(models.Model):
     _inherit = 'account.journal'
     account_check = fields.Selection([('check_received', 'Check Received'), ('check_send', 'Check Send')],
