@@ -19,8 +19,7 @@ class ExpenseEdit(models.Model):
         if  self.catg_id:
 
             self.product_id = False
-class ExpenseEditsheet(models.Model):
-    _inherit = 'hr.expense.sheet'
+
 
     @api.model
     def _get_employee_id_domainx(self):
@@ -41,6 +40,10 @@ class ExpenseEditsheet(models.Model):
             res = [('id', '=', employee.id), '|', ('company_id', '=', False),
                    ('company_id', '=', employee.company_id.id)]
         return res
+class ExpenseEditsheet(models.Model):
+    _inherit = 'hr.expense.sheet'
+
+
 
 
     @api.model
