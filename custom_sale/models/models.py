@@ -599,24 +599,33 @@ class Invoceder(models.Model):
     def compute_dist_out_refund(self):
         dist = 0
         for r in self:
-            order = self.env['sale.order'].search([('name', '=', r.lot_id)])
+            order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
             if order:
-                for x in order:
-                    dist = x.dis_discount_sale
-            else:
-                dist = r.partner_id.dist_discount
+                raise UserError(
+                    _('x'))
 
-            return dist
+                # for x in order:
+                #     dist = x.dis_discount_sale
+            else:
+                # dist = r.partner_id.dist_discount
+                raise UserError(
+                    _('y'))
+
+        return dist
 
     def compute_cash_out_refund(self):
         cash = 0
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.lot_id)])
             if order:
-                for x in order:
-                    cash = x.cash_discount_sale
+                raise UserError(
+                    _('x'))
+                # for x in order:
+                #     cash = x.cash_discount_sale
             else:
-                cash = r.partner_id.cash_discount
+                raise UserError(
+                    _('y'))
+                # cash = r.partner_id.cash_discount
 
             return cash
 
@@ -1225,10 +1234,14 @@ class Move(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.invoice_origin)])
             if order:
-                for x in order:
-                    dist = x.dis_discount_sale
+                raise UserError(
+                    _('x'))
+                # for x in order:
+                #     dist = x.dis_discount_sale
             else:
-                dist = r.partner_id.dist_discount
+                raise UserError(
+                    _('y'))
+                # dist = r.partner_id.dist_discount
 
             return dist
 
@@ -1237,12 +1250,16 @@ class Move(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.invoice_origin)])
             if order:
-                for x in order:
-                    cash = x.cash_discount_sale
+                raise UserError(
+                    _('x'))
+                # for x in order:
+                #     cash = x.cash_discount_sale
             else:
-                cash = r.partner_id.cash_discount
+                raise UserError(
+                    _('y'))
+                # cash = r.partner_id.cash_discount
 
-            return cash
+        return cash
 
     def _recompute_tax_lines(self, recompute_tax_base_amount=False):
         ''' Compute the dynamic tax lines of the journal entry.
