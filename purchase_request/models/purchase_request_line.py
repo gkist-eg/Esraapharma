@@ -70,7 +70,7 @@ class PurchaseRequestLine(models.Model):
     def get_ordered_m_supply_chain_qty(self):
         for rec in self:
             if rec.product_qty:
-                if rec.request_state == 'draft' or self.env.user.id == rec.request_line_id.requested_by_id.id:
+                if rec.request_state == 'draft' and self.env.user.id == rec.request_line_id.requested_by_id.id:
                     rec.ordered_qty = rec.product_qty
                 elif rec.request_state == 'to_be_approved' and self.env['hr.employee'].search(
                         [('user_id', '=', self.env.user.id)],
