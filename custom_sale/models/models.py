@@ -619,7 +619,7 @@ class Invoceder(models.Model):
         :param move_type:   The type of the move.
         :return:            A dictionary containing 'price_subtotal' & 'price_total'.
         '''
-        if move_type == 'out_refund' and self.compute_picking_id():
+        if move_type == 'out_refund':
             res = {}
 
             # Compute 'price_subtotal'.
@@ -721,7 +721,7 @@ class Invoceder(models.Model):
                 if currency:
                     res = {k: currency.round(v) for k, v in res.items()}
                 return res
-        if move_type == 'out_refund' and not self.compute_picking_id():
+        if move_type == 'out_invoice' :
             res = {}
 
             # Compute 'price_subtotal'.
