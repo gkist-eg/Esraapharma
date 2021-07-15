@@ -6,6 +6,7 @@ from odoo.exceptions import UserError
 from datetime import datetime
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
+
 class PurchaseRequestLine(models.Model):
     _name = "purchase.request.line"
     _description = "Purchase Request Line"
@@ -65,15 +66,20 @@ class PurchaseRequestLine(models.Model):
     )
 
     @api.onchange("product_qty")
+    @api.depends("product_qty")
     def get_ordered_m_supply_chain_qty(self):
         for rec in self:
             if rec.product_qty:
-                if int(rec.ordered_qty) == 0 or self.env.user.id == rec.request_line_id.requested_by_id.id:
+                if rec.request_state == 'draft' and self.env.user.id == rec.request_line_id.requested_by_id.id:
                     rec.ordered_qty = rec.product_qty
-                elif self.env['hr.employee'].search([('user_id', '=', self.env.user.id)],
-                                                    limit=1).id == rec.request_line_id.approver_id.id:
                     rec.m_qty = rec.product_qty
-                elif self.env.user.id == rec.request_line_id.purchase_approver_id.id:
+                    rec.supply_chain_qty = rec.product_qty
+                elif rec.request_state == 'to_be_approved' and self.env['hr.employee'].search(
+                        [('user_id', '=', self.env.user.id)],
+                        limit=1).id == rec.request_line_id.approver_id.id:
+                    rec.m_qty = rec.product_qty
+                    rec.supply_chain_qty = rec.product_qty
+                elif rec.request_state in ('leader_approved', 'maneger_approved') and self.env.user.id == rec.request_line_id.purchase_approver_id.id:
                     rec.supply_chain_qty = rec.product_qty
 
     def get_description_default(self):
@@ -91,15 +97,15 @@ class PurchaseRequestLine(models.Model):
             purchase_request = records.mapped('request_line_id')
             for record in records:
                 order_line.append((0, 0, {
-                        'product_id': record.product_id.id,
-                        'name': record.product_id.name,
-                        'date_planned': record.due_date or datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                        'product_qty': record.product_qty,
-                        'product_uom': record.product_uom_id.id,
-                        'attachmentt_ids': [a.id for a in record.attachment_ids],
-                        'purchase_request_line': record.id,
+                    'product_id': record.product_id.id,
+                    'name': record.product_id.name,
+                    'date_planned': record.due_date or datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                    'product_qty': record.product_qty,
+                    'product_uom': record.product_uom_id.id,
+                    'attachmentt_ids': [a.id for a in record.attachment_ids],
+                    'purchase_request_line': record.id,
 
-                    }))
+                }))
 
             return {
                 'name': 'New Quotation',
