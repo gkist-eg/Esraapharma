@@ -29,16 +29,12 @@ class ExpenseEdit(models.Model):
             employee = self.env.user.employee_id
             res = [
                 '|', '|', '|',
-                ('department_id.manager_id', '=', employee.id),
+                ('department_id.employee_id', '=', employee.depatment_id.id),
                 ('parent_id', '=', employee.id),
                 ('id', '=', employee.id),
                 ('expense_manager_id', '=', user.id),
                 '|', ('company_id', '=', False), ('company_id', '=', employee.company_id.id),
             ]
-        elif self.env.user.employee_id:
-            employee = self.env.user.employee_id
-            res = [('id', '=', employee.id), '|', ('company_id', '=', False),
-                   ('company_id', '=', employee.company_id.id)]
         return res
 class ExpenseEditsheet(models.Model):
     _inherit = 'hr.expense.sheet'
