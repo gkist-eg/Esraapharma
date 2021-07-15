@@ -1,5 +1,6 @@
 from odoo import models, fields, api
 
+
 class Locations(models.Model):
     _inherit = 'stock.location'
 

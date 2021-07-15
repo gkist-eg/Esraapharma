@@ -41,7 +41,7 @@
 
             <xpath expr="//field[@name='expiration_date']" position="replace">
                 <field name="expiration_date" force_save="1"
-                       attrs="{'readonly': [('picking_type_use_existing_lots', '=', True)],}" optional="show" />
+                       attrs="{'readonly': [('picking_type_use_existing_lots', '=', True)],}" optional="show"/>
             </xpath>
 
         </field>
@@ -59,15 +59,16 @@
             </xpath>
 
 
-        </field></record>
+        </field>
+    </record>
     <record id="view_stock_move_line_operation_tree_lot_2" model="ir.ui.view">
         <field name="name">stock.move.line</field>
         <field name="model">stock.move.line</field>
         <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='owner_id']" position="attributes">
-                    <attribute name="optional">show</attribute>
-                </xpath>
+                <attribute name="optional">show</attribute>
+            </xpath>
 
         </field>
     </record>
@@ -85,14 +86,14 @@
                     <field name="use_expiration_date" invisible="1"/>
                     <group>
                         <group>
-                            <field name="suplier_lot"/>
+                            <field name="supplier_id"/>
                             <field name="box_qty"/>
                             <field name="balet_ids" widget="many2many_tags"/>
 
                         </group>
                         <group>
+                            <field name="suplier_lot"/>
                             <field name="box_no"/>
-
                             <field name="attachment_ids" widget="many2many_binary"/>
 
                         </group>
@@ -223,8 +224,9 @@
         <field name="inherit_id" ref="stock.view_stock_quant_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='lot_id']" position="after">
-                <field name="suplier_lot"/>
-                <field name="balet_ids" widget="many2many_tags"/>
+                <field name="suplier_lot" optional="show"/>
+                <field name="supplier_id" optional="show"/>
+                <field name="balet_ids" widget="many2many_tags" optional="show"/>
 
             </xpath>
         </field>
@@ -236,6 +238,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='lot_id']" position="after">
                 <field name="suplier_lot"/>
+                <field name="supplier_id"/>
                 <field name="balet_ids"/>
 
             </xpath>
@@ -247,8 +250,9 @@
         <field name="inherit_id" ref="stock.view_stock_quant_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='lot_id']" position="after">
-                <field name="suplier_lot"/>
-                <field name="balet_ids" widget="many2many_tags"/>
+                <field name="suplier_lot" optional="show"/>
+                <field name="supplier_id" optional="show"/>
+                <field name="balet_ids" widget="many2many_tags" optional="show"/>
             </xpath>
         </field>
     </record>
