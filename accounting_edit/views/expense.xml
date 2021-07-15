@@ -1,36 +1,21 @@
 <odoo>
     <record id="view_expense_edits" model="ir.ui.view">
-         <field name="model">hr.expense</field>
+        <field name="model">hr.expense</field>
         <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
         <field name="arch" type="xml">
 
             <field name="product_id" position="before">
 
- <field name="catg_id" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}" />
-                </field>
-   <field name="product_id" position="replace" >
-                    <field name="product_id"  options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                <field name="catg_id" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+            </field>
+            <field name="product_id" position="replace">
+                <field name="product_id" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
 
             </field>
 
         </field>
     </record>
-    <record id="view_expense_edits_sheet" model="ir.ui.view">
-         <field name="model">hr.expense.sheet</field>
-        <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"/>
-        <field name="arch" type="xml">
 
-           <xpath expr="//field[@name='user_id']"
-                       position="attributes">
-                    <attribute name="readonly">True
-                    </attribute
-                    >
-                </xpath>
-
-
-
-        </field>
-    </record>
 
 
 </odoo>
