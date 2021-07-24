@@ -189,10 +189,10 @@ class ORder(models.Model):
     cash_discount_sale = fields.Float('Cash Dis%', store=True)
     dis_discount_sale = fields.Float('Dist Dis%', store=True)
 
-    @api.onchange('partner_id')
+    @api.onchange('product_id')
     def _onchange_ty(self):
         for record in self:
-            if self.partner_id:
+            if self.product:
                 record.dis_discount_sale = record.order_id.partner_id.dist_discount
                 record.cash_discount_sale = record.order_id.partner_id.cash_discount
             else:
