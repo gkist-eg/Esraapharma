@@ -3,6 +3,7 @@
 from odoo import models, fields, api, _
 import math
 from collections import defaultdict
+from odoo.exceptions import RedirectWarning, UserError, ValidationError, AccessError
 
 from odoo.exceptions import UserError
 
@@ -602,11 +603,9 @@ class Invoceder(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
             if order:
-                for x in order:
-                    dist = x.dis_discount_sale
+                raise ValidationError(_("x"))
             else:
-                dist = r.partner_id.dist_discount
-
+                raise ValidationError(_("y"))
         return dist
 
     def compute_cash_out_refund(self):
@@ -614,10 +613,9 @@ class Invoceder(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
             if order:
-                for x in order:
-                    cash = x.cash_discount_sale
+                raise ValidationError(_("x"))
             else:
-                cash = r.partner_id.cash_discount
+                raise ValidationError(_("y"))
 
         return cash
 
@@ -1222,10 +1220,9 @@ class Move(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.invoice_origin)])
             if order:
-                for x in order:
-                    dist = x.dis_discount_sale
+                raise ValidationError(_("x"))
             else:
-                dist = r.partner_id.dist_discount
+                raise ValidationError(_("y"))
 
         return dist
 
@@ -1234,10 +1231,9 @@ class Move(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.invoice_origin)])
             if order:
-                for x in order:
-                    cash = x.cash_discount_sale
+                raise ValidationError(_("x"))
             else:
-                cash = r.partner_id.cash_discount
+                raise ValidationError(_("y"))
 
         return cash
 
