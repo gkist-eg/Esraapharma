@@ -746,6 +746,7 @@ class Invoceder(models.Model):
                 else:
                     price_unit_wo_discount = price_unit
 
+
                 subtotal = quantity * price_unit_wo_discount
 
                 # Compute 'price_total'.
