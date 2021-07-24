@@ -21,34 +21,6 @@ class ExpenseEdit(models.Model):
             self.product_id = False
 
 
-    @api.model
-    def _get_employee_id_domainx(self):
-        res = [('id', '=', 0)]  # Nothing accepted by domain, by default
-        if self.env.user.employee_ids:
-            user = self.env.user
-            employee = self.env.user.employee_id
-            res = [
-                '|', '|', '|',
-                ('department_id.employee_id', '=', employee.depatment_id.id),
-                ('parent_id', '=', employee.id),
-                ('id', '=', employee.id),
-                ('expense_manager_id', '=', user.id),
-                '|', ('company_id', '=', False), ('company_id', '=', employee.company_id.id),
-            ]
-        return res
-class ExpenseEditsheet(models.Model):
-    _inherit = 'hr.expense.sheet'
 
-
-
-
-    @api.model
-    def _default_employee_id(self):
-        employee = self.env.user.employee_id
-        if not employee and not self.env.user.has_group('hr_expense.group_hr_expense_team_approver'):
-            raise ValidationError(_('The current user has no related employee. Please, create one.'))
-        return employee
-
-    employee_id = fields.Many2one('hr.employee', string="Employee", required=True, readonly=True, tracking=True, states={'draft': [('readonly', False)]}, default=_default_employee_id, check_company=True, domain= lambda self: self.env['hr.expense']._get_employee_id_domainx())
 
 
