@@ -598,12 +598,12 @@ class Invoceder(models.Model):
         dist = 0
         for r in self:
             dist = r.move_id.dis_discount_sale
-            if dist > 0 :
-                raise ValidationError(_("x"))
+            if dist == 10:
+                raise ValidationError(_("xx"))
 
-            else:
+            elif dist == 15:
 
-                raise ValidationError(_("y"))
+                raise ValidationError(_("yy"))
 
         return dist
 
@@ -1202,10 +1202,10 @@ class Move(models.Model):
         dist = 0
         for r in self:
             dist = r.dis_discount_sale
-            if dist > 0:
+            if dist == 10:
                 raise ValidationError(_("xx"))
 
-            else:
+            elif dist ==15:
 
                 raise ValidationError(_("yy"))
 
