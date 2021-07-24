@@ -165,3 +165,5 @@ class Move(models.Model):
     #                         'lot_id': i.lot_id.id,
     #
     #                     })
+
+
