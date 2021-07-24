@@ -285,11 +285,12 @@ class ORder(models.Model):
                     })
                 else:
 
+
                     taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty,
                                                     product=line.product_id, partner=line.order_id.partner_shipping_id)
                     line.update({
-                        'dist_amount': price1 * ((line.dist_discount_sale or 0.0) / 100) * line.product_uom_qty,
-                        'cash_amount': price2 * ((line.cash_discount_sale or 0.0) / 100) * line.product_uom_qty,
+                        'dist_amount': price1 * ((line.order_id.dis_discount_sale or 0.0) / 100) * line.product_uom_qty,
+                        'cash_amount': price2 * ((line.order_id.cash_discount_sale or 0.0) / 100) * line.product_uom_qty,
                         'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                         'price_total': taxes['total_included'],
                         'price_subtotal': taxes['total_excluded'],
