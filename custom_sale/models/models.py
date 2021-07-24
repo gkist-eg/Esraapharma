@@ -598,7 +598,6 @@ class Invoceder(models.Model):
     def compute_dist(self):
         dist = 0
         for r in self:
-
             if r.move_id.dis_discount_sale:
                 dist = r.move_id.dis_discount_sale
 

@@ -276,8 +276,8 @@
                                     </div>
                                     <field name="cash_discount" invisible="1"/>
                                     <field name="dist_discount" invisible="1"/>
-                                    <field name="cash_discount_sale" invisible="1"/>
-                                    <field name="dis_discount_sale" invisible="1"/>
+                                    <field name="cash_discount_sale" invisible="0"/>
+                                    <field name="dis_discount_sale" invisible="0"/>
                                     <field name="cash_amount" invisible="1"/>
                                     <field name="dist_amount" invisible="1"/>
                                     <field name="price_unit" readonly="1"/>
