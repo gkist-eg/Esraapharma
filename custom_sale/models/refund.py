@@ -167,7 +167,7 @@ class Move(models.Model):
     def _onchange_price_list(self):
 
         for record in self:
-            if record.move_type == 'out_refund':
+            if record.move_type == 'out_refund' and record.pricelist_id:
                 if record.pricelist_id:
                     for i in record.invoice_line_ids:
                         partner = record.partner_id
