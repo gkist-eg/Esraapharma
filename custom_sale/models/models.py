@@ -233,8 +233,8 @@ class ORder(models.Model):
 
                 price1 = line.store_price
 
-                price2 = price1 * (1.0 - (line.dis_discount_sale or 0.0) / 100.0)
-                price = price2 * (1.0 - (line.cash_discount_sale or 0.0) / 100.0)
+                price2 = price1 * (1.0 - (line.order_id.dis_discount_sale or 0.0) / 100.0)
+                price = price2 * (1.0 - (line.order_id.cash_discount_sale or 0.0) / 100.0)
                 ##print(line.price_unit, price1, price2, price)
 
                 if line.sale_type == 'bouns':
