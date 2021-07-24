@@ -277,8 +277,8 @@ class ORder(models.Model):
                     line.tax_id.invalidate_cache(['invoice_repartition_line_ids'], [line.tax_id.id])
             else:
                 price1 = (line.price_unit * (1.0 - (line.discount or 0.0) / 100.0))
-                price2 = price1 * (1.0 - (line.dis_discount_sale or 0.0) / 100.0)
-                price = price2 * (1.0 - (line.cash_discount_sale or 0.0) / 100.0)
+                price2 = price1 * (1.0 - (line.order_id.dis_discount_sale or 0.0) / 100.0)
+                price = price2 * (1.0 - (line.order_id.cash_discount_sale or 0.0) / 100.0)
                 # print(line.price_unit, price1, price2, price)
 
                 if line.sale_type == 'bouns':
@@ -574,10 +574,10 @@ class Invoceder(models.Model):
             if rec.sale_type != 'bouns':
                 price = rec.p_unit
                 price1 = (price * (1.0 - (rec.discount or 0.0) / 100.0))
-                price2 = price1 * (1.0 - (rec.dis_discount_sale or 0.0) / 100.0)
+                price2 = price1 * (1.0 - (rec.move_id.dis_discount_sale or 0.0) / 100.0)
                 rec.pre_amount = price * ((rec.discount or 0.0) / 100.0) * rec.quantity
-                rec.dist_amount = price1 * ((rec.dis_discount_sale or 0.0) / 100.0) * rec.quantity
-                rec.cash_amount = price2 * ((rec.cash_discount_sale or 0.0) / 100.0) * rec.quantity
+                rec.dist_amount = price1 * ((rec.move_id.dis_discount_sale or 0.0) / 100.0) * rec.quantity
+                rec.cash_amount = price2 * ((rec.move_id.cash_discount_sale or 0.0) / 100.0) * rec.quantity
             else:
                 rec.dist_amount = 0.0
                 rec.cash_amount = 0.0
@@ -597,14 +597,14 @@ class Invoceder(models.Model):
     def compute_dist(self):
         dist = 0
         for r in self:
-            dist = r.dis_discount_sale
+            dist = r.move_id.dis_discount_sale
 
         return dist
 
     def compute_cash(self):
         cash=0
         for r in self:
-            cash=r.cash_discount_sale
+            cash=r.move_id.cash_discount_sale
         return cash
 
 
