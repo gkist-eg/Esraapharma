@@ -604,7 +604,7 @@ class Invoceder(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
             if order:
-                    dist = r.dis_discount_sale
+                    dist = 10
             else:
                 dist = r.partner_id.dist_discount
 
@@ -615,7 +615,7 @@ class Invoceder(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
             if order:
-                    cash = r.cash_discount_sale
+                    cash = 0
             else:
                 cash = r.partner_id.cash_discount
 
@@ -1222,7 +1222,7 @@ class Move(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.invoice_origin)])
             if order:
-                    dist = r.dis_discount_sale
+                    dist = 10
             else:
                 dist = r.partner_id.dist_discount
 
@@ -1233,7 +1233,7 @@ class Move(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.invoice_origin)])
             if order:
-                    cash = r.cash_discount_sale
+                    cash = 0
             else:
                 cash = r.partner_id.cash_discount
 
