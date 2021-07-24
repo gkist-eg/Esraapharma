@@ -597,20 +597,19 @@ class Invoceder(models.Model):
     def compute_dist(self):
         dist = 0
         for r in self:
-            dist = r.move_id.dis_discount_sale
-            if dist == 10:
-                raise ValidationError(_("xx"))
 
-            elif dist == 15:
+            if r.move_id.dis_discount_sale:
+                dist = r.move_id.dis_discount_sale
 
-                raise ValidationError(_("yy"))
+
 
         return dist
 
     def compute_cash(self):
         cash=0
         for r in self:
-            cash=r.move_id.cash_discount_sale
+            if r.move_id.cash_discount_sale:
+               cash=r.move_id.cash_discount_sale
         return cash
 
 
@@ -1202,12 +1201,11 @@ class Move(models.Model):
         dist = 0
         for r in self:
             dist = r.dis_discount_sale
-            if dist == 10:
-                raise ValidationError(_("xx"))
+            if r.dis_discount_sale:
+                dist = r.dis_discount_sale
 
-            elif dist ==15:
 
-                raise ValidationError(_("yy"))
+
 
         return dist
 
