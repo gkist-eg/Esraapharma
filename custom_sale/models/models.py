@@ -599,7 +599,7 @@ class Invoceder(models.Model):
         for r in self:
 
             if r.move_id.dis_discount_sale:
-                raise ValidationError(_("The chosen journal has a type that is not compatible with your invoice type. Sales operations should go to 'sale' journals, and purchase operations to 'purchase' ones."))
+                dist = r.move_id.dis_discount_sale
 
 
 
