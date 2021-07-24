@@ -38,8 +38,8 @@ class PickingModule(models.Model):
                         'name': move.description_picking,
                         'product_id': move.product_id.id,
                         'price_unit': move.product_id.lst_price,
-                        'cash_discount_sale': move.partner_id.cash_discount,
-                        'dis_discount_sale': move.partner_id.dist_discount,
+                        'cash_discount_sale': picking_id.partner_id.cash_discount,
+                        'dis_discount_sale': picking_id.partner_id.dist_discount,
                         'lot_id': move.lot_id.id,
                         'account_id': move.product_id.property_account_income_id.id if move.product_id.property_account_income_id
                         else move.product_id.categ_id.property_account_income_categ_id.id,
