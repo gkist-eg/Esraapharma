@@ -632,6 +632,7 @@ class Invoceder(models.Model):
         '''
         res = {}
 
+
         # Compute 'price_subtotal'.
 
         if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
