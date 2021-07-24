@@ -51,6 +51,8 @@ class PickingModule(models.Model):
                         'invoice_user_id': current_user,
                         'narration': picking_id.name,
                         'partner_id': picking_id.partner_id.id,
+                        'cash_discount_sale': picking_id.partner_id.cash_discount,
+                        'dis_discount_sale': picking_id.partner_id.dist_discount,
                         'currency_id': picking_id.env.user.company_id.currency_id.id,
                         'payment_reference': picking_id.name,
                         'picking_id': picking_id.id,

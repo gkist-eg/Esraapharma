@@ -285,7 +285,6 @@ class ORder(models.Model):
                     })
                 else:
 
-
                     taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty,
                                                     product=line.product_id, partner=line.order_id.partner_shipping_id)
                     line.update({
@@ -604,7 +603,7 @@ class Invoceder(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
             if order:
-                    dist = 10
+                    dist = r.dis_discount_sale
             else:
                 dist = r.partner_id.dist_discount
 
@@ -615,7 +614,7 @@ class Invoceder(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
             if order:
-                    cash = 0
+                    cash = r.cash_discount_sale
             else:
                 cash = r.partner_id.cash_discount
 
@@ -637,211 +636,108 @@ class Invoceder(models.Model):
         :param move_type:   The type of the move.
         :return:            A dictionary containing 'price_subtotal' & 'price_total'.
         '''
-        if move_type == "out_invoice":
-            res = {}
+        res = {}
 
-            # Compute 'price_subtotal'.
+        # Compute 'price_subtotal'.
 
-            if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
-                if product:
-                    x = round((price_unit * (1.0 - discount / 100.0)), 3)
-                    price_unit_wo_discount1 = round_half_up(x, 2)
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash() or 0.0) / 100.0)
-                else:
-                    price_unit_wo_discount = price_unit
-
-                subtotal = quantity * price_unit_wo_discount
-
-                # Compute 'price_total'.
-                if taxes:
-
-                    if self.sale_type == 'bouns':
-
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        # print(price_unit_wo_discount, taxes_res)
-                        res['price_subtotal'] = 0.00
-                        res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
-                    elif self.sale_type == 'sale':
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-                    elif not self.sale_type:
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-
-                else:
-                    if self.sale_type == 'bouns':
-                        res['price_total'] = res['price_subtotal'] = 0.00
-
-                    else:
-                        res['price_total'] = res['price_subtotal'] = subtotal
-
-                # In case of multi currency, round before it's use for computing debit credit
-                if currency:
-                    res = {k: currency.round(v) for k, v in res.items()}
-                return res
+        if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
+            if product:
+                x = round((price_unit * (1.0 - discount / 100.0)), 3)
+                price_unit_wo_discount1 = round_half_up(x, 2)
+                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
+                price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash() or 0.0) / 100.0)
             else:
-                if product:
+                price_unit_wo_discount = price_unit
 
-                    price_unit_wo_discount1 = (price_unit* (1 - ((discount or 0.0) / 100.0)))
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
-                else:
-                    price_unit_wo_discount = price_unit
+            subtotal = quantity * price_unit_wo_discount
 
-                subtotal = quantity * price_unit_wo_discount
+            # Compute 'price_total'.
+            if taxes:
 
-                # Compute 'price_total'.
-                if taxes:
+                if self.sale_type == 'bouns':
 
-                    if self.sale_type == 'bouns':
-                        price_unit_wo_discount1 = (price_unit * (1.0 - (discount / 100.0)))
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount1,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        # print(price_unit_wo_discount, taxes_res)
-                        res['price_subtotal'] = 0.00
-                        res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
-                    elif self.sale_type == 'sale':
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-                    elif not self.sale_type:
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
+                                                          quantity=quantity, currency=currency, product=product,
+                                                          partner=partner,
+                                                          is_refund=move_type in ('out_refund', 'in_refund'))
+                    # print(price_unit_wo_discount, taxes_res)
+                    res['price_subtotal'] = 0.00
+                    res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
+                elif self.sale_type == 'sale':
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
+                                                          quantity=quantity, currency=currency, product=product,
+                                                          partner=partner,
+                                                          is_refund=move_type in ('out_refund', 'in_refund'))
+                    res['price_subtotal'] = taxes_res['total_excluded']
+                    res['price_total'] = taxes_res['total_included']
+                elif not self.sale_type:
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
+                                                          quantity=quantity, currency=currency, product=product,
+                                                          partner=partner,
+                                                          is_refund=move_type in ('out_refund', 'in_refund'))
+                    res['price_subtotal'] = taxes_res['total_excluded']
+                    res['price_total'] = taxes_res['total_included']
+
+            else:
+                if self.sale_type == 'bouns':
+                    res['price_total'] = res['price_subtotal'] = 0.00
 
                 else:
-                    if self.sale_type == 'bouns':
-                        res['price_total'] = res['price_subtotal'] = 0.00
+                    res['price_total'] = res['price_subtotal'] = subtotal
 
-                    else:
-                        res['price_total'] = res['price_subtotal'] = subtotal
-
-                # In case of multi currency, round before it's use for computing debit credit
-                if currency:
-                    res = {k: currency.round(v) for k, v in res.items()}
-                return res
+            # In case of multi currency, round before it's use for computing debit credit
+            if currency:
+                res = {k: currency.round(v) for k, v in res.items()}
+            return res
         else:
-            res = {}
+            if product:
 
-            # Compute 'price_subtotal'.
-            if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
-                if product:
-                    x = round((price_unit * (1.0 - discount / 100.0)), 3)
-                    price_unit_wo_discount1 = round_half_up(x, 2)
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist_out_refund() or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash_out_refund() or 0.0) / 100.0)
-                else:
-                    price_unit_wo_discount = price_unit
-
-                subtotal = quantity * price_unit_wo_discount
-
-                # Compute 'price_total'.
-                if taxes:
-
-                    if self.sale_type == 'bouns':
-
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        # print(price_unit_wo_discount, taxes_res)
-                        res['price_subtotal'] = 0.00
-                        res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
-                    elif self.sale_type == 'sale':
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-                    elif not self.sale_type:
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-
-                else:
-                    if self.sale_type == 'bouns':
-                        res['price_total'] = res['price_subtotal'] = 0.00
-
-                    else:
-                        res['price_total'] = res['price_subtotal'] = subtotal
-
-                # In case of multi currency, round before it's use for computing debit credit
-                if currency:
-                    res = {k: currency.round(v) for k, v in res.items()}
-                return res
+                price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
+                price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
+                price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
             else:
-                if product:
+                price_unit_wo_discount = price_unit
 
-                    price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist_out_refund() or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash_out_refund() or 0.0)) / 100.0)
-                else:
-                    price_unit_wo_discount = price_unit
+            subtotal = quantity * price_unit_wo_discount
 
-                subtotal = quantity * price_unit_wo_discount
+            # Compute 'price_total'.
+            if taxes:
 
-                # Compute 'price_total'.
-                if taxes:
+                if self.sale_type == 'bouns':
+                    price_unit_wo_discount1 = (price_unit * (1.0 - (discount / 100.0)))
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount1,
+                                                          quantity=quantity, currency=currency, product=product,
+                                                          partner=partner,
+                                                          is_refund=move_type in ('out_refund', 'in_refund'))
+                    # print(price_unit_wo_discount, taxes_res)
+                    res['price_subtotal'] = 0.00
+                    res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
+                elif self.sale_type == 'sale':
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
+                                                          quantity=quantity, currency=currency, product=product,
+                                                          partner=partner,
+                                                          is_refund=move_type in ('out_refund', 'in_refund'))
+                    res['price_subtotal'] = taxes_res['total_excluded']
+                    res['price_total'] = taxes_res['total_included']
+                elif not self.sale_type:
+                    taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
+                                                          quantity=quantity, currency=currency, product=product,
+                                                          partner=partner,
+                                                          is_refund=move_type in ('out_refund', 'in_refund'))
+                    res['price_subtotal'] = taxes_res['total_excluded']
+                    res['price_total'] = taxes_res['total_included']
 
-                    if self.sale_type == 'bouns':
-                        price_unit_wo_discount1 = (price_unit * (1.0 - (discount / 100.0)))
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount1,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        # print(price_unit_wo_discount, taxes_res)
-                        res['price_subtotal'] = 0.00
-                        res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
-                    elif self.sale_type == 'sale':
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-                    elif not self.sale_type:
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
+            else:
+                if self.sale_type == 'bouns':
+                    res['price_total'] = res['price_subtotal'] = 0.00
 
                 else:
-                    if self.sale_type == 'bouns':
-                        res['price_total'] = res['price_subtotal'] = 0.00
+                    res['price_total'] = res['price_subtotal'] = subtotal
 
-                    else:
-                        res['price_total'] = res['price_subtotal'] = subtotal
-
-                # In case of multi currency, round before it's use for computing debit credit
-                if currency:
-                    res = {k: currency.round(v) for k, v in res.items()}
-                return res
+            # In case of multi currency, round before it's use for computing debit credit
+            if currency:
+                res = {k: currency.round(v) for k, v in res.items()}
+            return res
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -1222,7 +1118,7 @@ class Move(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.invoice_origin)])
             if order:
-                    dist = 10
+                    dist = r.dis_discount_sale
             else:
                 dist = r.partner_id.dist_discount
 
@@ -1233,7 +1129,7 @@ class Move(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.invoice_origin)])
             if order:
-                    cash = 0
+                    cash = r.cash_discount_sale
             else:
                 cash = r.partner_id.cash_discount
 
@@ -1267,152 +1163,78 @@ class Move(models.Model):
             '''
 
             move = base_line.move_id
-            if base_line.move_id.move_type == 'out_invoice':
-                if move.is_invoice(include_receipts=True):
+            if move.is_invoice(include_receipts=True):
 
-                    handle_price_include = True
-                    sign = -1 if move.is_inbound() else 1
-                    quantity = base_line.quantity
-                    is_refund = move.move_type in ('out_refund', 'in_refund')
-                    if move.partner_id.categ_id.category_type == 'store' or move.partner_id.categ_id.category_type == 'tender':
-                        if base_line.product_id and base_line.sale_type == 'sale':
-                            x = round((base_line.p_unit * (1.0 - base_line.discount / 100.0)), 3)
-                            discount_pharm = round_half_up(x, 2)
-                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
-                            discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
-                            price_unit_wo_discount = sign * discount_cash
-                        elif base_line.product_id and base_line.sale_type == 'bouns':
-                            x = round((base_line.p_unit * (1.0 - base_line.discount / 100.0)), 3)
-                            discount_pharm = round_half_up(x, 2)
-                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
-                            discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
-                            price_unit_wo_discount = sign * discount_cash
+                handle_price_include = True
+                sign = -1 if move.is_inbound() else 1
+                quantity = base_line.quantity
+                is_refund = move.move_type in ('out_refund', 'in_refund')
+                if move.partner_id.categ_id.category_type == 'store' or move.partner_id.categ_id.category_type == 'tender':
+                    if base_line.product_id and base_line.sale_type == 'sale':
+                        x = round((base_line.p_unit * (1.0 - base_line.discount / 100.0)), 3)
+                        discount_pharm = round_half_up(x, 2)
+                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
+                        price_unit_wo_discount = sign * discount_cash
+                    elif base_line.product_id and base_line.sale_type == 'bouns':
+                        x = round((base_line.p_unit * (1.0 - base_line.discount / 100.0)), 3)
+                        discount_pharm = round_half_up(x, 2)
+                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
+                        price_unit_wo_discount = sign * discount_cash
 
-                        else:
-                            price_unit_wo_discount = sign * base_line.product_id.lst_price
                     else:
-                        if base_line.product_id and base_line.sale_type == 'sale':
-                            discount_pharm = ((base_line.p_unit * (1.0 - (base_line.discount / 100.0))))
-                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
-                            discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
-                            price_unit_wo_discount = sign * discount_cash
-                        elif base_line.product_id and base_line.sale_type == 'bouns':
-                            discount_pharm = (base_line.p_unit * (1.0 - (base_line.discount / 100.0)))
-                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist()/ 100.0))
-                            discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
-                            price_unit_wo_discount = sign * discount_pharm
-
-                        else:
-                            price_unit_wo_discount = sign * base_line.product_id.lst_price
-
-
-
+                        price_unit_wo_discount = sign * base_line.product_id.lst_price
                 else:
+                    if base_line.product_id and base_line.sale_type == 'sale':
+                        discount_pharm = ((base_line.p_unit * (1.0 - (base_line.discount / 100.0))))
+                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
+                        price_unit_wo_discount = sign * discount_cash
+                    elif base_line.product_id and base_line.sale_type == 'bouns':
+                        discount_pharm = (base_line.p_unit * (1.0 - (base_line.discount / 100.0)))
+                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
+                        discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
+                        price_unit_wo_discount = sign * discount_pharm
 
-                    handle_price_include = False
-                    quantity = 1.00
-                    tax_type = base_line.tax_ids[0].type_tax_use if base_line.tax_ids else None
-                    is_refund = (tax_type == 'sale' and base_line.debit) or (
-                                tax_type == 'purchase' and base_line.credit)
-                    price_unit_wo_discount = base_line.balance
-                    # print(base_line.balance, 'balance')
+                    else:
+                        price_unit_wo_discount = sign * base_line.product_id.lst_price
 
-                balance_taxes_res = base_line.tax_ids._origin.compute_all(
-                    price_unit_wo_discount,
-                    currency=base_line.currency_id,
-                    quantity=quantity,
-                    product=base_line.product_id,
-                    partner=base_line.partner_id,
-                    is_refund=is_refund,
-                    handle_price_include=handle_price_include,
-                )
 
-                if move.move_type == 'entry':
-                    repartition_field = is_refund and 'refund_repartition_line_ids' or 'invoice_repartition_line_ids'
-                    repartition_tags = base_line.tax_ids.mapped(repartition_field).filtered(
-                        lambda x: x.repartition_type == 'base').tag_ids
-                    tags_need_inversion = (tax_type == 'sale' and not is_refund) or (
-                                tax_type == 'purchase' and is_refund)
-                    if tags_need_inversion:
-                        balance_taxes_res['base_tags'] = base_line._revert_signed_tags(repartition_tags).ids
-                        for tax_res in balance_taxes_res['taxes']:
-                            tax_res['tag_ids'] = base_line._revert_signed_tags(
-                                self.env['account.account.tag'].browse(tax_res['tag_ids'])).ids
 
-                return balance_taxes_res
             else:
-                if move.is_invoice(include_receipts=True):
 
-                    handle_price_include = True
-                    sign = -1 if move.is_inbound() else 1
-                    quantity = base_line.quantity
-                    is_refund = move.move_type in ('out_refund', 'in_refund')
-                    if move.partner_id.categ_id.category_type == 'store' or move.partner_id.categ_id.category_type == 'tender':
-                        if base_line.product_id and base_line.sale_type == 'sale':
-                            x = round((base_line.price_unit * (1.0 - base_line.discount / 100.0)), 3)
-                            discount_pharm = round_half_up(x, 2)
-                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist_out_refund() / 100.0))
-                            discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash_out_refund() / 100.0))
-                            price_unit_wo_discount = sign * discount_cash
-                        elif base_line.product_id and base_line.sale_type == 'bouns':
-                            x = round((base_line.product_id.lst_price * (1.0 - base_line.discount / 100.0)), 3)
-                            discount_pharm = round_half_up(x, 2)
-                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist_out_refund() / 100.0))
-                            discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash_out_refund ()/ 100.0))
-                            price_unit_wo_discount = sign * discount_cash
+                handle_price_include = False
+                quantity = 1.00
+                tax_type = base_line.tax_ids[0].type_tax_use if base_line.tax_ids else None
+                is_refund = (tax_type == 'sale' and base_line.debit) or (
+                        tax_type == 'purchase' and base_line.credit)
+                price_unit_wo_discount = base_line.balance
+                # print(base_line.balance, 'balance')
 
-                        else:
-                            price_unit_wo_discount = sign * base_line.price_unit
-                    else:
-                        if base_line.product_id and base_line.sale_type == 'sale':
-                            discount_pharm = ((base_line.price_unit * (1.0 - (base_line.discount / 100.0))))
-                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist_out_refund() / 100.0))
-                            discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash_out_refund() / 100.0))
-                            price_unit_wo_discount = sign * discount_cash
-                        elif base_line.product_id and base_line.sale_type == 'bouns':
-                            discount_pharm = (base_line.product_id.lst_price * (1.0 - (base_line.discount / 100.0)))
-                            discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist_out_refund() / 100.0))
-                            discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash_out_refund() / 100.0))
-                            price_unit_wo_discount = sign * discount_pharm
+            balance_taxes_res = base_line.tax_ids._origin.compute_all(
+                price_unit_wo_discount,
+                currency=base_line.currency_id,
+                quantity=quantity,
+                product=base_line.product_id,
+                partner=base_line.partner_id,
+                is_refund=is_refund,
+                handle_price_include=handle_price_include,
+            )
 
-                        else:
-                            price_unit_wo_discount = sign * base_line.price_unit
+            if move.move_type == 'entry':
+                repartition_field = is_refund and 'refund_repartition_line_ids' or 'invoice_repartition_line_ids'
+                repartition_tags = base_line.tax_ids.mapped(repartition_field).filtered(
+                    lambda x: x.repartition_type == 'base').tag_ids
+                tags_need_inversion = (tax_type == 'sale' and not is_refund) or (
+                        tax_type == 'purchase' and is_refund)
+                if tags_need_inversion:
+                    balance_taxes_res['base_tags'] = base_line._revert_signed_tags(repartition_tags).ids
+                    for tax_res in balance_taxes_res['taxes']:
+                        tax_res['tag_ids'] = base_line._revert_signed_tags(
+                            self.env['account.account.tag'].browse(tax_res['tag_ids'])).ids
 
-
-
-                else:
-
-                    handle_price_include = False
-                    quantity = 1.00
-                    tax_type = base_line.tax_ids[0].type_tax_use if base_line.tax_ids else None
-                    is_refund = (tax_type == 'sale' and base_line.debit) or (
-                                tax_type == 'purchase' and base_line.credit)
-                    price_unit_wo_discount = base_line.balance
-                    # print(base_line.balance, 'balance')
-
-                balance_taxes_res = base_line.tax_ids._origin.compute_all(
-                    price_unit_wo_discount,
-                    currency=base_line.currency_id,
-                    quantity=quantity,
-                    product=base_line.product_id,
-                    partner=base_line.partner_id,
-                    is_refund=is_refund,
-                    handle_price_include=handle_price_include,
-                )
-
-                if move.move_type == 'entry':
-                    repartition_field = is_refund and 'refund_repartition_line_ids' or 'invoice_repartition_line_ids'
-                    repartition_tags = base_line.tax_ids.mapped(repartition_field).filtered(
-                        lambda x: x.repartition_type == 'base').tag_ids
-                    tags_need_inversion = (tax_type == 'sale' and not is_refund) or (
-                                tax_type == 'purchase' and is_refund)
-                    if tags_need_inversion:
-                        balance_taxes_res['base_tags'] = base_line._revert_signed_tags(repartition_tags).ids
-                        for tax_res in balance_taxes_res['taxes']:
-                            tax_res['tag_ids'] = base_line._revert_signed_tags(
-                                self.env['account.account.tag'].browse(tax_res['tag_ids'])).ids
-
-                return balance_taxes_res
+            return balance_taxes_res
         taxes_map = {}
 
         # ==== Add tax lines ====
