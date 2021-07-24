@@ -299,7 +299,8 @@ class ORder(models.Model):
                                                     product=line.product_id, partner=line.order_id.partner_shipping_id)
                     line.update({
                         'dist_amount': price1 * ((line.order_id.dis_discount_sale or 0.0) / 100) * line.product_uom_qty,
-                        'cash_amount': price2 * ((line.order_id.cash_discount_sale or 0.0) / 100) * line.product_uom_qty,
+                        'cash_amount': price2 * (
+                                    (line.order_id.cash_discount_sale or 0.0) / 100) * line.product_uom_qty,
                         'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                         'price_total': taxes['total_included'],
                         'price_subtotal': taxes['total_excluded'],
@@ -601,18 +602,14 @@ class Invoceder(models.Model):
             if r.move_id.dis_discount_sale:
                 dist = r.move_id.dis_discount_sale
 
-
-
         return dist
 
     def compute_cash(self):
-        cash=0
+        cash = 0
         for r in self:
             if r.move_id.cash_discount_sale:
-               cash=r.move_id.cash_discount_sale
+                cash = r.move_id.cash_discount_sale
         return cash
-
-
 
     @api.model
     def _get_price_total_and_subtotal_model(self, price_unit, quantity, discount,
@@ -630,7 +627,7 @@ class Invoceder(models.Model):
         :param move_type:   The type of the move.
         :return:            A dictionary containing 'price_subtotal' & 'price_total'.
         '''
-        if move_type == "out_invoice":
+        if move_type == 'out_invoice':
             res = {}
 
             # Compute 'price_subtotal'.
@@ -687,7 +684,7 @@ class Invoceder(models.Model):
             else:
                 if product:
 
-                    price_unit_wo_discount1 = (price_unit* (1 - ((discount or 0.0) / 100.0)))
+                    price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
                     price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
                     price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
                 else:
@@ -734,108 +731,8 @@ class Invoceder(models.Model):
                     res = {k: currency.round(v) for k, v in res.items()}
                 return res
         else:
-            res = {}
-
-            # Compute 'price_subtotal'.
-            if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
-                if product:
-                    x = round((price_unit * (1.0 - discount / 100.0)), 3)
-                    price_unit_wo_discount1 = round_half_up(x, 2)
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - (partner.cash_discount or 0.0) / 100.0)
-                else:
-                    price_unit_wo_discount = price_unit
-
-
-                subtotal = quantity * price_unit_wo_discount
-
-                # Compute 'price_total'.
-                if taxes:
-
-                    if self.sale_type == 'bouns':
-
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        # print(price_unit_wo_discount, taxes_res)
-                        res['price_subtotal'] = 0.00
-                        res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
-                    elif self.sale_type == 'sale':
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-                    elif not self.sale_type:
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-
-                else:
-                    if self.sale_type == 'bouns':
-                        res['price_total'] = res['price_subtotal'] = 0.00
-
-                    else:
-                        res['price_total'] = res['price_subtotal'] = subtotal
-
-                # In case of multi currency, round before it's use for computing debit credit
-                if currency:
-                    res = {k: currency.round(v) for k, v in res.items()}
-                return res
-            else:
-                if product:
-
-                    price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
-                    price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (partner.dist_discount or 0.0) / 100.0)
-                    price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((partner.cash_discount or 0.0)) / 100.0)
-                else:
-                    price_unit_wo_discount = price_unit
-
-                subtotal = quantity * price_unit_wo_discount
-
-                # Compute 'price_total'.
-                if taxes:
-
-                    if self.sale_type == 'bouns':
-                        price_unit_wo_discount1 = (price_unit * (1.0 - (discount / 100.0)))
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount1,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        # print(price_unit_wo_discount, taxes_res)
-                        res['price_subtotal'] = 0.00
-                        res['price_total'] = taxes_res['total_included'] - taxes_res['total_excluded']
-                    elif self.sale_type == 'sale':
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-                    elif not self.sale_type:
-                        taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
-                                                              quantity=quantity, currency=currency, product=product,
-                                                              partner=partner,
-                                                              is_refund=move_type in ('out_refund', 'in_refund'))
-                        res['price_subtotal'] = taxes_res['total_excluded']
-                        res['price_total'] = taxes_res['total_included']
-
-                else:
-                    if self.sale_type == 'bouns':
-                        res['price_total'] = res['price_subtotal'] = 0.00
-
-                    else:
-                        res['price_total'] = res['price_subtotal'] = subtotal
-
-                # In case of multi currency, round before it's use for computing debit credit
-                if currency:
-                    res = {k: currency.round(v) for k, v in res.items()}
-                return res
+            raise ValidationError(
+                _("The chosen journal has a type that is not compatible with your invoice type. Sales operations should go to 'sale' journals, and purchase operations to 'purchase' ones."))
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -864,82 +761,81 @@ class Move(models.Model):
     @api.depends('posted_before', 'state', 'journal_id', 'date')
     def _compute_name(self):
         for invoice in self:
-           if self.move_type != 'entry':
-            if not self.name:
-                if  invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == False:
-                    invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
-                elif   invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == True:
-                    invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
-                elif  invoice.move_type == 'out_refund':
-                    invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
-                elif invoice.move_type == 'in_refund':
-                    invoice.name = self.env['ir.sequence'].next_by_code('refund_bill')
-                elif  invoice.move_type == 'in_invoice':
-                    invoice.name = self.env['ir.sequence'].next_by_code('in_invoice')
-           else:
+            if self.move_type != 'entry':
+                if not self.name:
+                    if invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == False:
+                        invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
+                    elif invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == True:
+                        invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
+                    elif invoice.move_type == 'out_refund':
+                        invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
+                    elif invoice.move_type == 'in_refund':
+                        invoice.name = self.env['ir.sequence'].next_by_code('refund_bill')
+                    elif invoice.move_type == 'in_invoice':
+                        invoice.name = self.env['ir.sequence'].next_by_code('in_invoice')
+            else:
 
+                def journal_key(move):
+                    return (move.journal_id, move.journal_id.refund_sequence and move.move_type)
 
-               def journal_key(move):
-                   return (move.journal_id, move.journal_id.refund_sequence and move.move_type)
+                def date_key(move):
+                    return (move.date.year, move.date.month)
 
-               def date_key(move):
-                   return (move.date.year, move.date.month)
+                grouped = defaultdict(  # key: journal_id, move_type
+                    lambda: defaultdict(  # key: first adjacent (date.year, date.month)
+                        lambda: {
+                            'records': self.env['account.move'],
+                            'format': False,
+                            'format_values': False,
+                            'reset': False
+                        }
+                    )
+                )
+                self = self.sorted(lambda m: (m.date, m.ref or '', m.id))
+                highest_name = self[0]._get_last_sequence() if self else False
 
-               grouped = defaultdict(  # key: journal_id, move_type
-                   lambda: defaultdict(  # key: first adjacent (date.year, date.month)
-                       lambda: {
-                           'records': self.env['account.move'],
-                           'format': False,
-                           'format_values': False,
-                           'reset': False
-                       }
-                   )
-               )
-               self = self.sorted(lambda m: (m.date, m.ref or '', m.id))
-               highest_name = self[0]._get_last_sequence() if self else False
+                # Group the moves by journal and month
+                for move in self:
+                    if not highest_name and move == self[0] and not move.posted_before:
+                        # In the form view, we need to compute a default sequence so that the user can edit
+                        # it. We only check the first move as an approximation (enough for new in form view)
+                        pass
+                    elif (move.name and move.name != '/') or move.state != 'posted':
+                        # Has already a name or is not posted, we don't add to a batch
+                        continue
+                    group = grouped[journal_key(move)][date_key(move)]
+                    if not group['records']:
+                        # Compute all the values needed to sequence this whole group
+                        move._set_next_sequence()
+                        group['format'], group['format_values'] = move._get_sequence_format_param(move.name)
+                        group['reset'] = move._deduce_sequence_number_reset(move.name)
+                    group['records'] += move
 
-               # Group the moves by journal and month
-               for move in self:
-                   if not highest_name and move == self[0] and not move.posted_before:
-                       # In the form view, we need to compute a default sequence so that the user can edit
-                       # it. We only check the first move as an approximation (enough for new in form view)
-                       pass
-                   elif (move.name and move.name != '/') or move.state != 'posted':
-                       # Has already a name or is not posted, we don't add to a batch
-                       continue
-                   group = grouped[journal_key(move)][date_key(move)]
-                   if not group['records']:
-                       # Compute all the values needed to sequence this whole group
-                       move._set_next_sequence()
-                       group['format'], group['format_values'] = move._get_sequence_format_param(move.name)
-                       group['reset'] = move._deduce_sequence_number_reset(move.name)
-                   group['records'] += move
+                # Fusion the groups depending on the sequence reset and the format used because `seq` is
+                # the same counter for multiple groups that might be spread in multiple months.
+                final_batches = []
+                for journal_group in grouped.values():
+                    for date_group in journal_group.values():
+                        if not final_batches or final_batches[-1]['format'] != date_group['format']:
+                            final_batches += [date_group]
+                        elif date_group['reset'] == 'never':
+                            final_batches[-1]['records'] += date_group['records']
+                        elif (
+                                date_group['reset'] == 'year'
+                                and final_batches[-1]['records'][0].date.year == date_group['records'][0].date.year
+                        ):
+                            final_batches[-1]['records'] += date_group['records']
+                        else:
+                            final_batches += [date_group]
 
-               # Fusion the groups depending on the sequence reset and the format used because `seq` is
-               # the same counter for multiple groups that might be spread in multiple months.
-               final_batches = []
-               for journal_group in grouped.values():
-                   for date_group in journal_group.values():
-                       if not final_batches or final_batches[-1]['format'] != date_group['format']:
-                           final_batches += [date_group]
-                       elif date_group['reset'] == 'never':
-                           final_batches[-1]['records'] += date_group['records']
-                       elif (
-                               date_group['reset'] == 'year'
-                               and final_batches[-1]['records'][0].date.year == date_group['records'][0].date.year
-                       ):
-                           final_batches[-1]['records'] += date_group['records']
-                       else:
-                           final_batches += [date_group]
+                # Give the name based on previously computed values
+                for batch in final_batches:
+                    for move in batch['records']:
+                        move.name = batch['format'].format(**batch['format_values'])
+                        batch['format_values']['seq'] += 1
+                    batch['records']._compute_split_sequence()
 
-               # Give the name based on previously computed values
-               for batch in final_batches:
-                   for move in batch['records']:
-                       move.name = batch['format'].format(**batch['format_values'])
-                       batch['format_values']['seq'] += 1
-                   batch['records']._compute_split_sequence()
-
-               self.filtered(lambda m: not m.name).name = '/'
+                self.filtered(lambda m: not m.name).name = '/'
 
     name = fields.Char(string='Number', copy=False, default=False, compute='_compute_name', store=True, index=True,
                        tracking=True)
@@ -1212,9 +1108,6 @@ class Move(models.Model):
             cash = r.cash_discount_sale
         return cash
 
-
-
-
     def _recompute_tax_lines(self, recompute_tax_base_amount=False):
         ''' Compute the dynamic tax lines of the journal entry.
 
@@ -1434,4 +1327,3 @@ class Move(models.Model):
 
             if in_draft_mode:
                 taxes_map_entry['tax_line'].update(taxes_map_entry['tax_line']._get_fields_onchange_balance())
-
