@@ -597,14 +597,14 @@ class Invoceder(models.Model):
     def compute_dist(self):
         dist = 0
         for r in self:
-            dist = r.move_id.dis_discount_sale
+            dist = 10
 
         return dist
 
     def compute_cash(self):
         cash=0
         for r in self:
-            cash=r.move_id.cash_discount_sale
+            cash=0
         return cash
 
 
@@ -625,7 +625,7 @@ class Invoceder(models.Model):
         :param move_type:   The type of the move.
         :return:            A dictionary containing 'price_subtotal' & 'price_total'.
         '''
-        if move_type == "out_invoice":
+        if move_type == 'out_invoice':
             res = {}
 
             # Compute 'price_subtotal'.
