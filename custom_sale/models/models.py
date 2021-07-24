@@ -1230,7 +1230,7 @@ class Move(models.Model):
                         price_unit_wo_discount = sign * discount_pharm
 
                     else:
-                        price_unit_wo_discount = sign * base_line.product_id.lst_price
+                        price_unit_wo_discount = sign * base_line.p_unit
 
 
 

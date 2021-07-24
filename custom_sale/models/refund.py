@@ -22,7 +22,7 @@ class Moveline(models.Model):
             if line.product_id:
                 if line.sale_type == 'sale':
 
-                    line.pharmacy_discount = (line.p_unit * line.quantity) *((line.discount or 0.0) / 100)
+                    line.pharmacy_discount = (line.p_unit * line.quantity) * ((line.discount or 0.0) / 100)
                 else:
 
                     line.pharmacy_discount = 0
@@ -52,10 +52,10 @@ class Move(models.Model):
             for line in order.invoice_line_ids:
                 if line:
 
-                    if line.sale_type=='sale':
-                        amount_totals=line.p_unit*line.quantity
-                    if line.sale_type=='bouns':
-                        amount_totals=line.p_unit*line.quantity
+                    if line.sale_type == 'sale':
+                        amount_totals = line.p_unit * line.quantity
+                    if line.sale_type == 'bouns':
+                        amount_totals = line.p_unit * line.quantity
                     pharmacy = round(line.pharmacy_discount, 3)
                     cash = round(line.cash_amount, 3)
                     dist = round(line.dist_amount, 3)
@@ -85,7 +85,7 @@ class Move(models.Model):
     discount_totals = fields.Monetary(string='Total Discount',
                                       compute='discount_total_amount', track_visibility='always')
     amount_totals = fields.Monetary(string='Total Amount',
-                                      compute='discount_total_amount', track_visibility='always')
+                                    compute='discount_total_amount', track_visibility='always')
 
     refund_method = fields.Selection([
 
@@ -106,12 +106,8 @@ class Move(models.Model):
                 record.invoice_line_ids.dist_discount = record.partner_id.dist_discount
                 record.invoice_line_ids.cash_discount = record.partner_id.cash_discount
 
-
-
     @api.onchange('pricelist_id', 'invoice_line_ids')
     def _onchange_price_list(self):
-
-
         for record in self:
             if record.move_type == 'out_refund' and record.pricelist_id:
                 if record.pricelist_id:
@@ -151,20 +147,17 @@ class Move(models.Model):
                                 i.discount = discount
 
                         i.update({
-                            # 'move_id': record.id,
+                            'move_id': record.id,
                             'product_id': i.product_id.id,
-                            #'pricelist': pricelist.id,
+                            # 'pricelist': pricelist.id,
                             'price_unit': i.price_unit,
+                            'p_unit': i.p_unit,
                             'name': i.name,
                             'discount': i.discount,
                             'account_id': i.account_id,
                             'product_uom_id': i.product_uom_id.id,
-                            #'sale_type': i.sale_type,
-                            #'tax_ids': [(6, 0, i.product_id.taxes_id.ids)],
-                            # 'batch_num': [(6, 0, i.batch_num.ids)],
-                            # 'batch_no': [(6, 0, i.batch_no.ids)],
+                            # 'sale_type': i.sale_type,
+                            'tax_ids': [(6, 0, i.product_id.taxes_id.ids)],
                             'lot_id': i.lot_id.id,
 
                         })
-
-
