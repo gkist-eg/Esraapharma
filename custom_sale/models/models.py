@@ -669,7 +669,7 @@ class Invoceder(models.Model):
         else:
             if product:
 
-                price_unit_wo_discount1 = (price_unit * (1 - ((discount or 0.0) / 100.0)))
+                price_unit_wo_discount1 = (self.p_unit * (1 - ((discount or 0.0) / 100.0)))
                 price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
                 price_unit_wo_discount = price_unit_wo_discount2 * (1 - ((self.compute_cash() or 0.0)) / 100.0)
             else:
