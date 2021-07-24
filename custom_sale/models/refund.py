@@ -111,6 +111,7 @@ class Move(models.Model):
     @api.onchange('pricelist_id', 'invoice_line_ids')
     def _onchange_price_list(self):
 
+
         for record in self:
             if record.move_type == 'out_refund' and record.pricelist_id:
                 if record.pricelist_id:
