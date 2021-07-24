@@ -603,9 +603,10 @@ class Invoceder(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
             if order:
-                raise ValidationError(_("x"))
+                    dist = r.dis_discount_sale
             else:
-                raise ValidationError(_("y"))
+                dist = r.partner_id.dist_discount
+
         return dist
 
     def compute_cash_out_refund(self):
@@ -613,9 +614,9 @@ class Invoceder(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.move_id.invoice_origin)])
             if order:
-                raise ValidationError(_("x"))
+                    cash = r.cash_discount_sale
             else:
-                raise ValidationError(_("y"))
+                cash = r.partner_id.cash_discount
 
         return cash
 
@@ -1220,9 +1221,9 @@ class Move(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.invoice_origin)])
             if order:
-                raise ValidationError(_("x"))
+                    dist = r.dis_discount_sale
             else:
-                raise ValidationError(_("y"))
+                dist = r.partner_id.dist_discount
 
         return dist
 
@@ -1231,9 +1232,9 @@ class Move(models.Model):
         for r in self:
             order = self.env['sale.order'].search([('name', '=', r.invoice_origin)])
             if order:
-                raise ValidationError(_("x"))
+                    cash = r.cash_discount_sale
             else:
-                raise ValidationError(_("y"))
+                cash = r.partner_id.cash_discount
 
         return cash
 
