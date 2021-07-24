@@ -233,8 +233,8 @@ class ORder(models.Model):
 
                 price1 = line.store_price
 
-                price2 = price1 * (1.0 - (line.dist_discount or 0.0) / 100.0)
-                price = price2 * (1.0 - (line.cash_discount or 0.0) / 100.0)
+                price2 = price1 * (1.0 - (line.dis_discount_sale or 0.0) / 100.0)
+                price = price2 * (1.0 - (line.cash_discount_sale or 0.0) / 100.0)
                 ##print(line.price_unit, price1, price2, price)
 
                 if line.sale_type == 'bouns':
@@ -267,8 +267,8 @@ class ORder(models.Model):
                     line.tax_id.invalidate_cache(['invoice_repartition_line_ids'], [line.tax_id.id])
             else:
                 price1 = (line.price_unit * (1.0 - (line.discount or 0.0) / 100.0))
-                price2 = price1 * (1.0 - (line.dist_discount or 0.0) / 100.0)
-                price = price2 * (1.0 - (line.cash_discount or 0.0) / 100.0)
+                price2 = price1 * (1.0 - (line.dis_discount_sale or 0.0) / 100.0)
+                price = price2 * (1.0 - (line.cash_discount_sale or 0.0) / 100.0)
                 # print(line.price_unit, price1, price2, price)
 
                 if line.sale_type == 'bouns':
@@ -288,8 +288,8 @@ class ORder(models.Model):
                     taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty,
                                                     product=line.product_id, partner=line.order_id.partner_shipping_id)
                     line.update({
-                        'dist_amount': price1 * ((line.dist_discount or 0.0) / 100) * line.product_uom_qty,
-                        'cash_amount': price2 * ((line.cash_discount or 0.0) / 100) * line.product_uom_qty,
+                        'dist_amount': price1 * ((line.dist_discount_sale or 0.0) / 100) * line.product_uom_qty,
+                        'cash_amount': price2 * ((line.cash_discount_sale or 0.0) / 100) * line.product_uom_qty,
                         'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                         'price_total': taxes['total_included'],
                         'price_subtotal': taxes['total_excluded'],
@@ -564,10 +564,10 @@ class Invoceder(models.Model):
             if rec.sale_type != 'bouns':
                 price = rec.p_unit
                 price1 = (price * (1.0 - (rec.discount or 0.0) / 100.0))
-                price2 = price1 * (1.0 - (rec.dist_discount or 0.0) / 100.0)
+                price2 = price1 * (1.0 - (rec.dis_discount_sale or 0.0) / 100.0)
                 rec.pre_amount = price * ((rec.discount or 0.0) / 100.0) * rec.quantity
-                rec.dist_amount = price1 * ((rec.dist_discount or 0.0) / 100.0) * rec.quantity
-                rec.cash_amount = price2 * ((rec.cash_discount or 0.0) / 100.0) * rec.quantity
+                rec.dist_amount = price1 * ((rec.dis_discount_sale or 0.0) / 100.0) * rec.quantity
+                rec.cash_amount = price2 * ((rec.cash_discount_sale or 0.0) / 100.0) * rec.quantity
             else:
                 rec.dist_amount = 0.0
                 rec.cash_amount = 0.0
