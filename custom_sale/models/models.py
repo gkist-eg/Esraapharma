@@ -4,7 +4,7 @@ from odoo import models, fields, api, _
 import math
 from collections import defaultdict
 
-from odoo.exceptions import UserError,ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 INTEGRITY_HASH_MOVE_FIELDS = ('date', 'journal_id', 'company_id')
 INTEGRITY_HASH_LINE_FIELDS = ('debit', 'credit', 'account_id', 'partner_id')
@@ -316,8 +316,8 @@ class ORder(models.Model):
             'product_uom_id': self.product_uom.id,
             'quantity': self.qty_to_invoice,
             'discount': self.discount,
-            'cash_discount_sale': self.cash_discount_sale,
-            'dis_discount_sale': self.dis_discount_sale,
+            'cash_discount_sale': self.order_id.cash_discount_sale,
+            'dis_discount_sale': self.order_id.dis_discount_sale,
             'store_price': self.store_price,
             'publicprice': self.publicprice,
             'price_unit': self.price_unit,
@@ -358,7 +358,7 @@ class Invoceder(models.Model):
             if line.product_id:
                 line.publicprice = line.product_id.pubprice
 
-    @api.depends('price_unit', 'product_id', 'discount','sale_type')
+    @api.depends('price_unit', 'product_id', 'discount', 'sale_type')
     def onchange_p_price(self):
         for line in self:
             if line.product_id and line.sale_type:
@@ -563,10 +563,10 @@ class Invoceder(models.Model):
             if rec.sale_type != 'bouns':
                 price = rec.p_unit
                 price1 = (price * (1.0 - (rec.discount or 0.0) / 100.0))
-                price2 = price1 * (1.0 - (rec.dist_discount or 0.0) / 100.0)
+                price2 = price1 * (1.0 - (rec.dis_discount_sale or 0.0) / 100.0)
                 rec.pre_amount = price * ((rec.discount or 0.0) / 100.0) * rec.quantity
-                rec.dist_amount = price1 * ((rec.dist_discount or 0.0) / 100.0) * rec.quantity
-                rec.cash_amount = price2 * ((rec.cash_discount or 0.0) / 100.0) * rec.quantity
+                rec.dist_amount = price1 * ((rec.dis_discount_sale or 0.0) / 100.0) * rec.quantity
+                rec.cash_amount = price2 * ((rec.cash_discount_sale or 0.0) / 100.0) * rec.quantity
             else:
                 rec.dist_amount = 0.0
                 rec.cash_amount = 0.0
@@ -591,10 +591,9 @@ class Invoceder(models.Model):
         return dist
 
     def compute_cash(self):
-        cash=0
+        cash = 0
         for r in self:
-
-            cash=r.cash_discount_sale
+            cash = r.cash_discount_sale
         return cash
 
     @api.model
@@ -619,7 +618,7 @@ class Invoceder(models.Model):
 
         if partner.categ_id.category_type == 'store' or partner.categ_id.category_type == 'tender':
             if product:
-                x = round((price_unit * (1.0 - discount / 100.0)), 3)
+                x = round((self.p_unit * (1.0 - discount / 100.0)), 3)
                 price_unit_wo_discount1 = round_half_up(x, 2)
                 price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
                 price_unit_wo_discount = price_unit_wo_discount2 * (1 - (self.compute_cash() or 0.0) / 100.0)
@@ -632,7 +631,6 @@ class Invoceder(models.Model):
             if taxes:
 
                 if self.sale_type == 'bouns':
-
 
                     taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
                                                           quantity=quantity, currency=currency, product=product,
@@ -669,7 +667,6 @@ class Invoceder(models.Model):
             return res
         else:
             if product:
-
 
                 price_unit_wo_discount1 = (self.p_unit * (1 - ((discount or 0.0) / 100.0)))
                 price_unit_wo_discount2 = price_unit_wo_discount1 * (1 - (self.compute_dist() or 0.0) / 100.0)
@@ -744,157 +741,159 @@ class Move(models.Model):
 
     @api.depends('posted_before', 'state', 'journal_id', 'date')
     def _compute_name(self):
-      if self.move_type != 'entry':
-        for invoice in self:
-            if not self.name:
-                if self.move_type != 'entry' and invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == False:
-                    invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
-                elif self.move_type != 'entry' and invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == True:
-                    invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
-                elif self.move_type != 'entry' and invoice.move_type == 'out_refund':
-                    invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
-                elif self.move_type != 'entry' and invoice.move_type == 'in_refund':
-                    invoice.name = self.env['ir.sequence'].next_by_code('refund_bill')
-                elif self.move_type != 'entry' and invoice.move_type == 'in_invoice':
-                    invoice.name = self.env['ir.sequence'].next_by_code('in_invoice')
+        if self.move_type != 'entry':
+            for invoice in self:
+                if not self.name:
+                    if self.move_type != 'entry' and invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == False:
+                        invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice')
+                    elif self.move_type != 'entry' and invoice.move_type == 'out_invoice' and invoice.warehouse_id.sale_store == True:
+                        invoice.name = self.env['ir.sequence'].next_by_code('customer_invoice_distributor')
+                    elif self.move_type != 'entry' and invoice.move_type == 'out_refund':
+                        invoice.name = self.env['ir.sequence'].next_by_code('refund_invoice')
+                    elif self.move_type != 'entry' and invoice.move_type == 'in_refund':
+                        invoice.name = self.env['ir.sequence'].next_by_code('refund_bill')
+                    elif self.move_type != 'entry' and invoice.move_type == 'in_invoice':
+                        invoice.name = self.env['ir.sequence'].next_by_code('in_invoice')
 
-                elif self.move_type == 'entry':
+                    elif self.move_type == 'entry':
 
-                    def journal_key(move):
-                        return (move.journal_id, move.journal_id.refund_sequence and move.move_type)
+                        def journal_key(move):
+                            return (move.journal_id, move.journal_id.refund_sequence and move.move_type)
 
-                    def date_key(move):
-                        return (move.date.year, move.date.month)
+                        def date_key(move):
+                            return (move.date.year, move.date.month)
 
-                    grouped = defaultdict(  # key: journal_id, move_type
-                        lambda: defaultdict(  # key: first adjacent (date.year, date.month)
-                            lambda: {
-                                'records': self.env['account.move'],
-                                'format': False,
-                                'format_values': False,
-                                'reset': False
-                            }
+                        grouped = defaultdict(  # key: journal_id, move_type
+                            lambda: defaultdict(  # key: first adjacent (date.year, date.month)
+                                lambda: {
+                                    'records': self.env['account.move'],
+                                    'format': False,
+                                    'format_values': False,
+                                    'reset': False
+                                }
+                            )
                         )
-                    )
-                    self = self.sorted(lambda m: (m.date, m.ref or '', m.id))
-                    highest_name = self[0]._get_last_sequence() if self else False
+                        self = self.sorted(lambda m: (m.date, m.ref or '', m.id))
+                        highest_name = self[0]._get_last_sequence() if self else False
 
-                    # Group the moves by journal and month
-                    for move in self:
-                        if not highest_name and move == self[0] and not move.posted_before:
-                            # In the form view, we need to compute a default sequence so that the user can edit
-                            # it. We only check the first move as an approximation (enough for new in form view)
-                            pass
-                        elif (move.name and move.name != '/') or move.state != 'posted':
-                            # Has already a name or is not posted, we don't add to a batch
-                            continue
-                        group = grouped[journal_key(move)][date_key(move)]
-                        if not group['records']:
-                            # Compute all the values needed to sequence this whole group
-                            move._set_next_sequence()
-                            group['format'], group['format_values'] = move._get_sequence_format_param(move.name)
-                            group['reset'] = move._deduce_sequence_number_reset(move.name)
-                        group['records'] += move
+                        # Group the moves by journal and month
+                        for move in self:
+                            if not highest_name and move == self[0] and not move.posted_before:
+                                # In the form view, we need to compute a default sequence so that the user can edit
+                                # it. We only check the first move as an approximation (enough for new in form view)
+                                pass
+                            elif (move.name and move.name != '/') or move.state != 'posted':
+                                # Has already a name or is not posted, we don't add to a batch
+                                continue
+                            group = grouped[journal_key(move)][date_key(move)]
+                            if not group['records']:
+                                # Compute all the values needed to sequence this whole group
+                                move._set_next_sequence()
+                                group['format'], group['format_values'] = move._get_sequence_format_param(move.name)
+                                group['reset'] = move._deduce_sequence_number_reset(move.name)
+                            group['records'] += move
 
-                    # Fusion the groups depending on the sequence reset and the format used because `seq` is
-                    # the same counter for multiple groups that might be spread in multiple months.
-                    final_batches = []
-                    for journal_group in grouped.values():
-                        for date_group in journal_group.values():
-                            if not final_batches or final_batches[-1]['format'] != date_group['format']:
-                                final_batches += [date_group]
-                            elif date_group['reset'] == 'never':
-                                final_batches[-1]['records'] += date_group['records']
-                            elif (
-                                    date_group['reset'] == 'year'
-                                    and final_batches[-1]['records'][0].date.year == date_group['records'][0].date.year
-                            ):
-                                final_batches[-1]['records'] += date_group['records']
-                            else:
-                                final_batches += [date_group]
+                        # Fusion the groups depending on the sequence reset and the format used because `seq` is
+                        # the same counter for multiple groups that might be spread in multiple months.
+                        final_batches = []
+                        for journal_group in grouped.values():
+                            for date_group in journal_group.values():
+                                if not final_batches or final_batches[-1]['format'] != date_group['format']:
+                                    final_batches += [date_group]
+                                elif date_group['reset'] == 'never':
+                                    final_batches[-1]['records'] += date_group['records']
+                                elif (
+                                        date_group['reset'] == 'year'
+                                        and final_batches[-1]['records'][0].date.year == date_group['records'][
+                                            0].date.year
+                                ):
+                                    final_batches[-1]['records'] += date_group['records']
+                                else:
+                                    final_batches += [date_group]
 
-                    # Give the name based on previously computed values
-                    for batch in final_batches:
-                        for move in batch['records']:
-                            move.name = batch['format'].format(**batch['format_values'])
-                            batch['format_values']['seq'] += 1
-                        batch['records']._compute_split_sequence()
+                        # Give the name based on previously computed values
+                        for batch in final_batches:
+                            for move in batch['records']:
+                                move.name = batch['format'].format(**batch['format_values'])
+                                batch['format_values']['seq'] += 1
+                            batch['records']._compute_split_sequence()
 
-                    self.filtered(lambda m: not m.name).name = '/'
-      else:
-          def journal_key(move):
-              return (move.journal_id, move.journal_id.refund_sequence and move.move_type)
+                        self.filtered(lambda m: not m.name).name = '/'
+        else:
+            def journal_key(move):
+                return (move.journal_id, move.journal_id.refund_sequence and move.move_type)
 
-          def date_key(move):
-              return (move.date.year, move.date.month)
+            def date_key(move):
+                return (move.date.year, move.date.month)
 
-          grouped = defaultdict(  # key: journal_id, move_type
-              lambda: defaultdict(  # key: first adjacent (date.year, date.month)
-                  lambda: {
-                      'records': self.env['account.move'],
-                      'format': False,
-                      'format_values': False,
-                      'reset': False
-                  }
-              )
-          )
-          self = self.sorted(lambda m: (m.date, m.ref or '', m.id))
-          highest_name = self[0]._get_last_sequence() if self else False
+            grouped = defaultdict(  # key: journal_id, move_type
+                lambda: defaultdict(  # key: first adjacent (date.year, date.month)
+                    lambda: {
+                        'records': self.env['account.move'],
+                        'format': False,
+                        'format_values': False,
+                        'reset': False
+                    }
+                )
+            )
+            self = self.sorted(lambda m: (m.date, m.ref or '', m.id))
+            highest_name = self[0]._get_last_sequence() if self else False
 
-          # Group the moves by journal and month
-          for move in self:
-              if not highest_name and move == self[0] and not move.posted_before:
-                  # In the form view, we need to compute a default sequence so that the user can edit
-                  # it. We only check the first move as an approximation (enough for new in form view)
-                  pass
-              elif (move.name and move.name != '/') or move.state != 'posted':
-                  try:
-                      if not move.posted_before:
-                          move._constrains_date_sequence()
-                      # Has already a name or is not posted, we don't add to a batch
-                      continue
-                  except ValidationError:
-                      # Has never been posted and the name doesn't match the date: recompute it
-                      pass
-              group = grouped[journal_key(move)][date_key(move)]
-              if not group['records']:
-                  # Compute all the values needed to sequence this whole group
-                  move._set_next_sequence()
-                  group['format'], group['format_values'] = move._get_sequence_format_param(move.name)
-                  group['reset'] = move._deduce_sequence_number_reset(move.name)
-              group['records'] += move
+            # Group the moves by journal and month
+            for move in self:
+                if not highest_name and move == self[0] and not move.posted_before:
+                    # In the form view, we need to compute a default sequence so that the user can edit
+                    # it. We only check the first move as an approximation (enough for new in form view)
+                    pass
+                elif (move.name and move.name != '/') or move.state != 'posted':
+                    try:
+                        if not move.posted_before:
+                            move._constrains_date_sequence()
+                        # Has already a name or is not posted, we don't add to a batch
+                        continue
+                    except ValidationError:
+                        # Has never been posted and the name doesn't match the date: recompute it
+                        pass
+                group = grouped[journal_key(move)][date_key(move)]
+                if not group['records']:
+                    # Compute all the values needed to sequence this whole group
+                    move._set_next_sequence()
+                    group['format'], group['format_values'] = move._get_sequence_format_param(move.name)
+                    group['reset'] = move._deduce_sequence_number_reset(move.name)
+                group['records'] += move
 
-          # Fusion the groups depending on the sequence reset and the format used because `seq` is
-          # the same counter for multiple groups that might be spread in multiple months.
-          final_batches = []
-          for journal_group in grouped.values():
-              journal_group_changed = True
-              for date_group in journal_group.values():
-                  if (
-                          journal_group_changed
-                          or final_batches[-1]['format'] != date_group['format']
-                          or dict(final_batches[-1]['format_values'], seq=0) != dict(date_group['format_values'], seq=0)
-                  ):
-                      final_batches += [date_group]
-                      journal_group_changed = False
-                  elif date_group['reset'] == 'never':
-                      final_batches[-1]['records'] += date_group['records']
-                  elif (
-                          date_group['reset'] == 'year'
-                          and final_batches[-1]['records'][0].date.year == date_group['records'][0].date.year
-                  ):
-                      final_batches[-1]['records'] += date_group['records']
-                  else:
-                      final_batches += [date_group]
+            # Fusion the groups depending on the sequence reset and the format used because `seq` is
+            # the same counter for multiple groups that might be spread in multiple months.
+            final_batches = []
+            for journal_group in grouped.values():
+                journal_group_changed = True
+                for date_group in journal_group.values():
+                    if (
+                            journal_group_changed
+                            or final_batches[-1]['format'] != date_group['format']
+                            or dict(final_batches[-1]['format_values'], seq=0) != dict(date_group['format_values'],
+                                                                                       seq=0)
+                    ):
+                        final_batches += [date_group]
+                        journal_group_changed = False
+                    elif date_group['reset'] == 'never':
+                        final_batches[-1]['records'] += date_group['records']
+                    elif (
+                            date_group['reset'] == 'year'
+                            and final_batches[-1]['records'][0].date.year == date_group['records'][0].date.year
+                    ):
+                        final_batches[-1]['records'] += date_group['records']
+                    else:
+                        final_batches += [date_group]
 
-          # Give the name based on previously computed values
-          for batch in final_batches:
-              for move in batch['records']:
-                  move.name = batch['format'].format(**batch['format_values'])
-                  batch['format_values']['seq'] += 1
-              batch['records']._compute_split_sequence()
+            # Give the name based on previously computed values
+            for batch in final_batches:
+                for move in batch['records']:
+                    move.name = batch['format'].format(**batch['format_values'])
+                    batch['format_values']['seq'] += 1
+                batch['records']._compute_split_sequence()
 
-          self.filtered(lambda m: not m.name).name = '/'
+            self.filtered(lambda m: not m.name).name = '/'
 
     name = fields.Char(string='Number', copy=False, default=False, compute='_compute_name', store=True, index=True,
                        tracking=True)
@@ -1206,14 +1205,14 @@ class Move(models.Model):
                         x = round((base_line.p_unit * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
                         discount_dist = discount_pharm * (1.0 - (move.dis_discount_sale / 100.0))
-                        discount_cash = discount_dist * (1.0 - (move.cash_discount_sale  / 100.0))
+                        discount_cash = discount_dist * (1.0 - (move.cash_discount_sale / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
                         x = round((base_line.p_unit * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
 
-                        discount_dist = discount_pharm * (1.0 - (move.dis_discount_sale  / 100.0))
-                        discount_cash = discount_dist * (1.0 - (move.cash_discount_sale  / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (move.dis_discount_sale / 100.0))
+                        discount_cash = discount_dist * (1.0 - (move.cash_discount_sale / 100.0))
                         price_unit_wo_discount = sign * discount_cash
 
                     else:
@@ -1221,13 +1220,13 @@ class Move(models.Model):
                 else:
                     if base_line.product_id and base_line.sale_type == 'sale':
                         discount_pharm = ((base_line.p_unit * (1.0 - (base_line.discount / 100.0))))
-                        discount_dist = discount_pharm * (1.0 - (move.dis_discount_sale  / 100.0))
-                        discount_cash = discount_dist * (1.0 - (move.cash_discount_sale  / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (move.dis_discount_sale / 100.0))
+                        discount_cash = discount_dist * (1.0 - (move.cash_discount_sale / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
                         discount_pharm = (base_line.p_unit * (1.0 - (base_line.discount / 100.0)))
-                        discount_dist = discount_pharm * (1.0 - (move.dis_discount_sale  / 100.0))
-                        discount_cash = discount_dist * (1.0 - (move.cash_discount_sale  / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (move.dis_discount_sale / 100.0))
+                        discount_cash = discount_dist * (1.0 - (move.cash_discount_sale / 100.0))
                         price_unit_wo_discount = sign * discount_pharm
 
                     else:

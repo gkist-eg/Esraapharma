@@ -13,7 +13,7 @@ class Moveline(models.Model):
     def _onchange_price_subtotals(self):
         self._onchange_price_subtotal()
 
-    @api.depends('quantity', 'discount', 'price_unit', 'tax_ids', 'cash_discount', 'dist_discount', 'sale_type')
+    @api.depends('quantity', 'discount', 'price_unit', 'p_unit','tax_ids', 'cash_discount', 'dist_discount', 'sale_type')
     def _compute_pharmacy(self):
         """
         Compute the amounts of the SO line.
