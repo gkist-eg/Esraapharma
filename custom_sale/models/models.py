@@ -1205,33 +1205,33 @@ class Move(models.Model):
                     if base_line.product_id and base_line.sale_type == 'sale':
                         x = round((base_line.p_unit * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (move.dis_discount_sale / 100.0))
+                        discount_cash = discount_dist * (1.0 - (move.cash_discount_sale  / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
                         x = round((base_line.p_unit * (1.0 - base_line.discount / 100.0)), 3)
                         discount_pharm = round_half_up(x, 2)
 
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
+                        discount_dist = discount_pharm * (1.0 - (move.dis_discount_sale  / 100.0))
+                        discount_cash = discount_dist * (1.0 - (move.cash_discount_sale  / 100.0))
                         price_unit_wo_discount = sign * discount_cash
 
                     else:
                         price_unit_wo_discount = sign * base_line.product_id.lst_price
                 else:
                     if base_line.product_id and base_line.sale_type == 'sale':
-                        discount_pharm = ((base_line.p_unit * (1.0 - (base_line.discount / 100.0))))
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
+                        discount_pharm = (base_line.price_unit * (1.0 - (base_line.discount / 100.0)))
+                        discount_dist = discount_pharm * (1.0 - (move.dis_discount_sale  / 100.0))
+                        discount_cash = discount_dist * (1.0 - (move.cash_discount_sale  / 100.0))
                         price_unit_wo_discount = sign * discount_cash
                     elif base_line.product_id and base_line.sale_type == 'bouns':
-                        discount_pharm = (base_line.p_unit * (1.0 - (base_line.discount / 100.0)))
-                        discount_dist = discount_pharm * (1.0 - (base_line.move_id.compute_dist() / 100.0))
-                        discount_cash = discount_dist * (1.0 - (base_line.move_id.compute_cash() / 100.0))
+                        discount_pharm = (base_line.price_unit * (1.0 - (base_line.discount / 100.0)))
+                        discount_dist = discount_pharm * (1.0 - (move.dis_discount_sale  / 100.0))
+                        discount_cash = discount_dist * (1.0 - (move.cash_discount_sale  / 100.0))
                         price_unit_wo_discount = sign * discount_pharm
 
                     else:
-                        price_unit_wo_discount = sign * base_line.p_unit
+                        price_unit_wo_discount = sign * base_line.price_unit
 
 
 
