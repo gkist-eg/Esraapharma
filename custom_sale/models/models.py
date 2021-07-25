@@ -718,6 +718,7 @@ class Invoceder(models.Model):
             return res
 
 
+
     @api.model_create_multi
     def create(self, vals_list):
 
