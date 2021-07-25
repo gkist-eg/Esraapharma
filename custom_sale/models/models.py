@@ -633,6 +633,7 @@ class Invoceder(models.Model):
 
                 if self.sale_type == 'bouns':
 
+
                     taxes_res = taxes._origin.compute_all(price_unit_wo_discount,
                                                           quantity=quantity, currency=currency, product=product,
                                                           partner=partner,
