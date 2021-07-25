@@ -722,6 +722,7 @@ class Invoceder(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
 
+
         # OVERRIDE
         ACCOUNTING_FIELDS = ('debit', 'credit', 'amount_currency', 'sale_type')
         BUSINESS_FIELDS = ('price_unit', 'quantity', 'discount', 'tax_ids', 'sale_type')
