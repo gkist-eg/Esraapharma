@@ -682,7 +682,7 @@ class Invoceder(models.Model):
             if taxes:
 
                 if self.sale_type == 'bouns':
-                    price_unit_wo_discount1 = (price_unit * (1.0 - (discount / 100.0)))
+                    price_unit_wo_discount1 = (self.p_unit * (1.0 - (discount / 100.0)))
                     taxes_res = taxes._origin.compute_all(price_unit_wo_discount1,
                                                           quantity=quantity, currency=currency, product=product,
                                                           partner=partner,
