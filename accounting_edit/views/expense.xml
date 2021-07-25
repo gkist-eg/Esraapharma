@@ -10,7 +10,7 @@
             </field>
             <xpath expr="//field[@name='unit_amount']"
                        position="attributes">
-                    <attribute name="readonly">[('state','in',('paid','refused'))]</attribute>
+                    <attribute name="atrrs">{'readonly':[('state','in',('paid','refused'))]}</attribute>
 
                 </xpath>
 
