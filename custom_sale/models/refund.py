@@ -22,7 +22,7 @@ class Moveline(models.Model):
             if line.product_id:
                 if line.sale_type == 'sale':
 
-                    line.pharmacy_discount = (line.p_unit * line.quantity) * ((line.discount or 0.0) / 100)
+                    line.pharmacy_discount = (line.price_unit * line.quantity) *((line.discount or 0.0) / 100)
                 else:
 
                     line.pharmacy_discount = 0
@@ -52,10 +52,10 @@ class Move(models.Model):
             for line in order.invoice_line_ids:
                 if line:
 
-                    if line.sale_type == 'sale':
-                        amount_totals = line.p_unit * line.quantity
-                    if line.sale_type == 'bouns':
-                        amount_totals = line.p_unit * line.quantity
+                    if line.sale_type=='sale':
+                        amount_totals=line.price_unit*line.quantity
+                    if line.sale_type=='bouns':
+                        amount_totals=line.price_unit*line.quantity
                     pharmacy = round(line.pharmacy_discount, 3)
                     cash = round(line.cash_amount, 3)
                     dist = round(line.dist_amount, 3)
@@ -85,7 +85,7 @@ class Move(models.Model):
     discount_totals = fields.Monetary(string='Total Discount',
                                       compute='discount_total_amount', track_visibility='always')
     amount_totals = fields.Monetary(string='Total Amount',
-                                    compute='discount_total_amount', track_visibility='always')
+                                      compute='discount_total_amount', track_visibility='always')
 
     refund_method = fields.Selection([
 
@@ -106,10 +106,68 @@ class Move(models.Model):
                 record.invoice_line_ids.dist_discount = record.partner_id.dist_discount
                 record.invoice_line_ids.cash_discount = record.partner_id.cash_discount
 
+    """@api.onchange('invoice_number', 'invoice_line_ids')
+    def _onchange_typ(self):
+        for record in self:
+            f = 0
+            if record.invoice_number:
+                data = []
+                res = []
+                for l in record.invoice_number.invoice_line_ids:
+                    res.append(l.product_id)
+                for line in record.invoice_line_ids:
+                    if line.product_id not in res:
+                        f += 1
+                        raise UserError(_(line.product_id.name + ' not in this invoice'))
+                    else:
+                        record.invoice_number = record.invoice_number
+                if f == 0:
+                    record.dist_discount = record.invoice_number.dist_discount
+                    record.cash_discount = record.invoice_number.cash_discount
+                    record.invoice_line_ids.discount = record.invoice_number.invoice_line_ids.discount
+
+                   # record.credit = record.partner_id.credit
+                    #record.office = record.invoice_number.office
+                    record.delivery_rep = record.invoice_number.delivery_rep
+                    record.sales_rep = record.invoice_number.sales_rep
+                    record.supervisor = record.invoice_number.supervisor
+                    record.pricelist_id = record.invoice_number.pricelist_id
+                    #record.fr = record.invoice_number.fr
+                    #record.category_type = record.invoice_number.category_type
+                    for line in record.invoice_line_ids:
+                        for l in record.invoice_number.invoice_line_ids:
+                            if l.product_id == line.product_id:
+                                line.price_unit = l.price_unit
+                                #line.bonus_price = l.bonus_price
+                                line.tax_ids = l.tax_ids
+                                line.discount = l.discount
+                                if line.quantity > l.quantity:
+                                  raise UserError(_('Quantity of ' + line.product_id.name + ' not exist in this invoice'))
+
+                        data.append((0,0,{
+                            'move_id': record.id,
+                            'product_id': line.product_id.id,
+                           # 'bonus_price': line.bonus_price,
+                            'tax_ids': [(6, 0, line.tax_ids.ids)],
+                            'price_unit': line.price_unit,
+                            'discount': line.discount,
+                            'name': line.name,
+                            'account_id': line.account_id,
+                            'quantity': line.quantity,
+                            #'uom_id': line.uom_id.id,
+                            #'batch_num': [(6, 0, line.batch_num.ids)],
+                            #'batch_no': [(6, 0, line.batch_no.ids)],
+                           # 'lot_id': line.lot_id.id,
+                            #'unit_tax': line.unit_tax,
+
+                        }))
+                    record.write({'invoice_line_ids': data})"""
+
     @api.onchange('pricelist_id', 'invoice_line_ids')
     def _onchange_price_list(self):
+
         for record in self:
-            if record.move_type == 'out_refund' and record.pricelist_id:
+            if record.move_type == 'out_refund':
                 if record.pricelist_id:
                     for i in record.invoice_line_ids:
                         partner = record.partner_id
@@ -147,17 +205,18 @@ class Move(models.Model):
                                 i.discount = discount
 
                         i.update({
-                            'move_id': record.id,
+                            # 'move_id': record.id,
                             'product_id': i.product_id.id,
-                            # 'pricelist': pricelist.id,
+                            #'pricelist': pricelist.id,
                             'price_unit': i.price_unit,
-                            'p_unit': i.p_unit,
                             'name': i.name,
                             'discount': i.discount,
                             'account_id': i.account_id,
                             'product_uom_id': i.product_uom_id.id,
-                            # 'sale_type': i.sale_type,
-                            'tax_ids': [(6, 0, i.product_id.taxes_id.ids)],
+                            #'sale_type': i.sale_type,
+                            #'tax_ids': [(6, 0, i.product_id.taxes_id.ids)],
+                            # 'batch_num': [(6, 0, i.batch_num.ids)],
+                            # 'batch_no': [(6, 0, i.batch_no.ids)],
                             'lot_id': i.lot_id.id,
 
                         })

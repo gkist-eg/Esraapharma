@@ -615,9 +615,10 @@
                 <xpath expr="//field[@name='invoice_line_ids']//tree/field[@name='price_unit']" position="after">
                     <field name="publicprice" readonly="True"
                            attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
-                    <field name="p_unit" readonly="1" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
+<!--                    <field name="p_unit" readonly="1" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>-->
                     <field name="store_price" readonly="1" attrs="{'column_invisible':[('parent.move_type','not in',('out_invoice','out_refund'))]}"/>
                     <field name="list_price" invisible="1"/>
+                    <field name="invoice_origin" invisible="0"/>
                     <field name="move_type" invisible="1"/>
                     <field name="batch_no" invisible="1"/>
 
