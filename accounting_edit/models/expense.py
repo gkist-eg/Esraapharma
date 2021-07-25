@@ -8,19 +8,9 @@ class ExpenseEdit(models.Model):
     catg_id = fields.Many2one('product.category', store=True, string='Expense Category',
                               domain="[('is_expense','=',True)]", )
 
-    product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True, tracking=True,
-                                 states={'draft': [('readonly', False)], 'reported': [('readonly', False)],
-                                         'refused': [('readonly', False)]},
-                                 domain="[('can_be_expensed', '=', True),('categ_id', 'in', [catg_id]), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-                                 ondelete='restrict')
-
-    @api.onchange('catg_id')
-    def _onchange_catg_id(self):
-        if  self.catg_id:
-
-            self.product_id = False
-
-
+    unit_amount = fields.Float("Unit Price", compute='_compute_from_product_id_company_id', store=True, required=True, copy=True,
+        states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)],'approved': [('readonly', False)]}, digits='Product Price')
+    product_id = fields.Many2one('product.product', string='Product', readonly=True, tracking=True, states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'approved': [('readonly', False)], 'refused': [('readonly', False)]}, domain="[('can_be_expensed', '=', True), '|', ('company_id', '=', False), ('company_id', '=', company_id)]", ondelete='restrict')
 
 
 
