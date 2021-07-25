@@ -586,7 +586,7 @@ class Invoceder(models.Model):
     def compute_dist(self):
         dist = 0
         for r in self:
-            dist = r.dis_discount_sale
+            dist = r.move_id.dis_discount_sale
 
         return dist
 
@@ -594,7 +594,7 @@ class Invoceder(models.Model):
         cash=0
         for r in self:
 
-            cash=r.cash_discount_sale
+            cash=r.move_id.cash_discount_sale
         return cash
 
     @api.model
