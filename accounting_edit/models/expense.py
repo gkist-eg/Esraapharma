@@ -5,7 +5,7 @@ from odoo.osv import expression
 
 class ExpenseEdit(models.Model):
     _inherit = 'hr.expense'
-    catg_id = fields.Many2one('product.category', store=True, string='Expense Category', required=True,
+    catg_id = fields.Many2one('product.category', store=True, string='Expense Category',
                               domain="[('is_expense','=',True)]", )
 
     product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True, tracking=True,
