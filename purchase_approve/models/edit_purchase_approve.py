@@ -59,8 +59,8 @@ class EditPurchaseOrder(models.Model):
     state = fields.Selection([
         ('draft', 'RFQ'),
         ('sent', 'RFQ Sent'),
-        ('confirm', 'confirmed'),
-        ('leader_approved', 'Leaderteam Approved'),
+        ('confirm', 'Confirmed'),
+        ('leader_approved', 'TeamLeader Approved'),
         ('maneger_approved', 'Manager Approved'),
         ('purchase', 'Purchase Order'),
         ('done', 'Locked'),
