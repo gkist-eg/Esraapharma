@@ -366,6 +366,17 @@
                                                     <th class="text-center">توقيع</th>
                                                 </tr>
                                             </thead>
+                                                 <tbody style="font-size:11px">
+                        <tr class="border-black" >
+                            <td />
+                            <td />
+                            <td class="col-xs-3">
+                                <span t-field="request.env.user.segimage"
+                                                       t-field-options="{'widget': 'image'}"
+                                                       style="height: 17px; width: 17px;"/>
+                            </td>
+                        </tr>
+                    </tbody>
                                         </table>
                                     </div>
                                 </t>
@@ -645,6 +656,17 @@
                                                     </tr>
                                                 </thead>
 
+     <tbody style="font-size:11px">
+                        <tr class="border-black" >
+                            <td />
+                            <td />
+                            <td class="col-xs-3">
+                                <span t-field="request.env.user.segimage"
+                                                       t-field-options="{'widget': 'image'}"
+                                                       style="height: 17px; width: 17px;"/>
+                            </td>
+                        </tr>
+                    </tbody>
                                             </table>
                                         </div>
                                     </t>
@@ -926,6 +948,17 @@
 
                                                     </tr>
                                                 </thead>
+                                                 <tbody style="font-size:11px">
+                        <tr class="border-black" >
+                            <td />
+                            <td />
+                            <td class="col-xs-3">
+                                <span t-field="request.env.user.segimage"
+                                                       t-field-options="{'widget': 'image'}"
+                                                       style="height: 17px; width: 17px;"/>
+                            </td>
+                        </tr>
+                    </tbody>
 
                                             </table>
                                         </div>
