@@ -366,17 +366,14 @@
                                                     <th class="text-center">توقيع</th>
                                                 </tr>
                                             </thead>
-                                                 <tbody style="font-size:11px">
-                        <tr class="border-black" >
-                            <td />
-                            <td />
+                                                 <th>
+
+
                             <td class="col-xs-3">
-                                <span t-field="request.env.user.segimage"
-                                                       t-field-options="{'widget': 'image'}"
-                                                       style="height: 17px; width: 17px;"/>
+                                  <img class="pos-receipt-logo" t-att-src="image_data_uri(request.env.user.segimage)"
+                                             style="max-height: 180px"/>
                             </td>
-                        </tr>
-                    </tbody>
+                    </th>
                                         </table>
                                     </div>
                                 </t>
@@ -656,18 +653,14 @@
                                                     </tr>
                                                 </thead>
 
-     <tbody style="font-size:11px">
-                        <tr class="border-black" >
-                            <td />
-                            <td />
+    <th>
+
+
                             <td class="col-xs-3">
-                                <span t-field="request.env.user.segimage"
-                                                       t-field-options="{'widget': 'image'}"
-                                                       style="height: 17px; width: 17px;"/>
+                                  <img class="pos-receipt-logo" t-att-src="image_data_uri(request.env.user.segimage)"
+                                             style="max-height: 180px"/>
                             </td>
-                        </tr>
-                    </tbody>
-                                            </table>
+                    </th>           </table>
                                         </div>
                                     </t>
                                 </t>
@@ -948,17 +941,14 @@
 
                                                     </tr>
                                                 </thead>
-                                                 <tbody style="font-size:11px">
-                        <tr class="border-black" >
-                            <td />
-                            <td />
+                                                <th>
+
+
                             <td class="col-xs-3">
-                                <span t-field="request.env.user.segimage"
-                                                       t-field-options="{'widget': 'image'}"
-                                                       style="height: 17px; width: 17px;"/>
+                                  <img class="pos-receipt-logo" t-att-src="image_data_uri(request.env.user.segimage)"
+                                             style="max-height: 180px"/>
                             </td>
-                        </tr>
-                    </tbody>
+                    </th>
 
                                             </table>
                                         </div>
