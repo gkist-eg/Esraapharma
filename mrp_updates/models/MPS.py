@@ -35,6 +35,7 @@ class MrpProductionSchedule(models.Model):
             ('date', '>=', date_start),
             ('date', '<=', date_stop)
         ]
+
     def _get_indirect_demand_tree(self):
         """ Get the tree architecture for all the BoM and BoM line that are
         related to production schedules in self. The purpose of the tree:
@@ -97,6 +98,32 @@ class MrpProductionSchedule(models.Model):
 
         return [tree for tree in indirect_demand_trees.values()]
 
+    def _get_replenish_qty(self, after_forecast_qty):
+        """ Modify the quantity to replenish depending the min/max and targeted
+        quantity for safety stock.
+
+        param after_forecast_qty: The quantity to replenish in order to reach a
+        safety stock of 0.
+        return: quantity to replenish
+        rtype: float
+        """
+        bom_f = self.env['mrp.bom']._bom_find(
+            product=self.product_id, company_id=self.company_id.id,
+            bom_type='normal')
+
+        optimal_qty = self.forecast_target_qty - after_forecast_qty
+
+        if optimal_qty > self.max_to_replenish_qty:
+            replenish_qty = self.max_to_replenish_qty
+        elif optimal_qty < self.min_to_replenish_qty:
+            replenish_qty = self.min_to_replenish_qty
+        else:
+            if bom_f and optimal_qty > 0:
+                replenish_qty = math.ceil(optimal_qty / bom_f[0].product_qty) * bom_f[0].product_qty
+            else:
+                replenish_qty = optimal_qty
+
+        return replenish_qty
 
     def action_replenish(self, based_on_lead_time=False):
         """ Run the procurement for production schedule in self. Once the
