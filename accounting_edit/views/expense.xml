@@ -8,11 +8,7 @@
 
                 <field name="catg_id" invisible="1" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
             </field>
-            <xpath expr="//field[@name='unit_amount']"
-                       position="attributes">
-                    <attribute name="atrrs">{'readonly':[('state','in',('paid','refused'))]}</attribute>
 
-                </xpath>
 
         </field>
     </record>
