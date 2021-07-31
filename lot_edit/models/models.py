@@ -8,7 +8,6 @@ class lot_edit_inhireit(models.Model):
         context = dict(self._context or {})
         active_ids = context.get('active_ids', []) or []
 
-    credit = fields.Many2one('account.account', related='journal_id.default_account_id')
     attachment_qc = fields.Many2many('ir.attachment', 'attachment_qc_lot_rel', string='Attachments QC ', )
 
 
