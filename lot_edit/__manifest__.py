@@ -20,11 +20,11 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','stock'],
+    'depends': ['base','stock','inventory_update'],
 
     # always loaded
     'data': [
-       # 'security/ir.model.access.csv',
+       'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
     ],

@@ -24,7 +24,17 @@
             <field name="binding_model_id" ref="stock.model_stock_production_lot" />
             <field name="binding_view_types">list</field>
         </record>
+  <record id="lot_form" model="ir.ui.view">
+            <field name="name">stock.production.lot</field>
+            <field name="model">stock.production.lot</field>
+            <field name="inherit_id" ref="stock.view_production_lot_form"/>
+            <field name="arch" type="xml">
+               <xpath expr="//field[@name='attachment_ids']" position="after">
+                    <field name="attachment_qc"/>
+                </xpath>
 
+            </field>
+        </record>
 
 
   </data>
