@@ -21,7 +21,7 @@
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
                     <div class="header">
-                        <div class="row">
+                        <div class="row" t-if="o.state not in ('draft','cancel')" >
                             <th class="text-center">
                                 <img class="pos-receipt-logo" t-att-src="image_data_uri(o.company_id.logo)"
                                      style="max-height: 180px"/>
@@ -49,7 +49,7 @@
 
                         </div>
                     </div>
-                    <div class="article">
+                    <div class="article" t-if="o.state not in ('draft','cancel')">
                         <div class="page">
                             <div class="row justify-content-end">
                                 <t t-if="o.move_type in ('out_invoice','out_refund') and o.partner_id.change_serial==False and o.partner_id.categ_id.category_type not in ('store','tender')">
@@ -959,7 +959,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="footer">
+                    <div class="footer" t-if="o.state not in ('draft','cancel')">
                         <div class="text-center" style="border-top: 1px solid black;">
 
                             <ul class="list-inline">
