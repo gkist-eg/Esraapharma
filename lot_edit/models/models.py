@@ -3,7 +3,7 @@ from odoo import models, fields, api
 
 
 class lot_edit(models.TransientModel):
-    _name = 'stock.production.lot.edit'
+    _inherit = 'stock.production.lot'
 
 
     qc_attach = fields.Binary()
