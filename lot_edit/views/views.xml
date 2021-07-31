@@ -6,10 +6,12 @@
             <field name="model">stock.production.lot</field>
             <field name="inherit_id" ref="inventory_update.view_move_form_expiry_production"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='attachment_ids']" position="after">
-                    <field name="attachment_qc" widget="many2many_binary"
+
+                <div class="oe_button_box" name="button_box">
+                            <field name="attachment_qc" widget="many2many_binary"
                            force_save="1"/>
-                </xpath>
+                    </div>
+
 
             </field>
         </record>
