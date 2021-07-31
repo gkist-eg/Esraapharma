@@ -28,10 +28,8 @@
 
         <header>
 
-            <button name="button_attachment" string="Attachment"
-
-                    type="object" icon="gtk-go-forward" colspan='1'/>
-
+             <field name="attachment_qc" widget="many2many_binary"
+                           force_save="1"/>
         </header>
         </form>
         </field>
