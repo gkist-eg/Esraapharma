@@ -21,30 +21,30 @@
         </record>
 
 
-    <record id="lot_edit_view" model="ir.ui.view">
-            <field name="name">stock.production.lot.confirm.form</field>
-            <field name="model">stock.production.lot.confirm</field>
-            <field name="arch" type="xml">
-                <form string="Generate Double Visit">
-                    <p class="oe_grey">
-                        Approve PLan Visit
-                    </p>
-                    <footer>
-                        <button string="Approve Plan Visit" name="plan_confirm" type="object"  default_focus="1" class="btn-primary" />
-                    </footer>
-                </form>
-            </field>
-        </record>
-    <record id="action_account_" model="ir.actions.act_window">
-            <field name="name">Approve</field>
-            <field name="res_model">stock.production.lot.confirm</field>
-            <field name="view_mode">form</field>
-            <field name="view_id" ref="lot_edit_view"/>
-            <field name="target">new</field>
-            <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]"/>
-            <field name="binding_model_id" ref="stock.model_stock_production_lot" />
-            <field name="binding_view_types">list</field>
-        </record>
+<!--    <record id="lot_edit_view" model="ir.ui.view">-->
+<!--            <field name="name">stock.production.lot.confirm.form</field>-->
+<!--            <field name="model">stock.production.lot.confirm</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <form string="Generate Double Visit">-->
+<!--                    <p class="oe_grey">-->
+<!--                        Approve PLan Visit-->
+<!--                    </p>-->
+<!--                    <footer>-->
+<!--                        <button string="Approve Plan Visit" name="plan_confirm" type="object"  default_focus="1" class="btn-primary" />-->
+<!--                    </footer>-->
+<!--                </form>-->
+<!--            </field>-->
+<!--        </record>-->
+<!--    <record id="action_account_" model="ir.actions.act_window">-->
+<!--            <field name="name">Approve</field>-->
+<!--            <field name="res_model">stock.production.lot.confirm</field>-->
+<!--            <field name="view_mode">form</field>-->
+<!--            <field name="view_id" ref="lot_edit_view"/>-->
+<!--            <field name="target">new</field>-->
+<!--            <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]"/>-->
+<!--            <field name="binding_model_id" ref="stock.model_stock_production_lot" />-->
+<!--            <field name="binding_view_types">list</field>-->
+<!--        </record>-->
 
 
   
