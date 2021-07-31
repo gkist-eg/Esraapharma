@@ -15,5 +15,26 @@
         </record>
 
 
+
+        <record model="ir.ui.view" id="action_view_demo">
+
+        <field name="name">stock.production.lot</field>
+
+        <field name="model">stock.production.lot</field>
+
+        <field name="arch" type="xml">
+
+        <form string="Demo Form">
+
+        <header>
+
+            <button name="button_attachment" string="Attachment"
+
+                    type="object" icon="gtk-go-forward" colspan='1'/>
+
+        </header>
+        </form>
+        </field>
+        </record>
     </data>
 </odoo>
