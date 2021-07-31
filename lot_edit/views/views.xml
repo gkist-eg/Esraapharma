@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="inventory_update.view_stock_move_line_operation_tree_expiry"/>
             <field name="arch" type="xml">
                <xpath expr="//field[@name='attachment_ids']" position="after">
- <field name="attachment_qc" groups="stock.group_production_lot" widget="many2many_binary"
+ <field name="attachment_qc"  widget="many2many_binary"
                        force_save="1" />
                 </xpath>
 
