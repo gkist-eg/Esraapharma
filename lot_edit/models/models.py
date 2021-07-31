@@ -4,7 +4,7 @@ from odoo import models, fields, api
 class lot_edit_inhireit(models.Model):
     _inherit = 'stock.production.lot'
 
-    attachment_qc = fields.Many2many('ir.attachment', 'attachment_qc_lot_rel', string='QC Attachments', )
+    attachment_qc = fields.Many2many('ir.attachment', 'attachment_qc_lot_rel', string='Attachments QC ', )
 
 
 class lot_edit(models.TransientModel):
