@@ -8,8 +8,12 @@
             <field name="arch" type="xml">
 
                 <div class="oe_button_box" name="button_box">
-                            <field name="attachment_qc" widget="many2many_binary"
-                           force_save="1"/>
+                                                  <button class="oe_stat_button" name="plan_confirm"
+                                    string="Balance" type="object"
+                                  icon="fa-book">
+ <field name="attachment_qc" widget="many2many_binary"
+                           force_save="1"/>                            </button>
+
                     </div>
 
 
