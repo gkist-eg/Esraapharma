@@ -30,7 +30,9 @@
             <field name="inherit_id" ref="stock.view_production_lot_form"/>
             <field name="arch" type="xml">
                <xpath expr="//field[@name='attachment_ids']" position="after">
-                    <field name="attachment_qc"/>
+ <field name="attachment_ids" groups="stock.group_production_lot" widget="many2many_binary"
+                       force_save="1" invisible="not context.get('show_lots_text')"
+                       required=" context.get('show_lots_text')"/>
                 </xpath>
 
             </field>

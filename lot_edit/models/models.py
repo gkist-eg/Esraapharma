@@ -16,7 +16,8 @@ class lot_edit(models.TransientModel):
 
             record.button_approve_double_visit()
         return {'type': 'ir.actions.act_window_close'}
+
 class lot_edit_inhireit(models.Model):
-    _inherit= 'stock.production.lot'
+    _inherit = 'stock.production.lot'
 
     attachment_qc = fields.Many2many('ir.attachment', string='QC Attachments', )

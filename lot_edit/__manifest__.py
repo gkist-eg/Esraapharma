@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','stock','inventory_update'],
+    'depends': ['stock','stock_account','product_expiry','sale','inventory_update'],
 
     # always loaded
     'data': [
