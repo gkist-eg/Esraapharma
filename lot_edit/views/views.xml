@@ -36,7 +36,7 @@
             <field name="view_id" ref="lot_edit_view"/>
             <field name="target">new</field>
             <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]"/>
-            <field name="binding_model_id" ref="stock.stock_production_lot" />
+            <field name="binding_model_id" ref="stock.model_stock_production_lot" />
             <field name="binding_view_types">list</field>
         </record>
 
