@@ -1,6 +1,4 @@
-
 from odoo import models, fields, api
-
 
 
 class lot_edit_inhireit(models.Model):
