@@ -33,8 +33,6 @@ class Move(models.Model):
         """ Get and prepare data to show a table of invoiced lot on the invoice's report. """
         self.ensure_one()
 
-        if self.state == 'draft':
-            return []
 
         sale_orders = self.mapped('invoice_line_ids.sale_line_ids.order_id')
         stock_move_lines = sale_orders.mapped('picking_ids.move_lines.move_line_ids')
@@ -42,7 +40,7 @@ class Move(models.Model):
 
         # Get the other customer invoices and refunds.
         ordered_invoice_ids = sale_orders.mapped('invoice_ids') \
-            .filtered(lambda i: i.state not in ['draft', 'cancel']) \
+            .filtered(lambda i: i.state not in ['cancel']) \
             .sorted(lambda i: (i.invoice_date, i.id))
 
         # Get the position of self in other customer invoices and refunds.
