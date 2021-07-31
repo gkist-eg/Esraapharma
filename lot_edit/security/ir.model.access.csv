@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_lot_edit_lot_edit,lot_edit.lot_edit,model_lot_edit_lot_edit,base.group_user,1,1,1,1
+access_lot_edit_lot_edit,stock.production.lot.edit,model_stock_production_lot_edit,base.group_user,1,1,1,1
