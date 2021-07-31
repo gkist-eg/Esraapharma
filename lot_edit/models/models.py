@@ -3,7 +3,7 @@ from odoo import models, fields, api
 
 
 class lot_edit(models.TransientModel):
-    _inherit = 'stock.production.lot'
+    _name = 'stock.production.lot.edit'
 
 
     qc_attach = fields.Binary()
@@ -14,5 +14,5 @@ class lot_edit(models.TransientModel):
 
         for record in self.env['stock.production.lot'].browse(active_ids):
 
-            record.lot_edit()
+            record.button_approve_double_visit()
         return {'type': 'ir.actions.act_window_close'}

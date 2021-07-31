@@ -1,7 +1,6 @@
 <odoo>
-    <data>
-<!--
-        <record id="stock_production_lot_edit" model="ir.ui.view">
+  <data>
+  <record id="stock_production_lot_edit" model="ir.ui.view">
             <field name="name">stock.production.lot.edit_form</field>
             <field name="model">stock.production.lot.edit</field>
             <field name="arch" type="xml">
@@ -9,49 +8,24 @@
                     <p class="oe_grey">
                         Approve PLan Visit
                     </p>
-                    <footer>
-                        <button string="Approve Plan Visit" name="lot_edit" type="object" default_focus="1"
-                                class="btn-primary"/>
+                     <footer>
+                        <button string="Approve Plan Visit" name="lot_edit" type="object"  default_focus="1" class="btn-primary" />
                     </footer>
 
                 </form>
             </field>
         </record>
-        <record id="qc_attach" model="ir.actions.act_window">
+    <record id="qc_attach" model="ir.actions.act_window">
             <field name="name">Approve</field>
             <field name="res_model">stock.production.lot.edit</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="stock_production_lot_edit"/>
             <field name="target">new</field>
-            <field name="binding_model_id" ref="stock.model_stock_production_lot"/>
+            <field name="binding_model_id" ref="stock.model_stock_production_lot" />
             <field name="binding_view_types">list</field>
         </record>
 
--->
 
 
-
-        <record model="ir.ui.view" id="action_view_demo">
-
-            <field name="name">demo</field>
-
-            <field name="model">stock.production.lot</field>
-
-            <field name="arch" type="xml">
-
-                <form string="Demo Form">
-
-                    <header>
-
-                        <button name="lot_edit" string="Attachment"
-
-                                type="object" icon="gtk-go-forward" colspan='1'/>
-
-                    </header>
-
-                </form>
-            </field>
-        </record>
-
-    </data>
+  </data>
 </odoo>
