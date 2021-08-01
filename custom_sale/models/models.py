@@ -321,6 +321,7 @@ class ORder(models.Model):
             'store_price': self.store_price,
             'publicprice': self.publicprice,
             'price_unit': self.price_unit,
+            'p_unit': self.price_unit,
             'tax_ids': [(6, 0, self.tax_id.ids)],
             'analytic_account_id': self.order_id.analytic_account_id.id,
             'analytic_tag_ids': [(6, 0, self.analytic_tag_ids.ids)],
