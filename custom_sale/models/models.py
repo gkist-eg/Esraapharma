@@ -365,7 +365,7 @@ class Invoceder(models.Model):
             if line.product_id and line.sale_type:
                 line.p_unit = line.product_id.lst_price
             else:
-                line.p_unit = line.product_id.lst_price
+                line.p_unit = line.price_unit
         return
 
     p_unit = fields.Float("Price Unit", store=True, digits=('Product Price'), compute='onchange_p_price')
