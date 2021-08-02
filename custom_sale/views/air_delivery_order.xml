@@ -369,8 +369,8 @@
                                                  <th>
 
 
-                            <td class="col-xs-3">
-                                  <img class="pos-receipt-logo" t-att-src="image_data_uri(request.env.user.segimage)"
+                            <td class="col-xs-3" t-if="request.env.user.segimage">
+                                  <img t-if="request.env.user.segimage" class="pos-receipt-logo" t-att-src="image_data_uri(request.env.user.segimage)"
                                              style="max-height: 180px"/>
                             </td>
                     </th>
@@ -656,8 +656,8 @@
     <th>
 
 
-                            <td class="col-xs-3">
-                                  <img class="pos-receipt-logo" t-att-src="image_data_uri(request.env.user.segimage)"
+                            <td class="col-xs-3" t-if="request.env.user.segimage">
+                                  <img  t-if="request.env.user.segimage" class="pos-receipt-logo" t-att-src="image_data_uri(request.env.user.segimage)"
                                              style="max-height: 180px"/>
                             </td>
                     </th>           </table>
@@ -946,8 +946,8 @@
 
 
 
-                            <td class="col-xs-3">
-                                  <img class="pos-receipt-logo" t-att-src="image_data_uri(request.env.user.segimage)"
+                            <td class="col-xs-3" t-if="request.env.user.segimage">
+                                  <img t-if="request.env.user.segimage" class="pos-receipt-logo" t-att-src="image_data_uri(request.env.user.segimage)"
                                              style="max-height: 180px"/>
                             </td>
                     </th>
