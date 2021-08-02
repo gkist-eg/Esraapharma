@@ -4,9 +4,10 @@
         <record id="view_users_form_signature" model="ir.ui.view">
             <field name="name">view.users.form.signature</field>
             <field name="model">res.users</field>
-            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
             <field name="arch" type="xml">
-                <group name="messaging" position="inside">
+                <group name="signature" position="inside">
+
                         <field name="segimage" widget="image"  class="oe_avatar" options="{'size': [90, 90]}"/>
 
                 </group>
