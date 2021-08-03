@@ -696,7 +696,7 @@
 
                                             </td>
                                             <td style="border: 1px solid black;">
-                                                <span t-if="l.sale_type='sale'" t-esc="l.p_unit*l.quantity-(l.pharmacy_discount+l.dist_amount)"
+                                                <span t-if="l.sale_type =='sale'" t-esc="l.p_unit*l.quantity-(l.pharmacy_discount+l.dist_amount)"
                                                       t-options='{"widget": "float", "precision": 2}'/>
 
                                             </td>
