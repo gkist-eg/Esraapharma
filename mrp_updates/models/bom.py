@@ -91,7 +91,7 @@ class MrpBom(models.Model):
             line_quantity = current_qty * current_line.product_qty
             bom = self._bom_find(product=current_line.product_id, picking_type=picking_type or self.picking_type_id, company_id=self.company_id.id, bom_type='phantom')
             if bom:
-                converted_line_quantity = current_line.product_uom_id._compute_quantity(line_quantity / bom.product_qty, bom.product_uom_id)
+                converted_line_quantity = current_line.product_uom_id._compute_quantity(current_line.product_qty / bom.product_qty, bom.product_uom_id)
                 if self.type == 'subcontract':
                     converted_line_quantity = current_line.product_uom_id._compute_quantity(
                         line_quantity / bom.product_qty, bom.product_uom_id)
