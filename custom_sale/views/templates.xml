@@ -132,14 +132,14 @@
                                                         <span t-field="l.name"/>
                                                     </td>
                                                     <td style="border: 1px solid black;"
-                                                        t-if="l.partner_id.categ_id.category_type not in ('store','tender')">
-                                                        <span t-esc="'%.2f'%(sum((line.p_unit * line.quantity) for line in l.invoice_line_ids))"
+                                                        t-if="l.partner_id.categ_id.category_type not in ('store','tender') ">
+                                                        <span t-esc="'%.2f'%(sum((line.p_unit * line.quantity) for line in l.invoice_line_ids if line.sale_type =='sale'))"
                                                               widget='float'/>
 
                                                     </td>
                                                     <td style="border: 1px solid black;"
                                                         t-if="l.partner_id.categ_id.category_type in ('store','tender')">
-                                                        <span t-esc="'%.2f'%(sum((line.store_price * line.quantity) for line in l.invoice_line_ids))"
+                                                        <span t-esc="'%.2f'%(sum((line.store_price * line.quantity) for line in l.invoice_line_ids if line.sale_type =='sale'))"
                                                               widget='float'/>
 
                                                     </td>
@@ -670,12 +670,12 @@
                                             </td>
 
                                             <td style="border: 1px solid black;"
-                                                t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender')">
+                                                t-if="l.move_id.partner_id.categ_id.category_type not in ('store','tender') and l.sale_type == 'sale'">
                                                 <span t-esc="'%.2f'% (l.p_unit*l.quantity)" widget='float'/>
 
                                             </td>
                                             <td style="border: 1px solid black;"
-                                                t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender')">
+                                                t-if="l.move_id.partner_id.categ_id.category_type in ('store','tender') and l.sale_type == 'sale'">
                                                 <span t-esc="'%.2f'% (l.store_price*l.quantity)" widget='float'/>
 
                                             </td>
@@ -685,7 +685,7 @@
 
                                             </td>
                                             <td style="border: 1px solid black;">
-                                                <span t-esc="l.p_unit * l.quantity - l.pharmacy_discount"
+                                                <span t-if="l.sale_type =='sale'" t-esc="l.p_unit * l.quantity - l.pharmacy_discount"
                                                       t-options='{"widget": "float", "precision": 2}'/>
 
                                             </td>
@@ -696,7 +696,7 @@
 
                                             </td>
                                             <td style="border: 1px solid black;">
-                                                <span t-esc="l.p_unit*l.quantity-(l.pharmacy_discount+l.dist_amount)"
+                                                <span t-if="l.sale_type =='sale'" t-esc="l.p_unit*l.quantity-(l.pharmacy_discount+l.dist_amount)"
                                                       t-options='{"widget": "float", "precision": 2}'/>
 
                                             </td>
@@ -707,7 +707,7 @@
 
                                             </td>
                                             <td style="border: 1px solid black;">
-                                                <span t-esc="l.p_unit*l.quantity-(l.pharmacy_discount+l.dist_amount+l.cash_amount)"
+                                                <span t-if="l.sale_type =='sale'" t-esc="l.p_unit*l.quantity-(l.pharmacy_discount+l.dist_amount+l.cash_amount)"
                                                       t-options='{"widget": "float", "precision": 2}'/>
 
                                             </td>
