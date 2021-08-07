@@ -188,8 +188,7 @@
 
                                                         <td class="text-center" style="border: 1px solid black;">
                                                             <span style="font-size: 13px"
-                                                                  t-if="o.partner_id.categ_id.category_type != 'store'"
-                                                                  t-esc="snln_line['price']"
+                                                                  t-esc="snln_line['publicprice']"
                                                                   t-options="{&quot;widget&quot;: &quot;False&quot; }"/>
                                                         </td>
                                                         <td class="text-center" style="border: 1px solid black;">
