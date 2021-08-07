@@ -384,7 +384,7 @@ class StockPicking(models.Model):
             for line in picking.move_lines:
                 received = 0.0
                 orderd = 0.0
-                if line.purchase_line_id:
+                if line.purchase_line_id and line.location_id.usage == 'vendor':
                     received += line.purchase_line_id.qty_received
                     orderd += line.purchase_line_id.product_qty
                 if line.sale_line_id and line.location_dest_id.usage == 'customer':
