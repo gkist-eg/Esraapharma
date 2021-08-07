@@ -98,4 +98,25 @@
         <field name="prefix">RP/%(y)s</field>
         <field name="padding">5</field>
     </record></data>
+
+    <data>
+       <template id="assets_backend" name="mrp_mps assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/mrp_updates/models/client_action.js"></script>
+            </xpath>
+        </template>
+
+        <record id="action_mrp_mrp" model="ir.actions.client">
+        <field name="name">Master Resource Planning</field>
+        <field name="res_model">mrp.production.schedule</field>
+        <field name="tag">mrp_mrp_client_action</field>
+    </record>
+        <menuitem
+        id="mrp_mrp_report_menu"
+        name="Master Resource Planning"
+        action="action_mrp_mrp"
+        groups="mrp.group_mrp_manager"
+        sequence="1"
+        parent="mrp_mps.mrp_mps_menu_planning"/>
+    </data>
 </odoo>
