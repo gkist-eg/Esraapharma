@@ -128,7 +128,7 @@ class Sale(models.Model):
             order.discount_total = 0.00
             for line in order.order_line:
                 if line:
-                    if order.partner_id.categ_id.category_type == 'store' or order.partner_id.categ_id.category_type == 'tender':
+                    if order.partner_id.categ_id.category_type == 'store':
 
                         pharmacy = 0
                         cash = 0
