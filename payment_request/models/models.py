@@ -65,7 +65,10 @@ class PaymentRequest(models.Model):
                 if move.lot_id:
                     excet = self.line_ids.search(
                         [('product_id', '=', move.product_id.id), ('picking_id', '=', move.picking_id.id), ('request_id', '!=', self.id), ('request_id', '!=', False), ])
-                    if not excet:
+                    excet2 = self.line_ids.search(
+                        [('product_id', '=', move.product_id.id), ('picking_id', '=', move.picking_id.id),
+                         ('lot_id', '=', move.lot_id.id), ])
+                    if not excet or not excet2:
                         lines = line.move_line_ids.search(
                             [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'),
                              ('location_id.stock_usage', '=', 'qrtin'), ('state', '=', 'done')])
