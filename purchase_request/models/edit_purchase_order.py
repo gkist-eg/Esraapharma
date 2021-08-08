@@ -344,12 +344,119 @@ class EditPurchaseOrderLin(models.Model):
                 rec.last_price_purchase = False
                 rec.last_date_purchase = False
 
-# class PurchaseOrderForeign(models.Model):
-#     _name = "purchase.foreignn"
-#     _description = "Purchase Foreign"
-#
-#     name=fields.Char("state")
-#     attachment_id = fields.Many2many('ir.attachment', string='Attachments', )
-#     note = fields.Text("Note", tracking=True)
-#     DateDate = fields.Date("Date", default=fields.Date.today, tracking=True, )
-#     foreign_id=fields.Many2one('purchase.order', string='Purchase foreign',)
+
+class StockRule(models.Model):
+    _inherit = "stock.rule"
+
+    @api.model
+    def _prepare_purchase_request_line(self, request_id, procurement):
+        procurement_uom_po_qty = procurement.product_uom._compute_quantity(
+            procurement.product_qty, procurement.product_id.uom_po_id
+        )
+        return {
+            "product_id": procurement.product_id.id,
+            "name": procurement.product_id.name,
+            "request_date": "date_planned" in procurement.values
+            and procurement.values["date_planned"]
+            or fields.Datetime.now(),
+            "product_uom_id": procurement.product_id.uom_po_id.id,
+            "product_qty": procurement_uom_po_qty,
+            "request_line_id": request_id.id,
+            # "move_dest_ids": [
+            #     (4, x.id) for x in procurement.values.get("move_dest_ids", [])
+            # ],
+            # # "orderpoint_id": procurement.values.get("orderpoint_id", False)
+            # and procurement.values.get("orderpoint_id").id,
+        }
+
+    @api.model
+    def _prepare_purchase_request(self, origin, values, procurement):
+        gpo = self.group_propagation_option
+        group_id = (
+            (gpo == "fixed" and self.group_id.id)
+            or (gpo == "propagate" and values.get("group_id") and values["group_id"].id)
+            or False
+        )
+        return {
+            # "origin": origin,
+            "nname": origin,
+            "prioritty":"high",
+            "request_category_id": procurement.product_id.categ_id.id,
+        }
+
+    @api.model
+    def _make_pr_get_domain(self, procurement):
+        """
+        This method is to be implemented by other modules that can
+        provide a criteria to select the appropriate purchase request to be
+        extended.
+        :return: False
+        """
+        domain = (
+            ("state", "=", "draft"),
+            ("request_category_id", "=",procurement.product_id.categ_id.id),
+            ("requested_by_id", "=", self.env.user.id),
+
+        )
+
+        return domain
+
+    def is_create_purchase_request_allowed(self, procurement):
+        """
+        Tell if current procurement order should
+        create a purchase request or not.
+        :return: boolean
+        """
+        return (
+            procurement[1].action == "buy"
+            and procurement[0].product_id.purchase_request
+        )
+
+    def _run_buy(self, procurements):
+        indexes_to_pop = []
+        for i, procurement in enumerate(procurements):
+            if self.is_create_purchase_request_allowed(procurement):
+                self.create_purchase_request(procurement)
+                indexes_to_pop.append(i)
+        if indexes_to_pop:
+            indexes_to_pop.reverse()
+            for index in indexes_to_pop:
+                procurements.pop(index)
+        if not procurements:
+            return
+        return super(StockRule, self)._run_buy(procurements)
+
+    def create_purchase_request(self, procurement_group):
+        """
+        Create a purchase request containing procurement order product.
+        """
+        procurement = procurement_group[0]
+        rule = procurement_group[1]
+        purchase_request_model = self.env["purchase.requests"]
+        purchase_request_line_model = self.env["purchase.request.line"]
+        cache = {}
+        pr = self.env["purchase.requests"]
+        domain = rule._make_pr_get_domain(procurement)
+        if domain in cache:
+            pr = cache[domain]
+        elif domain:
+            pr = self.env["purchase.requests"].search([dom for dom in domain])
+            pr = pr[0] if pr else False
+            cache[domain] = pr
+        if not pr:
+            request_data = rule._prepare_purchase_request(
+                    procurement.origin, procurement.values, procurement
+                )
+            pr = purchase_request_model.create(request_data)
+            cache[domain] = pr
+        elif not pr.nname or procurement.origin not in pr.nname.split(", "):
+            if pr.nname:
+                if procurement.origin:
+                    pr.write({"nname": pr.nname + ", " + procurement.origin})
+                else:
+                    pr.write({"nname": pr.nname})
+            else:
+                pr.write({"nname": procurement.origin})
+        # Create Line
+        request_line_data = rule._prepare_purchase_request_line(pr, procurement)
+        purchase_request_line_model.create(request_line_data)
