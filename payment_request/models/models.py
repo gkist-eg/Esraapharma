@@ -96,7 +96,15 @@ class PaymentRequest(models.Model):
                             [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant
                              in
                              request_return])
-                        if lines:
+                        request_return2 = line.move_line_ids.search(
+                            [('lot_id', '=', move.lot_id.id),
+                             ('location_dest_id.usage', '=', 'supplier'),
+                             ('state', '=', 'done')])
+                        done -= sum(
+                            [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant
+                             in
+                             request_return2])
+                        if lines and done > 0:
                             price = move.move_id.purchase_line_id.price_unit
                             taxes = move.move_id.purchase_line_id.taxes_id.compute_all(price, self.currency_id, done,
                                                                                        product=move.product_id,
