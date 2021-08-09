@@ -65,7 +65,10 @@ class PaymentRequest(models.Model):
                 if move.lot_id:
                     excet = self.line_ids.search(
                         [('product_id', '=', move.product_id.id), ('picking_id', '=', move.picking_id.id), ('request_id', '!=', self.id), ('request_id', '!=', False), ])
-                    if not excet:
+                    excet2 = self.line_ids.search(
+                        [('product_id', '=', move.product_id.id), ('picking_id', '=', move.picking_id.id),
+                         ('lot_id', '=', move.lot_id.id), ])
+                    if not excet and not excet2:
                         lines = line.move_line_ids.search(
                             [('lot_id', '=', move.lot_id.id), ('location_dest_id.stock_usage', '=', 'release'),
                              ('location_id.stock_usage', '=', 'qrtin'), ('state', '=', 'done')])
@@ -93,7 +96,15 @@ class PaymentRequest(models.Model):
                             [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant
                              in
                              request_return])
-                        if lines:
+                        request_return2 = line.move_line_ids.search(
+                            [('lot_id', '=', move.lot_id.id),
+                             ('location_dest_id.usage', '=', 'supplier'),
+                             ('state', '=', 'done')])
+                        done -= sum(
+                            [quant.product_uom_id._compute_quantity(quant.qty_done, quant.product_id.uom_id) for quant
+                             in
+                             request_return2])
+                        if lines and done > 0.0:
                             price = move.move_id.purchase_line_id.price_unit
                             taxes = move.move_id.purchase_line_id.taxes_id.compute_all(price, self.currency_id, done,
                                                                                        product=move.product_id,
