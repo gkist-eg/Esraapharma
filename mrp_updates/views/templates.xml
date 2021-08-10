@@ -107,13 +107,13 @@
         </template>
 
         <record id="action_mrp_mrp" model="ir.actions.client">
-        <field name="name">Master Resource Planning</field>
+        <field name="name">Material Requirement Planning</field>
         <field name="res_model">mrp.production.schedule</field>
         <field name="tag">mrp_mrp_client_action</field>
     </record>
         <menuitem
         id="mrp_mrp_report_menu"
-        name="Master Resource Planning"
+        name="Material Requirement Planning"
         action="action_mrp_mrp"
         groups="mrp.group_mrp_manager"
         sequence="1"
