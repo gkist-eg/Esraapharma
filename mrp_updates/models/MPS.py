@@ -16,6 +16,65 @@ class MrpProductionSchedule(models.Model):
     _order = 'warehouse_id, sequence'
     _description = 'Schedule the production of Product in a warehouse'
 
+    @api.constrains('product_id')
+    def on_create_product(self):
+        if self.product_id:
+            bom = self.env['mrp.bom']._bom_find(
+                product=self.product_id, company_id=self.company_id.id,
+                bom_type='normal')
+            boms, lines = bom.explode(self.product_id,1)
+            for line in lines:
+                product = line[0].product_id
+                exited = self.search([('product_id', '=', product.id), ('warehouse_id','=',self.warehouse_id.id)])
+                if not exited:
+                    self.create({
+                                'product_id' : product.id,
+                                'warehouse_id':self.warehouse_id.id
+                            })
+    def _get_incoming_qty(self, date_range):
+        """ Get the incoming quantity from RFQ and existing moves.
+
+        param: list of time slots used in order to group incoming quantity.
+        return: a dict with as key a production schedule and as values a list
+        of incoming quantity for each date range.
+        """
+        incoming_qty = defaultdict(float)
+        incoming_qty_done = defaultdict(float)
+        after_date = date_range[0][0]
+        before_date = date_range[-1][1]
+        # Get quantity in RFQ
+        rfq_domain = self._get_rfq_domain(after_date, before_date)
+        rfq_lines = self.env['purchase.order.line'].search(rfq_domain, order='date_planned')
+
+        index = 0
+        for line in rfq_lines:
+            # Skip to the next time range if the planned date is not in the
+            # current time interval.
+            while not (date_range[index][0] <= line.date_planned.date() and
+                    date_range[index][1] >= line.date_planned.date()):
+                index += 1
+            quantity = line.product_uom._compute_quantity(line.product_qty, line.product_id.uom_id)
+            incoming_qty[date_range[index], line.product_id, line.order_id.picking_type_id.warehouse_id] += quantity
+
+        # Get quantity on incoming moves
+        # TODO: issue since it will use one search by move. Should use a
+        # read_group with a group by location.
+        domain_moves = self._get_moves_domain(after_date, before_date, 'incoming')
+        stock_moves = self.env['stock.move'].search(domain_moves, order='date')
+        index = 0
+        for move in stock_moves:
+            # Skip to the next time range if the planned date is not in the
+            # current time interval.
+            while not (date_range[index][0] <= move.date.date() and date_range[index][1] >= move.date.date()):
+                index += 1
+            key = (date_range[index], move.product_id, move.location_dest_id.get_warehouse())
+            if move.state == 'done':
+                incoming_qty_done[key] += move.product_qty
+            else:
+                incoming_qty[key] += move.product_qty
+
+        return incoming_qty, incoming_qty_done
+
     def _get_moves_domain(self, date_start, date_stop, type):
         """ Return domain for incoming or outgoing moves """
         location = type == 'incoming' and 'location_dest_id' or 'location_id'

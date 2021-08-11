@@ -2,12 +2,13 @@ from datetime import datetime, time
 
 from odoo import api, fields, models, _
 
-class RequestCategory(models.Model):
-    _name = "request.category"
-    _description = "Requests category"
+class ProductTemplate(models.Model):
+    _inherit = "product.template"
 
-    name = fields.Char('Request Name', readonly=True, select=True, copy=False, default='New')
-    requested_category = fields.Many2one('product.category', string='Requested By')
+    purchase_request = fields.Boolean(
+        help="Check this box to generate Purchase Request instead of "
+        "generating Requests For Quotation from procurement."
+    )
 
 
 
