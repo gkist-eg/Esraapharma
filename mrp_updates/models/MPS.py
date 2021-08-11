@@ -22,15 +22,16 @@ class MrpProductionSchedule(models.Model):
             bom = self.env['mrp.bom']._bom_find(
                 product=self.product_id, company_id=self.company_id.id,
                 bom_type='normal')
-            boms, lines = bom.explode(self.product_id,1)
+            boms, lines = bom.explode(self.product_id, 1)
             for line in lines:
                 product = line[0].product_id
-                exited = self.search([('product_id', '=', product.id), ('warehouse_id','=',self.warehouse_id.id)])
+                exited = self.search([('product_id', '=', product.id), ('warehouse_id', '=', self.warehouse_id.id)])
                 if not exited:
                     self.create({
-                                'product_id' : product.id,
-                                'warehouse_id':self.warehouse_id.id
-                            })
+                        'product_id': product.id,
+                        'warehouse_id': self.warehouse_id.id
+                    })
+
     def _get_incoming_qty(self, date_range):
         """ Get the incoming quantity from RFQ and existing moves.
 
@@ -50,8 +51,7 @@ class MrpProductionSchedule(models.Model):
         for line in rfq_lines:
             # Skip to the next time range if the planned date is not in the
             # current time interval.
-            while not (date_range[index][0] <= line.date_planned.date() and
-                    date_range[index][1] >= line.date_planned.date()):
+            while not (date_range[index][0] <= line.date_planned.date() and date_range[index][1] >= line.date_planned.date()):
                 index += 1
             quantity = line.product_uom._compute_quantity(line.product_qty, line.product_id.uom_id)
             incoming_qty[date_range[index], line.product_id, line.order_id.picking_type_id.warehouse_id] += quantity
@@ -114,7 +114,7 @@ class MrpProductionSchedule(models.Model):
             '&',
             ('product_id', '=', False),
             ('product_tmpl_id', 'in', self.mapped('product_id.product_tmpl_id').ids),
-        ('bom_type', '=', 'normal')
+            ('bom_type', '=', 'normal')
         ])
         bom_lines_by_product = defaultdict(lambda: self.env['mrp.bom'])
         bom_lines_by_product_tmpl = defaultdict(lambda: self.env['mrp.bom'])
@@ -136,12 +136,14 @@ class MrpProductionSchedule(models.Model):
                 return Node(product_tree.product, ratio, product_tree.children)
 
             product_tree = Node(product, ratio, [])
-            product_boms = (bom_lines_by_product[product] | bom_lines_by_product_tmpl[product.product_tmpl_id]).sorted('sequence')[:1]
+            product_boms = (bom_lines_by_product[product] | bom_lines_by_product_tmpl[product.product_tmpl_id]).sorted(
+                'sequence')[:1]
             if not product_boms:
                 product_boms = self.env['mrp.bom']._bom_find(product=product) or self.env['mrp.bom']
             for line in product_boms.bom_line_ids:
                 line_qty = line.product_uom_id._compute_quantity(line.product_qty, line.product_id.uom_id)
-                bom_qty = line.bom_id.product_uom_id._compute_quantity(line.bom_id.product_qty, line.bom_id.product_tmpl_id.uom_id)
+                bom_qty = line.bom_id.product_uom_id._compute_quantity(line.bom_id.product_qty,
+                                                                       line.bom_id.product_tmpl_id.uom_id)
                 ratio = line_qty / bom_qty
                 tree = _get_product_tree(line.product_id, ratio)
                 product_tree.children.append(tree)
@@ -231,11 +233,7 @@ class MrpProductionSchedule(models.Model):
             replenishment_field = based_on_lead_time and 'to_replenish' or 'forced_replenish'
             forecasts_to_replenish = filter(lambda f: f[replenishment_field], production_schedule_state['forecast_ids'])
             for forecast in forecasts_to_replenish:
-                existing_forecasts = production_schedule.forecast_ids.filtered(lambda p:
-                                                                               p.date >= forecast[
-                                                                                   'date_start'] and p.date <= forecast[
-                                                                                   'date_stop']
-                                                                               )
+                existing_forecasts = production_schedule.forecast_ids.filtered(lambda p: p.date >= forecast['date_start'] and p.date <= forecast['date_stop'])
                 extra_values = production_schedule._get_procurement_extra_values(forecast)
                 quantity = forecast['replenish_qty'] - forecast['incoming_qty']
                 if not bom:
