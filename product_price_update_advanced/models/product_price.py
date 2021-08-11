@@ -28,13 +28,14 @@ class ProductPrice(models.TransientModel):
 
     name = fields.Many2one('product.template', string="Product", required=True, domain=[('sale_ok', '=',True)],)
     sale_price = fields.Float(string="Sale Price", required=True)
+    pubprice = fields.Float(string="Public Price", required=True)
     cost_price = fields.Float(string="Cost Price")
     tax_ids = fields.Many2many('account.tax', domain=[('type_tax_use', '=', 'sale')], string='Taxes', check_company=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company, )
 
     def change_product_price(self):
         prod_obj = self.env['product.template'].search([('id', '=', self.name.id)])
-        prod_value = {'list_price': self.sale_price,'taxes_id' :[(6, 0, self.tax_ids.ids)] }
+        prod_value = {'list_price': self.sale_price,'pubprice': self.pubprice,'taxes_id' :[(6, 0, self.tax_ids.ids)] }
         prod_obj.sudo().write(prod_value)
         return {
             'name': _('Products'),
@@ -48,6 +49,7 @@ class ProductPrice(models.TransientModel):
     @api.onchange('name')
     def get_price(self):
         self.sale_price = self.name.list_price
+        self.pubprice = self.name.pubprice
         self.tax_ids = self.name.taxes_id
 
 
