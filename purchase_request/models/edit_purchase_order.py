@@ -383,6 +383,7 @@ class StockRule(models.Model):
             or (gpo == "propagate" and values.get("group_id") and values["group_id"].id)
             or False
         )
+
         return {
             # "origin": origin,
             "nname": origin,
@@ -398,10 +399,14 @@ class StockRule(models.Model):
         extended.
         :return: False
         """
+        if self.env.uid != 1:
+            purchase_default = self.env.uid
+        else:
+            purchase_default = int(self.env.ref('purchase_request.id_purchase_request_default').sudo().value)
         domain = (
             ("state", "=", "draft"),
             ("request_category_id", "=",procurement.product_id.categ_id.id),
-            ("requested_by_id", "=", self.env.user.id),
+            ("requested_by_id", "=", purchase_default),
 
         )
 

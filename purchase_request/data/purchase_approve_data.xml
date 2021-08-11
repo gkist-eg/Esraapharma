@@ -5,6 +5,10 @@
             <field name="key">purchase approve</field>
             <field name="value">2</field>
         </record>
+        <record id="id_purchase_request_default" model="ir.config_parameter">
+            <field name="key">purchase request default</field>
+            <field name="value">2</field>
+        </record>
         <record id="id_department_purchase" model="hr.department">
             <field name="name">Purchase</field>
         </record>
