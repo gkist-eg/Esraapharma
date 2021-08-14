@@ -173,6 +173,8 @@
                 <field name="journal_id" />
                 <field name="partner_id" invisible="1"/>
                 <field name="employee_expense" />
+                <field name="analytic_account_id" />
+                <field name="product_id" />
                 <field name="state" />
             </tree>
         </field>
@@ -190,6 +192,8 @@
                 <field name="journal_id" />
                 <field name="partner_id" />
                 <field name="employee_expense" />
+                 <field name="analytic_account_id" />
+                <field name="product_id" />
                 <field name="state" />
             </tree>
         </field>
@@ -208,6 +212,8 @@
                 <field name="analytic_account_id" />
                 <field name="partner_id" invisible="1"/>
                 <field name="employee_expense" />
+                 <field name="analytic_account_id" />
+                <field name="product_id" />
                 <field name="state" />
             </tree>
         </field>
@@ -224,6 +230,8 @@
                 <field name="journal_id" />
                 <field name="partner_id" invisible="1"/>
                 <field name="employee_expense" />
+                 <field name="analytic_account_id" />
+                <field name="product_id" />
                 <field name="state" />
             </tree>
         </field>
@@ -241,6 +249,8 @@
                 <field name="journal_id" />
                 <field name="partner_id" invisible="1"/>
                 <field name="employee_expense" />
+                 <field name="analytic_account_id" />
+                <field name="product_id" />
                 <field name="state" />
             </tree>
         </field>
@@ -259,6 +269,8 @@
                 <field name="journal_id" />
                 <field name="partner_id" invisible="1"/>
                 <field name="employee_expense" />
+                 <field name="analytic_account_id" />
+                <field name="product_id" />
                 <field name="state" />
             </tree>
         </field>
@@ -276,6 +288,8 @@
                 <field name="journal_id" />
                 <field name="partner_id" />
                 <field name="employee_expense" invisible="1"/>
+                 <field name="analytic_account_id" />
+                <field name="product_id" />
                 <field name="state" />
             </tree>
         </field>
@@ -295,6 +309,8 @@
                 <field name="amount" invisible="1"/>
                 <field name="check_receive" />
                 <field name="partner_id" />
+                 <field name="analytic_account_id" />
+                <field name="product_id" />
                 <field name="employee_expense" invisible="1"/>
                 <field name="state" />
             </tree>
@@ -314,6 +330,8 @@
                 <field name="amount_re" invisible="1"/>
                 <field name="check_send"  />
                 <field name="partner_id" />
+                 <field name="analytic_account_id" />
+                <field name="product_id" />
                 <field name="employee_expense" invisible="1"/>
                 <field name="state" />
             </tree>
@@ -330,7 +348,8 @@
                 <field name="amount_re"  />
                 <field name="payment_type" />
                 <field name="cash_method" />
-
+ <field name="analytic_account_id" />
+                <field name="product_id" />
                 <field name="amount" invisible="1" />
                 <field name="journal_id" />
                 <field name="partner_id" invisible="1"/>
@@ -353,6 +372,8 @@
                 <field name="journal_id" />
                 <field name="partner_id" invisible="1"/>
                 <field name="employee_expense" />
+                 <field name="analytic_account_id" />
+                <field name="product_id" />
                 <field name="state" />
             </tree>
         </field>
