@@ -138,7 +138,7 @@ var ClientActionMRP = AbstractAction.extend({
         this.$searchview_buttons = $(QWeb.render('mrp_mps_control_panel_option_buttons', {groups: self.groups}));
         this.$searchview_buttons.find('.o_mps_mps_show_line').on('click', self._onChangeCompany.bind(self));
         return this.updateControlPanel({
-            title: _t('Master Production Schedule'),
+            title: _t('Material Requirement Planning'),
             cp_content: {
                 $buttons: this.$buttons,
                 $searchview_buttons: this.$searchview_buttons,

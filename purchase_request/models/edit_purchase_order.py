@@ -353,21 +353,27 @@ class StockRule(models.Model):
         procurement_uom_po_qty = procurement.product_uom._compute_quantity(
             procurement.product_qty, procurement.product_id.uom_po_id
         )
-        return {
-            "product_id": procurement.product_id.id,
-            "name": procurement.product_id.name,
-            "request_date": "date_planned" in procurement.values
-            and procurement.values["date_planned"]
-            or fields.Datetime.now(),
-            "product_uom_id": procurement.product_id.uom_po_id.id,
-            "product_qty": procurement_uom_po_qty,
-            "request_line_id": request_id.id,
-            # "move_dest_ids": [
-            #     (4, x.id) for x in procurement.values.get("move_dest_ids", [])
-            # ],
-            # # "orderpoint_id": procurement.values.get("orderpoint_id", False)
-            # and procurement.values.get("orderpoint_id").id,
-        }
+        existed = request_id.request_line_ids.filtered(lambda p: p.product_id == procurement.product_id and p.product_uom_id == procurement.product_id.uom_po_id)
+        if existed:
+            existed[0].product_qty = procurement_uom_po_qty
+            existed[0].ordered_qty = procurement_uom_po_qty
+            existed[0].m_qty = procurement_uom_po_qty
+            existed[0].supply_chain_qty = procurement_uom_po_qty
+        else:
+            request_id.request_line_ids.create({
+                "product_id": procurement.product_id.id,
+                "name": procurement.product_id.name,
+                "request_date": "date_planned" in procurement.values
+                and procurement.values["date_planned"]
+                or fields.Datetime.now(),
+                "product_uom_id": procurement.product_id.uom_po_id.id,
+                "product_qty": procurement_uom_po_qty,
+                "ordered_qty": procurement_uom_po_qty,
+                "m_qty": procurement_uom_po_qty,
+                "supply_chain_qty": procurement_uom_po_qty,
+                "request_line_id": request_id.id,
+
+            })
 
     @api.model
     def _prepare_purchase_request(self, origin, values, procurement):
@@ -377,6 +383,7 @@ class StockRule(models.Model):
             or (gpo == "propagate" and values.get("group_id") and values["group_id"].id)
             or False
         )
+
         return {
             # "origin": origin,
             "nname": origin,
@@ -392,10 +399,14 @@ class StockRule(models.Model):
         extended.
         :return: False
         """
+        if self.env.uid != 1:
+            purchase_default = self.env.uid
+        else:
+            purchase_default = int(self.env.ref('purchase_request.id_purchase_request_default').sudo().value)
         domain = (
             ("state", "=", "draft"),
             ("request_category_id", "=",procurement.product_id.categ_id.id),
-            ("requested_by_id", "=", self.env.user.id),
+            ("requested_by_id", "=", purchase_default),
 
         )
 
@@ -458,5 +469,4 @@ class StockRule(models.Model):
             else:
                 pr.write({"nname": procurement.origin})
         # Create Line
-        request_line_data = rule._prepare_purchase_request_line(pr, procurement)
-        purchase_request_line_model.create(request_line_data)
+        rule._prepare_purchase_request_line(pr, procurement)

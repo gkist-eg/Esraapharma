@@ -142,7 +142,7 @@ class EditPurchaseOrder(models.Model):
         if self.check_sample != 'sample':
             for rec in self:
                 for line in rec.order_line:
-                    if line.price_unit == 0:
+                    if line.product_id and line.price_unit == 0:
                         raise ValidationError(_('PRICE UNIT MUST BE MORE THAN 0.'))
 
     receipt_reminder_email = fields.Boolean('Receipt Reminder Email', related=False,
