@@ -14,12 +14,23 @@ class PurchaseRequests(models.Model):
 
     @api.model
     def _get_default_requested_by(self):
-        return self.env["res.users"].browse(self.env.uid)
+        if self.env.uid != 1:
+            return self.env["res.users"].browse(self.env.uid)
+        else:
+            purchase_default = self.env.ref('purchase_request.id_purchase_request_default').sudo().value
+            return self.env["res.users"].browse(int(purchase_default))
+
 
     @api.model
     def _get_default_departmnt_id(self):
-        departmnt = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1).department_id
-        return departmnt.id
+        if self.env.uid != 1:
+            departmnt = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1).department_id
+            return departmnt.id
+        else:
+            purchase_default = self.env.ref('purchase_request.id_purchase_request_default').sudo().value
+            departmnt = self.env['hr.employee'].search([('user_id', '=', int(purchase_default))], limit=1).department_id
+            return departmnt.id
+
 
     # @api.model
     # def _get_default_departmnt_user_id(self):
@@ -28,8 +39,13 @@ class PurchaseRequests(models.Model):
 
     @api.model
     def _get_default_approver_id(self):
-        approver = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1).parent_id
-        return approver.id
+        if self.env.uid != 1:
+            approver = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1).parent_id
+            return approver.id
+        else:
+            purchase_default = self.env.ref('purchase_request.id_purchase_request_default').sudo().value
+            approver = self.env['hr.employee'].search([('user_id', '=',  int(purchase_default))], limit=1).parent_id
+            return approver.id
 
     def name_get(self):
         res = []
