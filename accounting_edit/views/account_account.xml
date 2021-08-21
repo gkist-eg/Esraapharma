@@ -24,14 +24,12 @@
         <field name="inherit_id" ref="account.view_account_search"/>
 
         <field name="arch" type="xml">
-          <search>
-               <xpath expr="//field[@name='name']" position="replace">
+               <xpath expr="//search//field[@name='name']" position="replace">
                      <field name="name_arab" string="Arabic Name"
                 filter_domain="[('name_arab', 'ilike', self)]"/>
 
 
 </xpath>
-                 </search>
         </field>
     </record>
 
