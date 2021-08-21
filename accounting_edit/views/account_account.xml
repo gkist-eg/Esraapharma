@@ -25,9 +25,13 @@
 
         <field name="arch" type="xml">
           <search>
-            <field name="name_arab" string="Arabic Name"
+               <xpath expr="//field[@name='name']" position="replace">
+                     <field name="name_arab" string="Arabic Name"
                 filter_domain="[('name_arab', 'ilike', self)]"/>
-       </search>
+
+
+</xpath>
+                 </search>
         </field>
     </record>
 
