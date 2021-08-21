@@ -24,7 +24,7 @@
         <field name="inherit_id" ref="account.view_account_search"/>
 
         <field name="arch" type="xml">
-          <search string="Arabic Name">
+          <search>
             <field name="name_arab" string="Arabic Name"
                 filter_domain="[('name_arab', 'ilike', self)]"/>
        </search>
