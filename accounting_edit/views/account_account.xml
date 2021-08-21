@@ -19,17 +19,19 @@
             </field>
         </field>
     </record>
-     <record id="view_account_account_search" model="ir.ui.view">
-]  <field name="model">account.account</field>
-  <field name="arch" type="xml">
-    <search string="Search contacts">
-      <field name="name_arab"></field>
-           <group expand="0" string="Group By">
-              <filter string="Arabic Name" name="name_arab"></filter>
-      </group>
-    </search>
-  </field>
-</record>
+   <record id="account_list_search" model="ir.ui.view">
+        <field name="model">account.account</field>
+       <field name="inherit_id" ref="account.view_account_search"/>
+
+        <field name="arch" type="xml">
+            <search>
+                <field  name="name_arab" string="Arabic Name"/>
+
+            </search>
+        </field>
+    </record>
+
+
 
 
 
