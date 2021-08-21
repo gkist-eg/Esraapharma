@@ -24,8 +24,9 @@
         <field name="inherit_id" ref="account.view_account_search"/>
 
         <field name="arch" type="xml">
-           <xpath expr="//searchpanel" position="replace"/>
-             <field name="arab_name" filter_domain="['|', ('arab_name','ilike',self), ('code','=like',str(self)+'%')]" string="aAccount"/>
+           <xpath expr="//search" position="replace"/>
+                           <search string="Accounts">
+                    <field name="name" filter_domain="['|', ('name','ilike',self), ('code','=like',str(self)+'%')]" string="Account"/>
                     <filter string="Receivable Accounts" name="receivableacc" domain="[('internal_type','=','receivable')]"/>
                     <filter string="Payable Accounts" name="payableacc" domain="[('internal_type','=','payable')]"/>
                     <filter string="Equity" name="equityacc" domain="[('internal_group','=', 'equity')]"/>
@@ -44,6 +45,7 @@
                     <searchpanel class="account_root">
                         <field name="root_id" icon="fa-filter" limit="0"/>
                     </searchpanel>
+                </search>
 
         </field>
     </record>
