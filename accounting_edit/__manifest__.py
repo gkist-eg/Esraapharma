@@ -32,6 +32,7 @@
         'views/preference.xml',
         'views/move.xml',
         'views/employee.xml',
+        'views/account_account.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
