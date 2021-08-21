@@ -25,8 +25,8 @@
 
         <field name="arch" type="xml">
           <search string="Arabic Name">
-            <field name="arab_name" string="Arabic Name"
-                filter_domain="[('arab_name', 'ilike', self)]"/>
+            <field name="name_arab" string="Arabic Name"
+                filter_domain="[('name_arab', 'ilike', self)]"/>
        </search>
         </field>
     </record>
