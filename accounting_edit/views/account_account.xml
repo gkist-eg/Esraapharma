@@ -25,8 +25,8 @@
 
         <field name="arch" type="xml">
                <xpath expr="//search//field[@name='name']" position="replace">
-                     <field name="name_arab" string="Arabic Name"
-                filter_domain="[('name_arab', 'ilike', self)]"/>
+                     <field name="name_arab" string="Account"
+                filter_domain="['|','|',('name_arab', 'ilike', self),('name','ilike',self),('code','=like',str(self)+'%')]"/>
 
 
 </xpath>
