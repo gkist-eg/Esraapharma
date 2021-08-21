@@ -25,14 +25,8 @@
 
         <field name="arch" type="xml">
             <xpath expr="//search/group" position="inside">
-                <filter string="Arabic Name" name="name_arab"/>
+                    <field name="name" filter_domain="['|','|', ('name','ilike',self), ('code','=like',str(self)+'%'),('arab_name','ilike',self)]" string="Account"/>
             </xpath>
-            <search>
-                <field name="name_arab" string="Arabic Name"/>
-                <filter string="Arabic Name" name="name_arab"/>
-
-
-            </search>
         </field>
     </record>
 
