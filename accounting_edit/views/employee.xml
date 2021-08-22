@@ -15,6 +15,19 @@
                     <field name="arabic_name"/>
                 </xpath>
             </field>
+       <record id="hr.employee_search" model="ir.ui.view">
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter"/>
+
+        <field name="arch" type="xml">
+               <xpath expr="//search//field[@name='name']" position="replace">
+                     <field name="name_arab" string="Account"
+                filter_domain="['|',|', ('work_email', 'ilike', self), ('name', 'ilike', self),('arabic_name', 'ilike', self)]"/>
+
+
+</xpath>
+        </field>
+    </record>
         </record><record id="eddt_tree_user" model="ir.ui.view">
             <field name="model">res.users</field>
             <field name="inherit_id" ref="base.view_users_tree"/>
