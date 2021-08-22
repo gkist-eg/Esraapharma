@@ -17,14 +17,14 @@
         </xpath>
     </field>
     </record>
-    <record id="hr.employee_search" model="ir.ui.view">
+    <record id="hr_hr_employee_search" model="ir.ui.view">
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_filter"/>
 
         <field name="arch" type="xml">
             <xpath expr="//search//field[@name='name']" position="replace">
                 <field name="arabic_name" string="Name"
-                       filter_domain="['|',|', ('work_email', 'ilike', self), ('name', 'ilike', self),('arabic_name', 'ilike', self)]"/>
+                       filter_domain="['|',|',('work_email', 'ilike', self), ('name', 'ilike', self),('arabic_name', 'ilike', self)]"/>
 
 
             </xpath>
