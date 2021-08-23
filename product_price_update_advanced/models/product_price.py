@@ -28,23 +28,48 @@ class ProductPrice(models.TransientModel):
 
     name = fields.Many2one('product.template', string="Product", required=True, domain=[('sale_ok', '=',True)],)
     sale_price = fields.Float(string="Sale Price", required=True)
-    pubprice = fields.Float(string="Public Price", required=True)
+    pubprice = fields.Float(string="Public Price",)
     cost_price = fields.Float(string="Cost Price")
     tax_ids = fields.Many2many('account.tax', domain=[('type_tax_use', '=', 'sale')], string='Taxes', check_company=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company, )
 
     def change_product_price(self):
-        prod_obj = self.env['product.template'].search([('id', '=', self.name.id)])
-        prod_value = {'list_price': self.sale_price,'pubprice': self.pubprice,'taxes_id' :[(6, 0, self.tax_ids.ids)] }
-        prod_obj.sudo().write(prod_value)
-        return {
-            'name': _('Products'),
-            'view_mode': 'form',
-            'res_model': 'product.template',
-            'type': 'ir.actions.act_window',
-            'res_id': prod_obj.id,
-            'context': self.env.context
-        }
+        if self.pubprice !=0  and self.sale_price !=0:
+           prod_obj = self.env['product.template'].search([('id', '=', self.name.id)])
+           prod_value = {'list_price': self.sale_price,'pubprice': self.pubprice,'taxes_id' :[(6, 0, self.tax_ids.ids)] }
+           prod_obj.sudo().write(prod_value)
+           return {
+               'name': _('Products'),
+               'view_mode': 'form',
+               'res_model': 'product.template',
+               'type': 'ir.actions.act_window',
+               'res_id': prod_obj.id,
+               'context': self.env.context
+           }
+        if self.pubprice == 0 and self.sale_price != 0:
+           prod_obj = self.env['product.template'].search([('id', '=', self.name.id)])
+           prod_value = {'list_price': self.sale_price,'taxes_id' :[(6, 0, self.tax_ids.ids)] }
+           prod_obj.sudo().write(prod_value)
+           return {
+               'name': _('Products'),
+               'view_mode': 'form',
+               'res_model': 'product.template',
+               'type': 'ir.actions.act_window',
+               'res_id': prod_obj.id,
+               'context': self.env.context
+           }
+        if self.pubprice != 0 and self.sale_price == 0:
+           prod_obj = self.env['product.template'].search([('id', '=', self.name.id)])
+           prod_value = {'pubprice': self.pubprice,'taxes_id' :[(6, 0, self.tax_ids.ids)] }
+           prod_obj.sudo().write(prod_value)
+           return {
+               'name': _('Products'),
+               'view_mode': 'form',
+               'res_model': 'product.template',
+               'type': 'ir.actions.act_window',
+               'res_id': prod_obj.id,
+               'context': self.env.context
+           }
 
     @api.onchange('name')
     def get_price(self):
