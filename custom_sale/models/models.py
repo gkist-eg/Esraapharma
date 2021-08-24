@@ -894,92 +894,92 @@ class Move(models.Model):
         pharma_discount = self.pharm_discount_totals
         total = dic_disc_amount + cash_disc_amount + pharma_discount
         ##print(total)
-        # if total != 0 and self.move_type == 'out_invoice':
-        #
-        #     # lines_list.append((0, 0, {
-        #     #     'name': 'Total Discount',
-        #     #     'display_type': False,
-        #     #     'exclude_from_invoice_tab': True,
-        #     #     'account_id': rec,
-        #     #     'debit': 0.0,
-        #     #     'credit': round(dic_disc_amount, 2) + round(cash_disc_amount, 2) + round(pharma_discount, 2),
-        #     # }))
-        #     if self.partner_id.dist_account.id:
-        #         lines_list.append((0, 0, {
-        #             'name': 'Dist Discount',
-        #             'display_type': False,
-        #             'exclude_from_invoice_tab': True,
-        #             'account_id': self.partner_id.dist_account.id,
-        #             'debit': round(dic_disc_amount, 2),
-        #             'credit': 0.0
-        #         }))
-        #     if self.partner_id.cash_account.id:
-        #         lines_list.append((0, 0, {
-        #             'name': 'Cash Discount',
-        #             'display_type': False,
-        #             'exclude_from_invoice_tab': True,
-        #             'account_id': self.partner_id.cash_account.id,
-        #             'credit': 0.0,
-        #             'debit': round(cash_disc_amount, 2),
-        #
-        #         }))
-        #
-        #     if self.partner_id.property_product_pricelist.pharmacy_account:
-        #         lines_list.append((0, 0, {
-        #             'name': 'Pharmacy Discount',
-        #             'display_type': False,
-        #             'exclude_from_invoice_tab': True,
-        #             'account_id': self.partner_id.property_product_pricelist.pharmacy_account.id,
-        #             'credit': 0.0,
-        #             'debit': round(pharma_discount, 2),
-        #
-        #         }))
-        #
-        #     self.update({'line_ids': lines_list,
-        #                  })
-        # if total != 0 and self.move_type == 'out_refund':
-        #
-        #     # lines_list.append((0, 0, {
-        #     #     'name': 'Total Discount',
-        #     #     'display_type': False,
-        #     #     'exclude_from_invoice_tab': True,
-        #     #     'account_id': rec,
-        #     #     'debit': round(dic_disc_amount, 2) + round(cash_disc_amount, 2) + round(pharma_discount, 2),
-        #     #     'credit':0.0 ,
-        #     # }))
-        #     if self.partner_id.dist_account.id:
-        #         lines_list.append((0, 0, {
-        #             'name': 'Dist Discount',
-        #             'display_type': False,
-        #             'exclude_from_invoice_tab': True,
-        #             'account_id': self.partner_id.dist_account.id,
-        #             'credit': round(dic_disc_amount, 2),
-        #             'debit': 0.0
-        #         }))
-        #     if self.partner_id.cash_account.id:
-        #         lines_list.append((0, 0, {
-        #             'name': 'Cash Discount',
-        #             'display_type': False,
-        #             'exclude_from_invoice_tab': True,
-        #             'account_id': self.partner_id.cash_account.id,
-        #             'debit': 0.0,
-        #             'credit': round(cash_disc_amount, 2),
-        #
-        #         }))
-        #
-        #     if self.partner_id.property_product_pricelist.pharmacy_account.id:
-        #         lines_list.append((0, 0, {
-        #             'name': 'Pharmacy Discount',
-        #             'display_type': False,
-        #             'exclude_from_invoice_tab': True,
-        #             'account_id': self.partner_id.property_product_pricelist.pharmacy_account.id,
-        #             'debit': 0.0,
-        #             'credit': round(pharma_discount, 2),
-        #
-        #         }))
-        #
-        #     self.update({'line_ids': lines_list,
-        #                  })
+        if total != 0 and self.move_type == 'out_invoice':
+
+            # lines_list.append((0, 0, {
+            #     'name': 'Total Discount',
+            #     'display_type': False,
+            #     'exclude_from_invoice_tab': True,
+            #     'account_id': rec,
+            #     'debit': 0.0,
+            #     'credit': round(dic_disc_amount, 2) + round(cash_disc_amount, 2) + round(pharma_discount, 2),
+            # }))
+            if self.partner_id.dist_account.id:
+                lines_list.append((0, 0, {
+                    'name': 'Dist Discount',
+                    'display_type': False,
+                    'exclude_from_invoice_tab': True,
+                    'account_id': self.partner_id.dist_account.id,
+                    'debit': round(dic_disc_amount, 2),
+                    'credit': 0.0
+                }))
+            if self.partner_id.cash_account.id:
+                lines_list.append((0, 0, {
+                    'name': 'Cash Discount',
+                    'display_type': False,
+                    'exclude_from_invoice_tab': True,
+                    'account_id': self.partner_id.cash_account.id,
+                    'credit': 0.0,
+                    'debit': round(cash_disc_amount, 2),
+
+                }))
+
+            if self.partner_id.property_product_pricelist.pharmacy_account:
+                lines_list.append((0, 0, {
+                    'name': 'Pharmacy Discount',
+                    'display_type': False,
+                    'exclude_from_invoice_tab': True,
+                    'account_id': self.partner_id.property_product_pricelist.pharmacy_account.id,
+                    'credit': 0.0,
+                    'debit': round(pharma_discount, 2),
+
+                }))
+
+            self.update({'line_ids': lines_list,
+                         })
+        if total != 0 and self.move_type == 'out_refund':
+
+            # lines_list.append((0, 0, {
+            #     'name': 'Total Discount',
+            #     'display_type': False,
+            #     'exclude_from_invoice_tab': True,
+            #     'account_id': rec,
+            #     'debit': round(dic_disc_amount, 2) + round(cash_disc_amount, 2) + round(pharma_discount, 2),
+            #     'credit':0.0 ,
+            # }))
+            if self.partner_id.dist_account.id:
+                lines_list.append((0, 0, {
+                    'name': 'Dist Discount',
+                    'display_type': False,
+                    'exclude_from_invoice_tab': True,
+                    'account_id': self.partner_id.dist_account.id,
+                    'credit': round(dic_disc_amount, 2),
+                    'debit': 0.0
+                }))
+            if self.partner_id.cash_account.id:
+                lines_list.append((0, 0, {
+                    'name': 'Cash Discount',
+                    'display_type': False,
+                    'exclude_from_invoice_tab': True,
+                    'account_id': self.partner_id.cash_account.id,
+                    'debit': 0.0,
+                    'credit': round(cash_disc_amount, 2),
+
+                }))
+
+            if self.partner_id.property_product_pricelist.pharmacy_account.id:
+                lines_list.append((0, 0, {
+                    'name': 'Pharmacy Discount',
+                    'display_type': False,
+                    'exclude_from_invoice_tab': True,
+                    'account_id': self.partner_id.property_product_pricelist.pharmacy_account.id,
+                    'debit': 0.0,
+                    'credit': round(pharma_discount, 2),
+
+                }))
+
+            self.update({'line_ids': lines_list,
+                         })
         return super(Move, self).action_post()
 
     @api.depends('invoice_line_ids.quantity')
