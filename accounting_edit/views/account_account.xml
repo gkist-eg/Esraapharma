@@ -1,0 +1,37 @@
+<odoo>
+    <record id="account_account_form" model="ir.ui.view">
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+
+                <field name="name_arab"/>
+            </field>
+        </field>
+    </record>
+    <record id="account_account_tree" model="ir.ui.view">
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_list"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+
+                <field name="name_arab"/>
+            </field>
+        </field>
+    </record>
+    <record id="account_list_search" model="ir.ui.view">
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_search"/>
+
+        <field name="arch" type="xml">
+               <xpath expr="//search//field[@name='name']" position="replace">
+                     <field name="name_arab" string="Account"
+                filter_domain="['|','|',('name_arab', 'ilike', self),('name','ilike',self),('code','=like',str(self)+'%')]"/>
+
+
+</xpath>
+        </field>
+    </record>
+
+
+</odoo>

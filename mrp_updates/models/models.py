@@ -466,7 +466,7 @@ class MrpUpdates(models.Model):
             bulk = self.env['mrp.bom']
             if bulks:
                 bulk = bulks[0].child_bom_id
-            if production.bom_id and bulk and production.product_id.mfg:
+            if production.bom_id and bulk and production.product_id.mfg and production.bom_id.type != 'subcontract':
                 if round(production.product_qty * production.product_id.mfg) > round(bulk.product_qty):
                     production.product_qty = production.bom_id.product_qty
             factor = production.product_uom_id._compute_quantity(production.product_qty,
