@@ -290,7 +290,7 @@ class MrpProductionSchedule(models.Model):
                         starting_inventory_qty - forecast_values['forecast_qty'] - forecast_values[
                             'indirect_demand_qty'])
                     if bom_f:
-                        forecast_values['replenish_qty'] = math.ceil(optimal_qty / bom_f[0].product_qty) * bom_f[0].product_qty
+                        forecast_values['replenish_qty'] = math.ceil(replenish_qty / bom_f[0].product_qty) * bom_f[0].product_qty
                     else :
                         forecast_values['replenish_qty'] = float_round(replenish_qty, precision_rounding=rounding)
 
