@@ -23,7 +23,7 @@ class ExpenseEdit(models.Model):
                 ('department_id.manager_id', '=', employee.id),
                 ('parent_id', '=', employee.id),
                 ('id', '=', employee.id),
-                ('employee_id.parent_id.user_id', '=', employee.id),
+                ('parent_id.user_id', '=', employee.id),
 
                 ('expense_manager_id', '=', user.id),
                 '|', ('company_id', '=', False), ('company_id', '=', employee.company_id.id),
