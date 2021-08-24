@@ -176,3 +176,12 @@ class PurchaseOrderLine(models.Model):
     def partner_id_onchange(self):
         for record in self:
             record.partner_id = record.order_id.partner_id
+
+    def _update_move_date_deadline(self, new_date):
+        """ Updates corresponding move picking line deadline dates that are not yet completed. """
+        moves_to_update = self.move_ids.filtered(lambda m: m.state not in ('done', 'cancel'))
+        if not moves_to_update:
+            moves_to_update = self.move_dest_ids.filtered(lambda m: m.state not in ('done', 'cancel'))
+        for move in moves_to_update:
+            move.date_deadline = new_date + relativedelta(days=move.company_id.po_lead)
+            move.date = new_date
