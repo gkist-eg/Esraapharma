@@ -2,6 +2,12 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+from odoo import api, fields, models, SUPERUSER_ID, _
+from odoo.tools.float_utils import float_compare, float_round
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from odoo.exceptions import UserError
+from odoo.addons.purchase.models.purchase import PurchaseOrder as Purchas
 
 
 class AddManufact(models.Model):
