@@ -12,7 +12,15 @@ class ExpenseEdit(models.Model):
         states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'refused': [('readonly', False)],'approved': [('readonly', False)]}, digits='Product Price')
     product_id = fields.Many2one('product.product', string='Product', readonly=True, tracking=True, states={'draft': [('readonly', False)], 'reported': [('readonly', False)], 'approved': [('readonly', False)], 'refused': [('readonly', False)]}, domain="[('can_be_expensed', '=', True), '|', ('company_id', '=', False), ('company_id', '=', company_id)]", ondelete='restrict')
     user_id = fields.Many2one('res.users', 'Manager', compute='_compute_from_employee_id', store=True, readonly=True, copy=False, states={'draft': [('readonly', True)]}, tracking=True, domain=lambda self: [('groups_id', 'in', self.env.ref('hr_expense.group_hr_expense_team_approver').id)])
+    address_id = fields.Many2one('res.partner', compute='_compute_from_employee_id', store=True, readonly=False, copy=True, string="Employee Home Address", check_company=True)
+    department_id = fields.Many2one('hr.department', compute='_compute_from_employee_id', store=True, readonly=False, copy=False, string='Department', states={'post': [('readonly', True)], 'done': [('readonly', True)]})
 
+    @api.depends('employee_id')
+    def _compute_from_employee_id(self):
+        for sheet in self:
+            sheet.address_id = sheet.employee_id.sudo().address_home_id
+            sheet.department_id = sheet.employee_id.department_id
+            sheet.user_id = sheet.employee_id.expense_manager_id or sheet.employee_id.parent_id.user_id
 
 
     def _get_employee_id_domain(self):
