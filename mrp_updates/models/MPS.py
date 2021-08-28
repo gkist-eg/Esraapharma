@@ -283,16 +283,11 @@ class MrpProductionSchedule(models.Model):
                     forecast_values['forecast_qty'] = 0.0
 
                 if not replenish_qty_updated:
-                    bom_f = self.env['mrp.bom']._bom_find(
-                        product=production_schedule.product_id, company_id=production_schedule.company_id.id,
-                        bom_type='normal')
                     replenish_qty = production_schedule._get_replenish_qty(
                         starting_inventory_qty - forecast_values['forecast_qty'] - forecast_values[
                             'indirect_demand_qty'])
-                    if bom_f:
-                        forecast_values['replenish_qty'] =float_round( math.ceil(replenish_qty / bom_f[0].product_qty) * bom_f[0].product_qty ,precision_rounding=rounding)
-                    else:
-                        forecast_values['replenish_qty'] = float_round(replenish_qty, precision_rounding=rounding)
+
+                    forecast_values['replenish_qty'] = float_round(replenish_qty, precision_rounding=rounding)
 
                     forecast_values['replenish_qty_updated'] = False
 
@@ -309,7 +304,7 @@ class MrpProductionSchedule(models.Model):
                     related_date = max(subtract(date_start, days=lead_time), fields.Date.today())
                     index = next(i for i, (dstart, dstop) in enumerate(date_range) if related_date <= dstart or (related_date >= dstart and related_date <= dstop))
                     related_key = (date_range[index], product, production_schedule.warehouse_id)
-                    indirect_demand_qty[related_key] = ratio * forecast_values['replenish_qty']
+                    indirect_demand_qty[related_key] += ratio * forecast_values['replenish_qty']
 
             if production_schedule in self:
                 # The state is computed after all because it needs the final
