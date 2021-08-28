@@ -309,7 +309,7 @@ class MrpProductionSchedule(models.Model):
                     related_date = max(subtract(date_start, days=lead_time), fields.Date.today())
                     index = next(i for i, (dstart, dstop) in enumerate(date_range) if related_date <= dstart or (related_date >= dstart and related_date <= dstop))
                     related_key = (date_range[index], product, production_schedule.warehouse_id)
-                    indirect_demand_qty[related_key] += ratio * forecast_values['replenish_qty']
+                    indirect_demand_qty[related_key] = ratio * forecast_values['replenish_qty']
 
             if production_schedule in self:
                 # The state is computed after all because it needs the final
