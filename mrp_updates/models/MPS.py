@@ -282,14 +282,14 @@ class MrpProductionSchedule(models.Model):
                 else:
                     forecast_values['forecast_qty'] = 0.0
 
-                if not replenish_qty_updated:
-                    replenish_qty = production_schedule._get_replenish_qty(
-                        starting_inventory_qty - forecast_values['forecast_qty'] - forecast_values[
-                            'indirect_demand_qty'])
-
-                    forecast_values['replenish_qty'] = float_round(replenish_qty, precision_rounding=rounding)
-
-                    forecast_values['replenish_qty_updated'] = False
+                # if not replenish_qty_updated:
+                #     replenish_qty = production_schedule._get_replenish_qty(
+                #         starting_inventory_qty - forecast_values['forecast_qty'] - forecast_values[
+                #             'indirect_demand_qty'])
+                #
+                #     forecast_values['replenish_qty'] = float_round(replenish_qty, precision_rounding=rounding)
+                #
+                #     forecast_values['replenish_qty_updated'] = False
 
                 forecast_values['starting_inventory_qty'] = float_round(starting_inventory_qty, precision_rounding=rounding)
                 forecast_values['safety_stock_qty'] = float_round(starting_inventory_qty - forecast_values['forecast_qty'] - forecast_values['indirect_demand_qty'] + forecast_values['replenish_qty'], precision_rounding=rounding)
